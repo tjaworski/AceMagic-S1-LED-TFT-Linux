@@ -129,10 +129,17 @@ data looks like this (image data omited):
 55 a2 12 00 18 00 18 0c 
 55 a2 12 00 0a 00 18 0c
 ```
+## Image Data
+
+coming soon
+
+## Commands for LED strip
+
+coming soon
 
 ## Code
 
-soon...
+coming soon
 
 ## Additional Documentation and Acknowledgments
 
