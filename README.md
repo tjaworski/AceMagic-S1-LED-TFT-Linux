@@ -118,7 +118,7 @@ struct patch_image {
     uint16_t x;       // 0x0012 x=18
     uint16_t y;       // 0x0032 y=50
     uint16_t length;  // 0x0C18 3096 bytes
-}
+};
 ```
 
 data looks like this (image data omited):
