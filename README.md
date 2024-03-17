@@ -145,3 +145,7 @@ coming soon
 
 * WireShark
 * IDA
+* [Application Notes for AN0619](https://www.holtek.com/page/applicationNotes/AN0619)
+* [ESK32-A2A31_UserManual v100 pdf](https://www.holtek.com/WebAPI/187541/ESK32-A2A31_UserManualv100.pdf/c8975661-c04f-4b33-8cc2-dc2e5aa3026c)
+* [ESK32-A2A31 Dev Kit](https://www.holtek.com/page/detail/dev_kit/ESK32-A2A31)
+
