@@ -42,6 +42,8 @@ all commands have an 8 byte header. total buffer sent is always 4104 bytes, that
 
 #### set_time (0xA1)
 
+this is used to keep the internal clock updated and as a heartbeat..
+
 ```
 struct set_time {
     uint8_t header;   // 0x55
@@ -105,6 +107,28 @@ data looks like this (image data omited):
    55 a3 f2 1b 00 a0 00 09    40960 - 2304
 ```
 
+#### draw_image (0xA2)
+
+draw on image at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... 
+
+```
+struct patch_image {
+    uint8_t header;   // 0x55
+    uint8_t command;  // 0xA2
+    uint16_t x;       // 0x0012 x=18
+    uint16_t y;       // 0x0032 y=50
+    uint16_t length;  // 0x0C18 3096 bytes
+}
+```
+
+data looks like this (image data omited):
+
+```
+55 a2 12 00 32 00 18 0c 
+55 a2 12 00 26 00 18 0c 
+55 a2 12 00 18 00 18 0c 
+55 a2 12 00 0a 00 18 0c
+```
 
 ## Code
 
