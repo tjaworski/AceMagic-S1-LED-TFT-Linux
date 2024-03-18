@@ -195,7 +195,7 @@ here is the code for the above:
                             uint8_t green_intensity = (uint8_t)((y * 63) / (height - 1));
                             uint8_t blue_intesity = (uint8_t)(((width - x - 1) * 31) / (width - 1));
                             color = RGB565(red_intensity, green_intensity, blue_intesity);
-                        };
+                        }
                         break;
                 }
     
