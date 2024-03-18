@@ -94,7 +94,7 @@ data looks like this (image data omited):
    55 a3 f1 0d 00 c0 00 10      
    55 a3 f1 0f 00 e0 00 10      
    55 a3 f1 10 00 f0 00 10     
-   55 a3 f1 11 00 00 00 10     
+   55 a3 f1 11 00 00 00 10   (see warning below)  
    55 a3 f1 12 00 10 00 10     
    55 a3 f1 13 00 20 00 10     
    55 a3 f1 14 00 30 00 10     
@@ -106,6 +106,9 @@ data looks like this (image data omited):
    55 a3 f1 1a 00 90 00 10     
    55 a3 f2 1b 00 a0 00 09    40960 - 2304
 ```
+
+> [!WARNING]
+> The offset field is ignored since it wraps around back to 0 at sequence 0x11. I am assuming the firmware will use the sequence to figure out the offset. 
 
 #### draw_sprite (0xA2)
 
