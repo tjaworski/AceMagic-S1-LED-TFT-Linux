@@ -131,7 +131,21 @@ data looks like this (image data omited):
 ```
 ## Image Data
 
-coming soon
+the screen is 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
+
+```
+
+#define RGB565(r, g, b) (((r & 0x1F) << 11) | ((g & 0x3F) << 5) | (b & 0x1F))
+#define SWAPENDIAN(num) (num>>8) | (num<<8);
+
+*pixel = RGB565(red, green, blue);
+
+```
+
+here is an example cycle through red, green, blue, and a color gradient. sorry about the quality, it looks much better in person.
+
+![alt text](images/framebuffer.gif?raw=true)
+
 
 ## Commands for LED strip
 
