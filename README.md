@@ -133,7 +133,7 @@ data looks like this (image data omited):
 
 the screen is a 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
 
-```
+```c++
 
 #define RGB565(r, g, b) (((r & 0x1F) << 11) | ((g & 0x3F) << 5) | (b & 0x1F))
 #define SWAPENDIAN(num) (num>>8) | (num<<8);
