@@ -107,12 +107,12 @@ data looks like this (image data omited):
    55 a3 f2 1b 00 a0 00 09    40960 - 2304
 ```
 
-#### draw_image (0xA2)
+#### draw_sprite (0xA2)
 
-draw on image at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... 
+draw a sprite at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
 
 ```
-struct patch_image {
+struct draw_sprite {
     uint8_t header;   // 0x55
     uint8_t command;  // 0xA2
     uint16_t x;       // 0x0012 x=18
@@ -131,7 +131,7 @@ data looks like this (image data omited):
 ```
 ## Image Data
 
-the screen is 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
+the screen is a 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
 
 ```
 
@@ -145,15 +145,78 @@ the screen is 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait
 here is an example cycle through red, green, blue, and a color gradient. sorry about the quality, it looks much better in person.
 
 ![alt text](images/framebuffer.gif?raw=true)
+![alt text](images/colors_small.png?raw=true)
 
+here is the code for the above:
+
+```c++
+    const int width = 320;
+    const int height = 170;
+    
+    unsigned char *framebuffer =  (unsigned char *)calloc(width * height, 2);
+    
+    for (int i = 0; i < 5; i++) {
+    
+        unsigned char* ptr = framebuffer;
+    
+        for (int y = 0; y < height; y++) {
+    
+            for (int x = 0; x < width; x++) {
+    
+                uint16_t* pixel = (uint16_t*)ptr;
+                uint16_t color = 0;
+    
+                switch (i) {
+    
+                    case 0:  // black, clear the screen
+                        break;
+    
+                    case 1:  // red
+                        {
+                            uint8_t intensity = (uint8_t)((y * 31) / (height - 1));
+                            color = RGB565(intensity, 0, 0);
+                        }
+                        break;
+                    case 2: // green
+                        {
+                            uint8_t intensity = (uint8_t)((y * 63) / (height - 1));
+                            color = RGB565(0, intensity, 0);
+                        }
+                        break;
+                    case 3: // blue
+                        {
+                            uint8_t intensity = (uint8_t)((y * 31) / (height - 1));
+                            color = RGB565(0, 0, intensity);
+                        }
+                        break;
+                    case 4: // gradient
+                        {
+                            uint8_t red_intensity = (uint8_t)((x * 31) / (width - 1));
+                            uint8_t green_intensity = (uint8_t)((y * 63) / (height - 1));
+                            uint8_t blue_intesity = (uint8_t)(((width - x - 1) * 31) / (width - 1));
+                            color = RGB565(red_intensity, green_intensity, blue_intesity);
+                        };
+                        break;
+                }
+    
+                *pixel = SWAPENDIAN(color);
+                ptr += 2;
+            }
+        }
+    
+        if (-1 == set_image(handle)) {
+            break;
+        }
+    }
+```
 
 ## Commands for LED strip
 
 coming soon
 
-## Code
+## Putting it all together
 
-coming soon
+coming soon, but the idea is to have a framebuffer that can be drawn on, (charts, text, animation, etc...), and having simple api that can either redraw() the whole screen, or send changed updates(). It is too bad that the screen draw is so slow.
 
 ## Additional Documentation and Acknowledgments
 
