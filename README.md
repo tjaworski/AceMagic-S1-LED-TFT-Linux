@@ -208,6 +208,8 @@ here is the code for the above:
         if (-1 == set_image(handle)) {
             break;
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 ```
 
