@@ -138,7 +138,8 @@ the screen is a 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portra
 #define RGB565(r, g, b) (((r & 0x1F) << 11) | ((g & 0x3F) << 5) | (b & 0x1F))
 #define SWAPENDIAN(num) (num>>8) | (num<<8);
 
-*pixel = RGB565(red, green, blue);
+color = RGB565(red, green, blue);
+*pixel = SWAPENDIAN(color);
 
 ```
 
