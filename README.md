@@ -134,7 +134,7 @@ data looks like this (image data omited):
 ```
 ## Image Data
 
-the screen is a 320 x 170 x 2 framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
+the screen is a 320 x 170 x 2 (16-bit color) framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
 
 ```c++
 
