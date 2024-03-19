@@ -44,7 +44,7 @@ all commands have an 8 byte header. total buffer sent is always 4104 bytes, that
 
 this is used to keep the internal clock updated and as a heartbeat..
 
-```
+```c++
 struct set_time {
     uint8_t header;   // 0x55
     uint8_t command1; // 0xA1
@@ -64,7 +64,7 @@ data looks like this:
 
 #### set_image (0xA3)
 
-```
+```c++
 struct set_image {
     uint8_t header;   // 0x55
     uint8_t command1; // 0xA3
@@ -114,7 +114,7 @@ data looks like this (image data omited):
 
 draw a sprite at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
 
-```
+```c++
 struct draw_sprite {
     uint8_t header;   // 0x55
     uint8_t command;  // 0xA2
@@ -218,7 +218,49 @@ here is the code for the above:
 
 ## Commands for LED strip
 
-coming soon
+the LCD strip used a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
+
+```c++
+struct led_command {
+    uint8_t signature; // 0xfa
+    uint8_t theme;     
+    uint8_t intensity;
+    uint8_t speed; 
+    uint8_t checksum;
+};
+```
+#### theme
+```
+0x01 = rainbow
+0x02 = breathing
+0x03 = color cycle
+0x04 = off
+0x05 = automatic
+```
+#### intensity
+```
+0x01 = level 5
+0x02 = level 4
+0x03 = level 3
+0x04 = level 2
+0x05 = level 1
+```
+#### speed
+```
+0x01 = level 5
+0x02 = level 4
+0x03 = level 3
+0x04 = level 2
+0x05 = level 1
+```
+#### checksum
+
+```
+crc = LSB(signature + theme + intensity + speed)
+```
+
+turning off the led strip you will need to send the intesity and speed too. 
+
 
 ## Putting it all together
 
