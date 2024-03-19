@@ -38,9 +38,28 @@ as you can see in the photo below, the sample traffic sent to the device:
 
 ## commands for TFT screen
 
-all commands have an 8 byte header. total buffer sent is always 4104 bytes, that is 8 bytes for header, and 4096 for data. the header always starts with a signature byte (0x55), followed by command byte. the next byte tells if this is a start (0xF0), continue (0xF1), or final command (0xF2). 
+all commands have an 8 byte header. total buffer sent is always 4104 bytes, that is 8 bytes for header, and 4096 for data. the header always starts with a signature byte (0x55), followed by command byte and a sub command byte. 
 
-#### set_time (0xA1)
+#### set_orientation (0xA1 0xF1)
+
+```c++
+struct set_orientation {
+    uint8_t header;      // 0x55
+    uint8_t command1;    // 0xA1
+    uint8_t command2;    // 0xF1 = set orientation
+    uint8_t orientation; // 0x01 = landscape, 0x02 = portrait
+    uint8_t unused[4];
+};
+```
+
+data look like this:
+```
+55 a1 f1 02 00 00 00
+```
+
+the "Disconnection, content information display will not be allowed!" will show correct orientation
+
+#### set_time (0xA1 0xF2)
 
 this is used to keep the internal clock updated and as a heartbeat..
 
@@ -48,11 +67,11 @@ this is used to keep the internal clock updated and as a heartbeat..
 struct set_time {
     uint8_t header;   // 0x55
     uint8_t command1; // 0xA1
-    uint8_t command2; // 0xF2 = end
+    uint8_t command2; // 0xF2 (heartbeat) or 0xF3 (set time) 
     uint8_t hour;     // 0x0E = 14 hours (2pm)
     uint8_t minute;   // 0x1C = 28 minutes
     uint8_t second;   // 0x2D = 45 seconds
-    uint16_t unused;
+    uint8_t unused[2];
 };
 ```
 
@@ -61,11 +80,13 @@ data looks like this:
 55 a1 f2 0e 1c 2d 00 00    2:28:45
 55 a1 f2 0e 1c 2e 00 00    2:28:46
 ```
+ 
+#### redraw (0xA3)
 
-#### set_image (0xA3)
+bitblt the entire screen
 
 ```c++
-struct set_image {
+struct lcd_redraw {
     uint8_t header;   // 0x55
     uint8_t command1; // 0xA3
     uint8_t command2; // 0xF0 = start, 0xF1 = continue, 0xF2 = end
@@ -110,12 +131,12 @@ data looks like this (image data omited):
 > [!WARNING]
 > The offset field is ignored since it wraps around back to 0 at sequence 0x11. I am assuming the firmware will use the sequence to figure out the offset. 
 
-#### draw_sprite (0xA2)
+#### update (0xA2)
 
-draw a sprite at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
+bitblt portion of the framebuffer at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
 
 ```c++
-struct draw_sprite {
+struct lcd_update {
     uint8_t header;   // 0x55
     uint8_t command;  // 0xA2
     uint16_t x;       // 0x0012 x=18
@@ -218,7 +239,7 @@ here is the code for the above:
 
 ## Commands for LED strip
 
-the LED strip used a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
+the LED strip uses a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
 
 ```c++
 struct led_command {
@@ -261,6 +282,19 @@ crc = LSB(signature + theme + intensity + speed)
 
 turning off the LED strip you will need to send the intesity and speed too. 
 
+## Flow
+
+- set_orientation
+- set_time
+- heartbeat
+- redraw
+- heartbeat
+- update
+- heartbeat
+- update
+- update
+- heartbeat
+etc...
 
 ## Putting it all together
 
