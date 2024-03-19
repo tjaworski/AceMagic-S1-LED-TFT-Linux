@@ -3,7 +3,7 @@ ACEMAGIC S1 Mini TFT/LCD Control for Linux
 
 # First: My Rant
 
-While this mini PC offers impressive features, the absence of information regarding the TFT front screen and LED strip is frustrating. Despite being advertised as 'with DIY LCD Display' on Amazon, the lack of Linux support is disappointing. My objective is to enable control of these devices in Linux, facilitating integration with projects like Batocera.linux. If you're interested in contributing to this effort, please reach out.   
+While this mini PC offers impressive features, the absence of information regarding the TFT front screen and LED strip is frustrating. Despite being advertised as 'with DIY LCD Display' on Amazon, the lack of Linux support is disappointing. My objective is to enable control of these devices in Linux, facilitating integration with projects like Batocera.linux. If you're interested in contributing to this effort, please reach out. work is much in progress.
 
 ## LED Strip
 
@@ -218,7 +218,7 @@ here is the code for the above:
 
 ## Commands for LED strip
 
-the LCD strip used a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
+the LED strip used a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
 
 ```c++
 struct led_command {
@@ -259,7 +259,7 @@ struct led_command {
 crc = LSB(signature + theme + intensity + speed)
 ```
 
-turning off the led strip you will need to send the intesity and speed too. 
+turning off the LED strip you will need to send the intesity and speed too. 
 
 
 ## Putting it all together
