@@ -133,7 +133,7 @@ data looks like this (image data omited):
 
 #### update (0xA2)
 
-bitblt portion of the framebuffer at x,y coordinates. this will send small image data that has the counters like temp, load, memory usage, power usage, time, date, fan speed, etc... because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
+bitblt portion of the framebuffer at x,y coordinates. this will send small image data to update, this data can be anything. because the framebuffer is slow, this is used to update portions of the framebuffer quickly.
 
 ```c++
 struct lcd_update {
@@ -141,7 +141,8 @@ struct lcd_update {
     uint8_t command;  // 0xA2
     uint16_t x;       // 0x0012 x=18
     uint16_t y;       // 0x0032 y=50
-    uint16_t length;  // 0x0C18 3096 bytes
+    uint8_t width;    // 0x18 w=24
+    uint8_t height;   // 0x0C h=12
 };
 ```
 
@@ -153,6 +154,10 @@ data looks like this (image data omited):
 55 a2 12 00 18 00 18 0c 
 55 a2 12 00 0a 00 18 0c
 ```
+
+> [!NOTE]
+> You can set any size update region (up to 254 width, and 170 height) as long as the pixel data does not exceed the total size of the 4096 buffer limit. for example, w=51, h=40 (51 x 40 x 2 = 4080 bytes) or w=102, h=20 (102 x 20 x 2 = 4080). there is a fine balance between how big each update region is vs how fast you need the area updated. The max update region size are 254 x 4 and 12 x 170.
+
 ## Image Data
 
 the screen is a 320 x 170 x 2 (16-bit color) framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
