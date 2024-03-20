@@ -244,7 +244,7 @@ here is the code for the above:
 
 With the update function, Some cool animations can be done. Although I did notice that after a few cycles, the screen starts to slow down a bit. It seems like there might be an issue with the firmware. My guess is that it was designed to handle a few updates and then take a quick nap for about a second. So, bursts of updates followed by short breaks seem to keep this device happy. But hey, even with that, you can still create some neat stuff, like an analog watch face or even small bursts of animation.
 
-** update: I noticed when you send the set_time/heartbeat it will slow down. if i leave the heartbeat to hit ever 1 second, and send the screen updates, the animation is much smoother. still have to sleep 10ms between, otherwise you will get a send error.
+** UPDATE: I noticed when you send the set_time/heartbeat too often it will slow down. if i leave the heartbeat to hit every 1 second, and send the screen updates every 10ms, the animation is much smoother. still have to sleep a little between updates, otherwise you will get a send error.
 
 ![alt text](images/animation1.gif?raw=true)
 ![alt text](images/animation2.gif?raw=true)
