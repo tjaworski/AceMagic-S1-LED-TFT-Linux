@@ -242,6 +242,10 @@ here is the code for the above:
     }
 ```
 
+With the update function, Some cool animations can be done. Although I did notice that after a few cycles, the screen starts to slow down a bit. It seems like there might be an issue with the firmware. My guess is that it was designed to handle a few updates and then take a quick nap for about a second. So, bursts of updates followed by short breaks seem to keep this device happy. But hey, even with that, you can still create some neat stuff, like an analog watch face or even small bursts of animation.
+
+![alt text](images/animation1.gif?raw=true)
+
 ## Commands for LED strip
 
 the LED strip uses a 5 byte buffer, with a signature 0xfa followed by theme, intensity, speed and a checksum. you open the device like a regular serial port and write bytes to it.
