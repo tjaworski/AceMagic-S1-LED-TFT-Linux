@@ -23,19 +23,19 @@ open your browser to the gui page http://localhost:8686
 
 this shows you the preview screen, and the settings which can be found in config.json file.
 
-![alt text](s1panel/screenshots/top-panel.png?raw=true)
+![alt text](screenshots/top-panel.png?raw=true)
 
 ### bottom panel
 
 this is the theme configuration screen where you can add, remove and change the panel components.
 
-![alt text](s1panel/screenshots/bottom-panel.png?raw=true)
+![alt text](screenshots/bottom-panel.png?raw=true)
 
 ### widgets
 
 expanding each widget shows you the configuration for that widget
 
-![alt text](s1panel/screenshots/widget-config.png?raw=true)
+![alt text](screenshots/widget-config.png?raw=true)
 
 ## Work in Progress
 
