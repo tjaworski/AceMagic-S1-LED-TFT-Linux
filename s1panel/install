@@ -30,9 +30,9 @@ echo "Install Service..."
 echo -e "$(make_service)" > /etc/systemd/system/s1panel.service
 echo "Reload Service Daemon..."
 systemctl daemon-reload
-echo "Reload Enable s1panel..."
+echo "Enable s1panel..."
 systemctl enable s1panel.service
-echo "Reload Start s1panel..."
+echo "Start s1panel..."
 systemctl start s1panel.service
 echo "Done!"
 systemctl status s1panel.service
