@@ -2,6 +2,15 @@
 
 This is my attempt at a panel software for linux. 
 
+## Dependencies
+
+you should at least have minimal version of node installed
+
+```
+$ node -v
+v18.13.0
+```
+
 ## Install
 
 clone this repo
