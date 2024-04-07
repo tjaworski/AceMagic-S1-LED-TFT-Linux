@@ -26,6 +26,19 @@ cd acemagic/s1panel
 sudo ./install
 ```
 
+also make sure you have lm_sensors installed and configured for the cpu temp to work.
+
+```
+sensors
+coretemp-isa-0000
+Adapter: ISA adapter
+Package id 0:  +45.0°C  (high = +105.0°C, crit = +105.0°C)
+Core 0:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
+Core 1:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
+Core 2:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
+Core 3:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
+```
+
 open your browser to the gui page http://localhost:8686
 
 ### top panel
