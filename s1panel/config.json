@@ -1,0 +1,61 @@
+{
+   "listen": "127.0.0.1:8686",
+   "theme": "themes/simple_demo/portrait_simple.json",
+   "poll": 500,
+   "refresh": 1200,
+   "heartbeat": 10000,
+   "debug_update": false,
+   "theme_list": [
+      {
+         "name": "a simple demo portrait orientation",
+         "config": "themes/simple_demo/portrait_simple.json"
+      }
+   ],
+   "sensors": [
+      {
+         "module": "sensors/clock.js"
+      },
+      {
+         "module": "sensors/calendar.js"
+      },
+      {
+         "module": "sensors/cpu_usage.js",
+         "config": {
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/cpu_temp.js",
+         "config": {
+            "max_points": 300,
+            "fahrenheit": true
+         }
+      },
+      {
+         "module": "sensors/cpu_power.js",
+         "config": {
+            "max_points": 300
+         }
+      }
+   ],
+   "widgets": [
+      "widgets/text.js",
+      "widgets/custom_bar.js",
+      "widgets/line_chart.js",
+      "widgets/doughnut_chart.js",
+      "widgets/image.js"
+   ],
+   "canvas": {
+      "width": 320,
+      "height": 170,
+      "pixel": "RGB16_565"
+   },
+   "device": "1-8:1.1",
+   "led_config": {
+      "device": "/dev/ttyUSB0",
+      "theme": 1,
+      "speed": 3
+   },
+   "portrait": true,
+   "unsaved_changes": false
+}

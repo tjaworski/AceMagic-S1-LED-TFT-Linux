@@ -1,0 +1,30 @@
+{
+  "name": "s1panel",
+  "version": "0.0.1",
+  "description": "S1 LCD/LED info panel",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tjaworski/AceMagic-S1-LED-TFT-Linux.git"
+  },
+  "author": "Tomasz Jaworski",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/tjaworski/AceMagic-S1-LED-TFT-Linux/issues"
+  },
+  "homepage": "https://github.com/tjaworski/AceMagic-S1-LED-TFT-Linux#readme",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "chart.js": "^3.9.1",
+    "chartjs-node-canvas": "^4.1.6",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "node-hid": "^3.0.0",
+    "serialport": "^12.0.0",
+    "usb": "^2.12.1",
+    "winston": "^3.13.0"
+  }
+}

@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# s1panel - set_led_strip
+# Copyright (c) 2024 Tomasz Jaworski
+# GPL-3 Licensed
+#
+declare -i theme=4
+declare -i intensity=3
+declare -i speed=3
+
+usage="$(basename "$0") -t n -i n -s n  -- set led strip via the rest api
+
+   -t theme 1: rainbow, 2: breathing, 3: color cycle, 5: auto (default 4: off)
+   -i intensity (default 3)
+   -s speed (default 3)"
+
+while getopts t:i:s:h\? flag
+do
+    case "${flag}" in
+        h) echo "$usage"
+           exit
+           ;;
+        t) theme=${OPTARG};;
+        i) intensity=${OPTARG};;
+        s) speed=${OPTARG};;
+       \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+           echo "$usage" >&2
+           exit 1
+           ;;
+    esac
+done
+
+generate_post_data()
+{
+cat <<EOF
+{
+   "theme":$theme,
+   "intesity":$intensity,
+   "speed":$speed
+}
+EOF
+}
+
+curl -s -X POST http://localhost:8686/api/led_strip \
+   -H 'Content-Type: application/json' \
+   -d "$(generate_post_data)" | jq "."

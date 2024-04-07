@@ -1,0 +1,172 @@
+{
+   "orientation": "portrait",
+   "refresh": "update",
+   "screens": [
+      {
+         "id": 1,
+         "name": "Screen 1 really long name",
+         "background": "#282828",
+         "duration": 0,
+         "led_config": {
+            "theme": 1,
+            "intensity": 3,
+            "speed": 3
+         },
+         "widgets": [
+            {
+               "id": 1,
+               "group": 1,
+               "name": "doughnut_chart",
+               "used": "#00e600",
+               "free": "#4d4d4d",
+               "rect": {
+                  "x": 35,
+                  "y": 0,
+                  "width": 100,
+                  "height": 100
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{0}",
+               "refresh": 1000,
+               "debug_frame": false
+            },
+            {
+               "id": 2,
+               "group": 1,
+               "name": "image",
+               "rect": {
+                  "x": 65,
+                  "y": 38,
+                  "width": 40,
+                  "height": 40
+               },
+               "value": "themes/simple_demo/cpu.png",
+               "refresh": 0,
+               "debug_frame": false
+            },
+            {
+               "id": 3,
+               "group": 1,
+               "name": "text",
+               "font": "18px Arial",
+               "color": "#878787",
+               "align": "center",
+               "rect": {
+                  "x": 65,
+                  "y": 83,
+                  "width": 45,
+                  "height": 25
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{0}%",
+               "refresh": 1000,
+               "debug_frame": false
+            },
+            {
+               "id": 4,
+               "group": 2,
+               "name": "doughnut_chart",
+               "used": "#00e600",
+               "free": "#4d4d4d",
+               "rect": {
+                  "x": 35,
+                  "y": 102,
+                  "width": 100,
+                  "height": 100
+               },
+               "sensor": true,
+               "value": "cpu_temp",
+               "format": "{0}",
+               "refresh": 1000,
+               "debug_frame": false
+            },
+            {
+               "id": 5,
+               "group": 2,
+               "name": "image",
+               "rect": {
+                  "x": 70,
+                  "y": 140,
+                  "width": 40,
+                  "height": 40
+               },
+               "value": "themes/simple_demo/temp.png",
+               "refresh": 0,
+               "debug_frame": false
+            },
+            {
+               "id": 6,
+               "group": 2,
+               "name": "text",
+               "font": "18px Arial",
+               "color": "#878787",
+               "align": "center",
+               "rect": {
+                  "x": 62,
+                  "y": 185,
+                  "width": 45,
+                  "height": 25
+               },
+               "sensor": true,
+               "value": "cpu_temp",
+               "format": "{0} {2}",
+               "refresh": 1000,
+               "debug_frame": false
+            },
+            {
+               "id": 7,
+               "group": 3,
+               "name": "doughnut_chart",
+               "used": "#00e600",
+               "free": "#4d4d4d",
+               "rect": {
+                  "x": 35,
+                  "y": 205,
+                  "width": 100,
+                  "height": 100
+               },
+               "sensor": true,
+               "value": "cpu_power",
+               "format": "{0}",
+               "refresh": 1000,
+               "debug_frame": false
+            },
+            {
+               "id": 8,
+               "group": 3,
+               "name": "image",
+               "rect": {
+                  "x": 70,
+                  "y": 243,
+                  "width": 40,
+                  "height": 40
+               },
+               "value": "themes/simple_demo/lightbulb.png",
+               "refresh": 0,
+               "debug_frame": false
+            },
+            {
+               "id": 9,
+               "group": 3,
+               "name": "text",
+               "font": "18px Arial",
+               "color": "#878787",
+               "align": "center",
+               "rect": {
+                  "x": 65,
+                  "y": 288,
+                  "width": 47,
+                  "height": 25
+               },
+               "sensor": true,
+               "value": "cpu_power",
+               "format": "{0} W",
+               "refresh": 1000,
+               "debug_frame": false
+            }
+         ]
+      }
+   ]
+}
