@@ -65,6 +65,9 @@ Core 3:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
 
 open your browser to the gui page http://localhost:8686
 
+> [!NOTE]
+> if you want to access the gui remotely you will need to change the listen address in config.json to 0.0.0.0:8686 and restart the service.
+
 ### top panel
 
 this shows you the preview screen, and the settings which can be found in config.json file.
