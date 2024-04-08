@@ -65,7 +65,7 @@ Core 3:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
 
 open your browser to the gui page http://localhost:8686
 
-> [!NOTE]
+> [!IMPORTANT]
 > if you want to access the gui remotely you will need to change the listen address in config.json to 0.0.0.0:8686 and restart the service.
 
 ### top panel
@@ -106,3 +106,5 @@ current widgets are:
 
 Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, including the elusive fan speed sensor, network activity sensor, a ping sensor, and several new widgets such as animated PNG (APNG), slideshow PNG, and a bar chart widget. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off.
 
+> [!TIP]
+> Please share photos of your creations with me, and I'll feature them here. I'm genuinely excited and can't wait to see what you all come up with!
