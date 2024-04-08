@@ -1,6 +1,6 @@
 'use strict';
 /*!
- * s1panel - lcd_device
+ * s1panel - led_device
  * Copyright (c) 2024 Tomasz Jaworski
  * GPL-3 Licensed
  */
