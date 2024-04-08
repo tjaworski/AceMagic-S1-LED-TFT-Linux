@@ -602,7 +602,7 @@ function make_widget_table(widget, infos) {
             }
         }
 
-        if (!key.startsWith('debug_') && key !== 'name' && key !== 'sensor' && key !== 'setup' && key !== 'id' && key !== 'group') {
+        if (!key.startsWith('debug_') && key !== 'name' && key !== 'sensor' && key !== 'setup' && key !== 'id' && key !== 'group' && key !== 'table' && key !== 'font_string') {
 
             _table.push(_obj);
         }            
@@ -611,8 +611,6 @@ function make_widget_table(widget, infos) {
     widget.font_string = { font: widget.font };
 
     widget.table = _table.sort((a, b) => a.name.localeCompare(b.name));
-
-    console.log(widget.table);
 }
 
 export default {
@@ -695,7 +693,7 @@ export default {
         this.canvas = this.$refs.canvas;
         this.context = this.canvas.getContext('2d', { pixelFormat: "RGB16_565" });
         
-        Promise.all([ 
+        return Promise.all([ 
             api.fetch_config(),
             api.fetch_theme(),
             api.fetch_widgets(),
@@ -735,11 +733,9 @@ export default {
             this.start();
         });      
     },
-
     beforeUnmount() {
         clearTimeout(this.timeout);
     },
-
     methods: {
 
         start() {
@@ -961,11 +957,10 @@ export default {
                     this.edit_screen_name = this.screen.name || 'n/a';
 
                     this.screen.widgets.forEach(each => {
+
                         make_widget_table(each, this.widgets);
                     });
-                    console.log(this.screen.widgets.table);
                 }
-
             });
         },
         onAddScreen() {
@@ -1152,10 +1147,9 @@ export default {
                 this.edit_background = this.screen.background || '#000000';
                 this.edit_screen_name = this.screen.name || 'n/a';
                 
-                this.theme.screens.forEach(screen => { 
-                    screen.widgets.forEach(widget => {
-                        make_widget_table(widget, this.widgets);
-                    });
+                this.screen.widgets.forEach(each => {
+                    
+                    make_widget_table(each, this.widgets);
                 });
 
                 this.canvas.width = ('portrait' === this.theme.orientation) ? 170 : 320;
