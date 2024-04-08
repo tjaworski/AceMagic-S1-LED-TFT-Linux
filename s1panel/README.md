@@ -7,14 +7,35 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
 
 ## Dependencies
 
-you should at least have minimal version of node installed
+Until I do an official release and figure out how to package all this, you will need to follow the below steps. You should at least have minimal version of node+npm installed. 
+
+```
+sudo apt install nodejs
+sudo apt install npm
+```
 
 ```
 $ node -v
 v18.13.0
+$ npm -v
+9.2.0
 ```
 
-## Install
+## Upgrade
+
+stop the service, do a git pull, update any npm packages, build the gui, start service.
+
+```
+sudo service stop s1panel
+git pull
+npm i
+cd gui
+npm i
+npm run build
+sudo service start s1panel
+```
+
+## New Install
 
 clone this repo
 
