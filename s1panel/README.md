@@ -35,6 +35,9 @@ npm run build
 sudo service start s1panel
 ```
 
+> [!WARNING]
+> make sure you backup your config.json and themes/simple_demo/ directory before upgrading or you will loose your changes!
+
 ## New Install
 
 clone this repo
