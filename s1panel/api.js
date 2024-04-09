@@ -868,7 +868,7 @@ function theme_revert(context) {
             const _theme = JSON.parse(buffer);
             const _screen = _theme.screens[0];
             
-            _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
             
             _state.update_orientation = true;
             _state.full_draw = true;
@@ -891,6 +891,120 @@ function theme_revert(context) {
         
             fulfill(_theme);
         });
+    });
+}
+
+function up_widget(context, request) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _screen = find_theme_screen(context, request.screen);
+
+        if (_screen) {
+
+            var _previous = null; 
+
+            _screen.widgets.find(widget => {
+
+                if (_previous && widget.id === request.widget) {
+
+                    widget.id = [_previous.id, _previous.id = widget.id][0];
+                    return true;
+                }
+
+                _previous = widget;
+            });
+
+            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+
+            set_dirty(context, true);
+
+            return fulfill();
+        }
+        reject();
+    });
+}
+
+function down_widget(context, request) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _screen = find_theme_screen(context, request.screen);
+
+        if (_screen) {
+
+            var _previous = null;
+
+            _screen.widgets.find(widget => {
+
+                if (_previous && _previous.id === request.widget) {
+
+                    widget.id = [_previous.id, _previous.id = widget.id][0];
+                    return true;
+                }
+
+                _previous = widget;
+            });
+            
+            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            
+            set_dirty(context, true);
+            
+            return fulfill();
+        }
+        reject();
+    });
+}
+
+function top_widget(context, request) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _screen = find_theme_screen(context, request.screen);
+
+        if (_screen) {
+
+            var _count = 2;
+
+            _screen.widgets.forEach(widget => {
+
+                widget.id = (widget.id === request.widget) ? 1 : _count++; 
+            });
+
+            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            
+            set_dirty(context, true);
+
+            return fulfill();
+        }
+
+        reject();
+    });
+}
+
+function bottom_widget(context, request) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _screen = find_theme_screen(context, request.screen);
+
+        if (_screen) {
+
+            var _count = 1;
+
+            _screen.widgets.forEach(widget => {
+
+                widget.id = (widget.id === request.widget) ? _screen.widgets.length : _count++; 
+            });
+    
+            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            
+            set_dirty(context, true);
+
+            return fulfill();
+        }
+
+        reject();
     });
 }
 
@@ -1020,6 +1134,11 @@ module.exports.init = function(web, context) {
         { method: 'post', url: '/api/save_config',         type: 'application/json', callback: save_config },
         { method: 'post', url: '/api/theme_save',          type: 'application/json', callback: theme_save },
         { method: 'post', url: '/api/theme_revert',        type: 'application/json', callback: theme_revert },
+        { method: 'post', url: '/api/up_widget',           type: 'application/json', callback: up_widget },
+        { method: 'post', url: '/api/down_widget',         type: 'application/json', callback: down_widget },
+        { method: 'post', url: '/api/top_widget',          type: 'application/json', callback: top_widget },
+        { method: 'post', url: '/api/bottom_widget',       type: 'application/json', callback: bottom_widget },
+
 
     ].forEach(each => {
 

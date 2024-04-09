@@ -470,6 +470,64 @@ function api_get_led_strip() {
     });
 }
 
+function api_up_widget(screen, widget) {
+
+    return new Promise((fulfill, reject) => {
+
+        fetch('/api/up_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+function api_down_widget(screen, widget) {
+
+    return new Promise((fulfill, reject) => {
+
+        fetch('/api/down_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+function api_top_widget(screen, widget) {
+
+    return new Promise((fulfill, reject) => {
+
+        fetch('/api/top_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+
+function api_bottom_widget(screen, widget) {
+
+    return new Promise((fulfill, reject) => {
+
+        fetch('/api/bottom_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+
 export default {
     set_poll_time       : set_poll_time,
     fetch_config        : api_fetch_config,
@@ -500,4 +558,8 @@ export default {
     theme_revert        : api_theme_revert,
     set_led_strip       : api_set_led_strip,
     get_led_strip       : api_get_led_strip,
+    up_widget           : api_up_widget,
+    down_widget         : api_down_widget,
+    top_widget          : api_top_widget,
+    bottom_widget       : api_bottom_widget
 };

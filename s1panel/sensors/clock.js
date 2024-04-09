@@ -34,10 +34,16 @@ function sample(rate, format) {
             var _am_pm = 'am';
 
             if (_24hours >= 12) {
+                
                 _am_pm = 'pm';
+                
                 if (_24hours > 12) {
+
                     _12hours = _24hours - 12;
                 }
+            }
+            else if (_24hours === 0) {
+                _12hours = 12;
             }
     
             switch (number) {

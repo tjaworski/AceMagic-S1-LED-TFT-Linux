@@ -238,7 +238,7 @@
 
     </Dialog>
 
-    <div class="p-3">    
+    <div class="p-3">
         <div class="grid flud">
             <div class="col-5">
 
@@ -355,7 +355,7 @@
                                                         
                         </div>
 
-                        <Accordion :multiple="true" :activeIndex="active">
+                        <Accordion :multiple="true" v-model:activeIndex="active_widgets">
 
                             <AccordionTab :header="screen?.name">
 
@@ -447,7 +447,15 @@
                             
                             </AccordionTab>
 
-                            <AccordionTab v-for="widget in screen?.widgets" :key="widget.id" :header="widget?.name + ' | ' + widget?.value">
+                            <AccordionTab v-for="(widget, index) in screen?.widgets" :key="widget.id">
+
+                                <template #header>
+                                    
+                                    <span class="flex align-items-center w-full">
+                                        {{ widget?.name }} <i class="pi pi-ellipsis-v"></i> {{ widget?.value }}
+                                    </span>
+
+                                </template>
 
                                 <Toolbar class="border-none -mt-4 -mb-2">
 
@@ -457,6 +465,12 @@
                                     </template>
 
                                     <template #center>
+                                        <div class="ml-auto">
+                                            <Button v-tooltip.top="'Move Top'"    :disabled="isFirst(widget.id)" size="small" icon="pi pi-angle-double-up"   text plain rounded @click="onSwapTop(widget.id, 1 + index)" />
+                                            <Button v-tooltip.top="'Move Up'"     :disabled="isFirst(widget.id)" size="small" icon="pi pi-angle-up"          text plain rounded @click="onSwapUp(widget.id, 1 + index)" />
+                                            <Button v-tooltip.top="'Move Down'"   :disabled="isLast(widget.id)"  size="small" icon="pi pi-angle-down"        text plain rounded @click="onSwapDown(widget.id, 1 + index)" />
+                                            <Button v-tooltip.top="'Move Bottom'" :disabled="isLast(widget.id)"  size="small" icon="pi pi-angle-double-down" text plain rounded @click="onSwapBottom(widget.id, 1 + index)" />
+                                        </div>
                                     </template>
 
                                     <template #end>
@@ -468,7 +482,7 @@
                                 </Toolbar>
 
                                 <ul class="list-none p-0 m-0">
-                                    <li v-for="(item, index) in widget.table" :key="index"  class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
+                                    <li v-for="(item, index2) in widget.table" :key="index2"  class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
                                             
                                         <div class="text-500 w-11rem font-medium capitalize">
                                             {{ item.name }}
@@ -668,7 +682,7 @@ export default {
             screen: null,
             widgets: null,
             sensors: null,
-            active: [],
+            active_widgets: [],
             edit_theme: null,
             edit_screen: null,
             edit_refresh: null,
@@ -785,12 +799,6 @@ export default {
 
                 return _found ? _found.name : 'unknown';
             }
-        },
-        onEditWidget(widget) {
-            widget.editing = true;
-        },
-        onRemoveWidget() {
-
         },
         onSetColorPicker(id, item) {
 
@@ -1179,6 +1187,107 @@ export default {
         onChangeLED() {
 
             return api.set_led_strip(this.led_manage.theme, this.led_manage.intensity, this.led_manage.speed, this.screen.id).then(() => {
+                this.unsaved_changes = true;
+            });
+        },
+        isFirst(id) {
+            
+            return this.screen.widgets[0].id === id;
+        },
+        onSwapUp(id, index) {
+
+            return api.up_widget(this.screen.id, id).then(response => {
+
+                var _previous = null; 
+
+                this.screen.widgets.find(widget => {
+
+                    if (_previous && widget.id === id) {
+
+                        widget.id = [_previous.id, _previous.id = widget.id][0];
+                        return true;
+                    }
+
+                    _previous = widget;
+                });
+
+                if (!this.active_widgets.includes(index - 1)) {
+                    this.active_widgets = this.active_widgets.filter(i => i !== index);
+                    this.active_widgets.push(index - 1);
+                }
+
+                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.unsaved_changes = true;
+            });
+        },
+        isLast(id) {
+
+            return this.screen.widgets[this.screen.widgets.length - 1].id === id;
+        },
+        onSwapDown(id, index) {
+
+            return api.down_widget(this.screen.id, id).then(response => {
+
+                var _previous = null;
+
+                this.screen.widgets.find(widget => {
+
+                    if (_previous && _previous.id === id) {
+
+                        widget.id = [_previous.id, _previous.id = widget.id][0];
+                        return true;
+                    }
+
+                    _previous = widget;
+                });
+
+                if (!this.active_widgets.includes(1 + index)) {
+                    this.active_widgets = this.active_widgets.filter(i => i !== index);
+                    this.active_widgets.push(1 + index);
+                }
+                
+                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.unsaved_changes = true;
+            });
+        },
+        onSwapTop(id, index) {
+
+            return api.top_widget(this.screen.id, id).then(response => {
+
+                var _count = 2;
+
+                this.screen.widgets.forEach(widget => {
+
+                    widget.id = (widget.id === id) ? 1 : _count++; 
+                });
+
+                if (!this.active_widgets.includes(1)) {
+                    this.active_widgets = this.active_widgets.filter(i => i !== index);
+                    this.active_widgets.push(1);
+                }
+
+                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.unsaved_changes = true;
+            });
+
+        },
+        onSwapBottom(id, index) {
+
+            return api.bottom_widget(this.screen.id, id).then(response => {
+
+                var _count = 1;
+
+                this.screen.widgets.forEach(widget => {
+
+                    widget.id = (widget.id === id) ? this.screen.widgets.length : _count++; 
+                });
+
+                if (!this.active_widgets.includes(this.screen.widgets.length)) {
+                    this.active_widgets = this.active_widgets.filter(i => i !== index);
+                    this.active_widgets.push(this.screen.widgets.length);
+                }
+
+                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
                 this.unsaved_changes = true;
             });
         }

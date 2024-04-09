@@ -1,5 +1,5 @@
 {
-   "listen": "127.0.0.1:8686",
+   "listen": "0.0.0.0:8686",
    "theme": "themes/simple_demo/portrait_simple.json",
    "poll": 500,
    "refresh": 1200,

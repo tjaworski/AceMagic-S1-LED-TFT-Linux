@@ -588,7 +588,7 @@ function initialize(handle, state, config, theme) {
     logger.info('initialize: device orientation is ' + theme.orientation);
 
     // sort screens by id
-    theme.screens.sort((a, b) => a.id - b.id);
+    theme.screens = theme.screens.sort((a, b) => a.id - b.id);
     
     return lcd.heartbeat(handle);
 }
@@ -663,7 +663,7 @@ function main() {
                         config.led_config.speed = _screen.led_config.speed || 3;
                     }
 
-                    _screen.widgets.sort((a, b) => a.id - b.id);
+                    _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
 
                     init_web_gui(_state, config, theme).then(() => {
             
