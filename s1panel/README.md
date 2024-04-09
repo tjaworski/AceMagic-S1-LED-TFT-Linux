@@ -5,6 +5,13 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
 > [!NOTE]
 > I am not affiliated with acemagic or minipcunion, nor have I been paid for any of this work. It's all done as a hobby (or a solution to a problem I had).  The software is provided as-is, without any warranties or guarantees of any kind, expressed or implied. Usage of the s1panel project is at your own risk. s1panel is an open-source project and is distributed under the GPL-3.0 license.  
 
+## Release Notes
+
+#### 2024-04-09
+  - added the widget position change buttons (up, down, top, bottom)
+  - fixed clock sensor's 12-hr format showed 0 at midnight
+
+
 ## Dependencies
 
 Until I do an official release and figure out how to package all this, you will need to follow the below steps. You should at least have minimal version of node+npm installed. 
