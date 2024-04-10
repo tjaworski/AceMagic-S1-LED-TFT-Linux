@@ -11,6 +11,12 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
   - added the widget position change buttons (up, down, top, bottom)
   - fixed clock sensor's 12-hr format showed 0 at midnight
 
+#### 2924-04-10
+  - Fixed screen sensor polling when on rotation
+  - Fixed calendar sensor and added more tokens
+  - Added network sensor
+  - Added bar_chart widget
+  - Added 2 more screens on rotation to demo theme
 
 ## Dependencies
 
@@ -114,7 +120,17 @@ current widgets are:
 
      custom_bar, doughnut_chart, image, line_chart, text
 
-Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, including the elusive fan speed sensor, network activity sensor, a ping sensor, and several new widgets such as animated PNG (APNG), slideshow PNG, and a bar chart widget. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off.
+Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, including the elusive fan speed sensor, a ping sensor, and several new widgets such as animated PNG (APNG), and a slideshow PNG. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off.
+
+#### demo theme has 3 screens on 1 minute rotation
+
+<div>
+<img src="screenshots/demo_screen1.png" data-canonical-src="screenshots/demo_screen1.png" width="200" />
+<img src="screenshots/demo_screen2.png" data-canonical-src="screenshots/demo_screen2.png" width="200" />
+<img src="screenshots/demo_screen3.png" data-canonical-src="screenshots/demo_screen3.png" width="200" />
+</div>
+ 
+
 
 > [!TIP]
 > Please share photos of your creations with me, and I'll feature them here. I'm genuinely excited and can't wait to see what you all come up with! I created a subreddit here https://www.reddit.com/r/s1panel/
