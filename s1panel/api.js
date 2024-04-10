@@ -868,7 +868,7 @@ function theme_revert(context) {
             const _theme = JSON.parse(buffer);
             const _screen = _theme.screens[0];
             
-            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets.sort((a, b) => a.id - b.id);
             
             _state.update_orientation = true;
             _state.full_draw = true;
@@ -915,7 +915,7 @@ function up_widget(context, request) {
                 _previous = widget;
             });
 
-            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets.sort((a, b) => a.id - b.id);
 
             set_dirty(context, true);
 
@@ -946,7 +946,7 @@ function down_widget(context, request) {
                 _previous = widget;
             });
             
-            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets.sort((a, b) => a.id - b.id);
             
             set_dirty(context, true);
             
@@ -971,7 +971,7 @@ function top_widget(context, request) {
                 widget.id = (widget.id === request.widget) ? 1 : _count++; 
             });
 
-            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets.sort((a, b) => a.id - b.id);
             
             set_dirty(context, true);
 
@@ -997,7 +997,7 @@ function bottom_widget(context, request) {
                 widget.id = (widget.id === request.widget) ? _screen.widgets.length : _count++; 
             });
     
-            _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+            _screen.widgets.sort((a, b) => a.id - b.id);
             
             set_dirty(context, true);
 

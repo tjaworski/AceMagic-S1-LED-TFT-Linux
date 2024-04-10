@@ -1,6 +1,6 @@
 'use strict';
 /*!
- * s1panel - widget/line_chart
+ * s1panel - widget/bar_chart
  * Copyright (c) 2024 Tomasz Jaworski
  * GPL-3 Licensed
  */
@@ -8,6 +8,8 @@ const logger = require('../logger');
 
 const { loadImage }         = require('canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+
+const DEFAULT_ZOOM = 0;
 
 function debug_rect(context, rect) {
 
@@ -17,7 +19,7 @@ function debug_rect(context, rect) {
     context.stroke();
 }
 
-function draw_chart(context, x, y, w, h, chart, config) {
+function draw_chart(context, x, y, w, h, zoom, chart, config) {
 
     return new Promise((fulfill, reject) => {
 
@@ -25,7 +27,9 @@ function draw_chart(context, x, y, w, h, chart, config) {
             
             loadImage(buffer).then(image => {
 
-                context.drawImage(image, 0, 0, w, h, x, y, w, h);
+                const _zoom = zoom / 2;
+
+                context.drawImage(image, _zoom, 0, w - _zoom, h, x, y, w, h);
         
                 fulfill();
 
@@ -59,6 +63,7 @@ function draw(context, value, min, max, config) {
         context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
         context.clip();
 
+        const _zoom = (config.zoom || DEFAULT_ZOOM) * 2;
         const _points = new Array(config.points);
         const _labels = new Array(config.points);
 
@@ -82,22 +87,40 @@ function draw(context, value, min, max, config) {
             _count++;        
         }
 
+        const _x_axis = {
+            type        : 'linear',
+            min         : 0,
+            max         : _points.length,
+            display     : false
+        };
+
+        const _y_axis = {
+            type        : 'linear',
+            min         : min,
+            max         : max,
+            display     : false,
+            beginAtZero : true,
+            border: {
+                display : false
+            }
+        };
+
         const _configuration = {
 
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: _labels,
                 datasets: [{
                     label           : '',
                     data            : _points,
-                    fill            : config.area || false,
-                    pointStyle      : 'circle',
                     backgroundColor : config.fill || '#00e600',
                     borderColor     : config.outline || '#4d4d4d', 
-                    tension         : 0.1
+                    borderWidth     : 1,
+                    barThickness    : config.thickness || 1
                 }]
             },
             options: {
+                indexAxis: config.horizontal ? 'y' : 'x',
                 plugins: {
                     legend: {
                       display: false
@@ -113,22 +136,8 @@ function draw(context, value, min, max, config) {
                     } 
                 },
                 scales: {
-                    x: {
-                        type        : 'linear',
-                        min         : 0,
-                        max         : _points.length,
-                        display     : false
-                    },
-                    y: {
-                        type        : 'linear',
-                        min         : min,
-                        max         : max,
-                        display     : false,
-                        beginAtZero : true,
-                        border: {
-                            display : false
-                        }
-                    }
+                    x: config.horizontal ? _y_axis : _x_axis,
+                    y: config.horizontal ? _x_axis : _y_axis,
                 },
                 legend: {
                     display: false
@@ -141,15 +150,15 @@ function draw(context, value, min, max, config) {
             }
         };
 
-        if (!_private.chart || _private.chart._width != _rect.width || _private.chart._height != _rect.height) {
+        if (!_private.chart || _private.chart._width != (_rect.width + _zoom) || _private.chart._height != _rect.height) {
 
             if (_private.chart) {
                 delete _private.chart;
             }
-            _private.chart = new ChartJSNodeCanvas({ width: _rect.width, height: _rect.height });
+            _private.chart = new ChartJSNodeCanvas({ width: _rect.width + _zoom, height: _rect.height });
         }
 
-        draw_chart(context, _rect.x, _rect.y, _rect.width, _rect.height, _private.chart, _configuration).then(() => {
+        draw_chart(context, _rect.x, _rect.y, _rect.width + _zoom, _rect.height, _zoom, _private.chart, _configuration).then(() => {
 
             if (_has_changed) {
                 _private.last_value = value;
@@ -163,7 +172,7 @@ function draw(context, value, min, max, config) {
 
         }, () => {
 
-            logger.error('line chart failed to draw');
+            logger.error('bar chart failed to draw');
 
         }).finally(() => {
 
@@ -174,13 +183,15 @@ function draw(context, value, min, max, config) {
 
 function info() {
     return {
-        name: 'line_chart',
-        description: 'A line chart',
+        name: 'bar_chart',
+        description: 'A bar chart',
         fields: [ 
             { name: 'outline', value: 'color' }, 
             { name: 'fill', value: 'color' }, 
-            { name: 'points', value: 'number' }, 
-            { name: 'area', value: 'boolean' } ]
+            { name: 'points', value: 'number' },
+            { name: 'thickness', value: 'number' },
+            { name: 'zoom', value: 'number'},
+            { name: 'horizontal', value: 'boolean' } ]
     };
 }
 

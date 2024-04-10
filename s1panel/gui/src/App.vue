@@ -1216,7 +1216,7 @@ export default {
                     this.active_widgets.push(index - 1);
                 }
 
-                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.screen.widgets.sort((a, b) => a.id - b.id);
                 this.unsaved_changes = true;
             });
         },
@@ -1246,7 +1246,7 @@ export default {
                     this.active_widgets.push(1 + index);
                 }
                 
-                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.screen.widgets.sort((a, b) => a.id - b.id);
                 this.unsaved_changes = true;
             });
         },
@@ -1266,7 +1266,7 @@ export default {
                     this.active_widgets.push(1);
                 }
 
-                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.screen.widgets.sort((a, b) => a.id - b.id);
                 this.unsaved_changes = true;
             });
 
@@ -1287,7 +1287,7 @@ export default {
                     this.active_widgets.push(this.screen.widgets.length);
                 }
 
-                this.screen.widgets = this.screen.widgets.sort((a, b) => a.id - b.id);
+                this.screen.widgets.sort((a, b) => a.id - b.id);
                 this.unsaved_changes = true;
             });
         }

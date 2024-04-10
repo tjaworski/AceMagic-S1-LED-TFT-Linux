@@ -4,9 +4,9 @@
    "screens": [
       {
          "id": 1,
-         "name": "Screen 1 really long name",
+         "name": "Screen 1",
          "background": "#282828",
-         "duration": 0,
+         "duration": 60000,
          "led_config": {
             "theme": 1,
             "intensity": 3,
@@ -37,7 +37,7 @@
                "name": "image",
                "rect": {
                   "x": 65,
-                  "y": 38,
+                  "y": 35,
                   "width": 40,
                   "height": 40
                },
@@ -69,9 +69,9 @@
                "name": "image",
                "rect": {
                   "x": 70,
-                  "y": 140,
-                  "width": 40,
-                  "height": 40
+                  "y": 134,
+                  "width": 34,
+                  "height": 51
                },
                "value": "themes/simple_demo/temp.png",
                "refresh": 0,
@@ -113,12 +113,12 @@
                "id": 7,
                "group": 1,
                "name": "text",
-               "font": "18px Arial",
+               "font": "17px Arial",
                "color": "#878787",
                "align": "center",
                "rect": {
                   "x": 65,
-                  "y": 83,
+                  "y": 81,
                   "width": 45,
                   "height": 25
                },
@@ -132,14 +132,14 @@
                "id": 8,
                "group": 2,
                "name": "text",
-               "font": "18px Arial",
+               "font": "17px Arial",
                "color": "#878787",
                "align": "center",
                "rect": {
                   "x": 62,
-                  "y": 185,
-                  "width": 45,
-                  "height": 25
+                  "y": 187,
+                  "width": 47,
+                  "height": 24
                },
                "sensor": true,
                "value": "cpu_temp",
@@ -151,14 +151,14 @@
                "id": 9,
                "group": 3,
                "name": "text",
-               "font": "18px Arial",
+               "font": "17px Arial",
                "color": "#878787",
                "align": "center",
                "rect": {
-                  "x": 65,
-                  "y": 288,
-                  "width": 47,
-                  "height": 25
+                  "x": 59,
+                  "y": 290,
+                  "width": 53,
+                  "height": 21
                },
                "sensor": true,
                "value": "cpu_power",
@@ -173,8 +173,8 @@
                "rect": {
                   "x": 0,
                   "y": 0,
-                  "width": 70,
-                  "height": 50
+                  "width": 60,
+                  "height": 17
                },
                "sensor": true,
                "value": "clock",
@@ -184,8 +184,427 @@
                "font": "13px Arial",
                "color": "#47b320",
                "align": "left"
+            },
+            {
+               "id": 11,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 110,
+                  "y": 0,
+                  "width": 60,
+                  "height": 17
+               },
+               "sensor": true,
+               "value": "calendar",
+               "format": "{9}/{2}/{10}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "13px Arial",
+               "color": "#47b320",
+               "align": "right"
             }
          ]
+      },
+      {
+         "id": 2,
+         "name": "Screen 2 Charts",
+         "background": "#000000",
+         "duartion": 0,
+         "widgets": [
+            {
+               "id": 1,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 4,
+                  "y": 10,
+                  "width": 166,
+                  "height": 25
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{1}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#88ff00",
+               "fill": "#80c72e",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 2,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 36,
+                  "width": 50,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "cpu",
+               "format": "",
+               "refresh": 0,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 3,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 130,
+                  "y": 36,
+                  "width": 37,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{0}%",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 4,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 60,
+                  "width": 168,
+                  "height": 40
+               },
+               "sensor": true,
+               "value": "cpu_temp",
+               "format": "{1}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#00ff00",
+               "fill": "#20bf2d",
+               "points": 16,
+               "thickness": 8,
+               "zoom": 17
+            },
+            {
+               "id": 5,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 103,
+                  "width": 35,
+                  "height": 15
+               },
+               "sensor": false,
+               "value": "temp",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 6,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 130,
+                  "y": 103,
+                  "width": 37,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "cpu_temp",
+               "format": "{0} {2}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 7,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 151,
+                  "width": 170,
+                  "height": 50
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{2}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#0033ff",
+               "fill": "#2332a6",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 8,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 193,
+                  "width": 170,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{2}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#37139c",
+               "fill": "#7a23f7",
+               "points": 1,
+               "thickness": 10,
+               "zoom": 0,
+               "horizontal": true
+            },
+            {
+               "id": 9,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 210,
+                  "width": 15,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "rx",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 10,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 100,
+                  "y": 210,
+                  "width": 70,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{3}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#02cc70",
+               "align": "right"
+            },
+            {
+               "id": 11,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 226,
+                  "width": 170,
+                  "height": 50
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{5}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#3db2c4",
+               "fill": "#26cccc",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 12,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 269,
+                  "width": 170,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{5}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#f5054d",
+               "fill": "#ff0091",
+               "points": 1,
+               "thickness": 9,
+               "zoom": 0,
+               "horizontal": true
+            },
+            {
+               "id": 13,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 291,
+                  "width": 15,
+                  "height": 15
+               },
+               "sensor": false,
+               "value": "tx",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#02cc70",
+               "align": "left"
+            },
+            {
+               "id": 14,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 100,
+                  "y": 291,
+                  "width": 70,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{6}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#02cc70",
+               "align": "right"
+            }
+         ],
+         "duration": 60000,
+         "led_config": {
+            "theme": 2,
+            "intensity": 3,
+            "speed": 3
+         }
+      },
+      {
+         "id": 3,
+         "name": "Screen 3 Date and Time",
+         "background": "#000000",
+         "duartion": 0,
+         "widgets": [
+            {
+               "id": 1,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 40,
+                  "width": 170,
+                  "height": 32
+               },
+               "sensor": true,
+               "value": "calendar",
+               "format": "{4}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "30px Arial",
+               "color": "#ffffff",
+               "align": "center"
+            },
+            {
+               "id": 2,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 100,
+                  "width": 170,
+                  "height": 50
+               },
+               "sensor": true,
+               "value": "calendar",
+               "format": "{6}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "30px Arial",
+               "color": "#ffffff",
+               "align": "center"
+            },
+            {
+               "id": 3,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 145,
+                  "width": 170,
+                  "height": 32
+               },
+               "sensor": true,
+               "value": "calendar",
+               "format": "{3}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "30px Arial",
+               "color": "#ffffff",
+               "align": "center"
+            },
+            {
+               "id": 4,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 190,
+                  "width": 170,
+                  "height": 30
+               },
+               "sensor": true,
+               "value": "calendar",
+               "format": "{8}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "30px Arial",
+               "color": "#ffffff",
+               "align": "center"
+            },
+            {
+               "id": 5,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 250,
+                  "width": 170,
+                  "height": 40
+               },
+               "sensor": true,
+               "value": "clock",
+               "format": "{1} {3}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "30px Arial",
+               "color": "#ffffff",
+               "align": "center"
+            }
+         ],
+         "duration": 60000,
+         "led_config": {
+            "theme": 3,
+            "intensity": 3,
+            "speed": 3
+         }
       }
    ]
 }

@@ -56,25 +56,23 @@ function translate_rect(portrait, rect, height) {
 
 function next_update_region(handle, context, state, config, fulfill) {
 
-    if (!state.change_count) {
+    if (!state.changes.length) {
 
         state.last_activity = get_hr_time();
         return fulfill();
     }
 
-    const _change = state.changes[0];
+    const _change = state.changes.shift();
     const _rect = translate_rect(config.portrait, _change, config.canvas.height);
-
     const _image = context.getImageData(_rect.x, _rect.y, _rect.width, _rect.height);
-
+    
     if (config.debug_update) {
-
+        
         _image.data.fill(Math.floor(Math.random() * 65025) + 1);
     }
-
-    state.changes.shift();
+    
     state.change_count--;
-
+    
     lcd.refresh(handle, _rect.x, _rect.y, _rect.width, _rect.height, _image).then(() => {
 
         // intentionally blank
@@ -139,6 +137,13 @@ function fullscreen_redraw(handle, context, state, config, fulfill) {
             state.last_activity = _finished;
             state.full_draw = false;
 
+            // since we did a full screen redraw, 
+            // clear any pending screen updates
+            while (state.changes.length > 0) {
+                state.changes.shift();
+                state.change_count--;
+            }              
+
             fulfill(true);
 
         }, err => {
@@ -180,7 +185,7 @@ function update_device_screen(handle, context, state, config, theme) {
             }
             else if (state.full_draw) {
 
-                fullscreen_redraw(handle, context, state, config, fulfill);
+                return fullscreen_redraw(handle, context, state, config, fulfill);
             }        
             else if (state.change_count) {
                 
@@ -393,9 +398,9 @@ function fix_rect_bounds(config, rect) {
 
 function next_draw_widgets(handle, context, state, config, widgets, index, total, fulfill) {
 
-    const _widget_config = widgets[index];
-
     if (index < total) {
+        
+        const _widget_config = widgets[index];
 
         var _sensor_reading = Promise.resolve();
 
@@ -408,7 +413,7 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
             }          
         }
 
-        _sensor_reading.then(sensor => {
+       return _sensor_reading.then(sensor => {
             
             const _widget = state.widgets[_widget_config.name];
             const _value = sensor ? sensor.value : _widget_config.value;
@@ -437,9 +442,8 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
             });
         });
     }
-    else {
-        fulfill(); // we are done
-    }
+    
+    fulfill(); // we are done
 }
 
 function load_wallpaper(context, state, config, screen) {
@@ -460,16 +464,15 @@ function load_wallpaper(context, state, config, screen) {
                 return fulfill(state.wallpaper_image);
             }
 
-            node_canvas.loadImage(screen.wallpaper).then(image => {
+            return node_canvas.loadImage(screen.wallpaper).then(image => {
 
                 state.wallpaper_image = image;
 
                 return fulfill(state.wallpaper_image);
             });
         }
-        else {
-            fulfill();
-        }
+
+        fulfill();
     });
 }
 
@@ -518,6 +521,61 @@ function update_led_strip(state, config) {
     });
 }
 
+function next_sensor(state, widgets, index, fulfill) {
+
+    if (index < widgets.length) {
+
+        const _widget_config = widgets[index];
+
+        var _sensor_reading = Promise.resolve();
+
+        if (_widget_config.refresh && _widget_config.sensor) {
+
+            const _sensor = state.sensors[_widget_config.value];
+            
+            if (_sensor) {
+
+                _sensor_reading = _sensor.sample(_widget_config.refresh, '');  
+            }          
+        }
+        
+        return _sensor_reading.then(() => {
+
+            next_sensor(state, widgets, 1 + index, fulfill);
+        });
+    }
+
+    fulfill(); // we are done
+}
+
+/*
+ * we need to poll each widget/sensor in all the inactive screens or we 
+ * going to have missed data points. ie: if cpu_usage is only on screen 1
+ * and temp is only on screen 2, if we stay on screen 1 too long screen 2 
+ * temp sensor will have missed data points. we skip the active screen, 
+ * since its going to be taken care of by the draw_screen. 
+ */
+function poll_inactive_screen_sensors(state, screens, index, active, fulfill) {
+
+    if (index < screens.length) {
+
+        const _screen = screens[index];
+        
+        if (_screen.id !== active.id) {
+
+            return next_sensor(state, _screen.widgets, 0, () => {
+
+                poll_inactive_screen_sensors(state, screens, 1 + index, active, fulfill);
+            });
+        }
+        
+        return poll_inactive_screen_sensors(state, screens, 1 + index, active, fulfill);
+    }
+
+    fulfill(); // we are done
+}
+
+
 function start_draw_canvas(handle, state, config, theme) {
 
     if (theme.refresh === 'redraw') {
@@ -525,29 +583,33 @@ function start_draw_canvas(handle, state, config, theme) {
     }
 
     const _context = state.canvas_context[state.active_context];
+    const _active_screen = fetch_screen(state, config, theme);
 
-    // pick a screen and draw it
-    draw_screen(handle, _context, state, config, fetch_screen(state, config, theme)).then(() => {
+    poll_inactive_screen_sensors(state, theme.screens, 0, _active_screen, () => {
 
-        // update lcd screen
-        update_device_screen(handle, _context, state, config, theme).then(device_updated => {
-            
-            state.output_context.putImageData(_context.getImageData(0, 0, config.canvas.width, config.canvas.height), 0, 0);
+        // pick a screen and draw it
+        draw_screen(handle, _context, state, config, _active_screen).then(() => {
 
-            if (device_updated) {
+            // update lcd screen
+            update_device_screen(handle, _context, state, config, theme).then(device_updated => {
                 
-                state.active_context ^= 1;  // flip buffer to use
-            }
-            
-            update_led_strip(state, config).then(() => {
+                state.output_context.putImageData(_context.getImageData(0, 0, config.canvas.width, config.canvas.height), 0, 0);
 
-                setTimeout(() => {
-
-                    start_draw_canvas(handle, state, config, theme);
+                if (device_updated) {
+                    
+                    state.active_context ^= 1;  // flip buffer to use
+                }
                 
-                }, config.poll);
-            });            
-        });    
+                update_led_strip(state, config).then(() => {
+
+                    setTimeout(() => {
+
+                        start_draw_canvas(handle, state, config, theme);
+                    
+                    }, config.poll);
+                });            
+            });    
+        });
     });
 }
 
@@ -588,7 +650,7 @@ function initialize(handle, state, config, theme) {
     logger.info('initialize: device orientation is ' + theme.orientation);
 
     // sort screens by id
-    theme.screens = theme.screens.sort((a, b) => a.id - b.id);
+    theme.screens.sort((a, b) => a.id - b.id);
     
     return lcd.heartbeat(handle);
 }
@@ -658,12 +720,12 @@ function main() {
                     const _screen = theme.screens[_state.screen_index];
 
                     if (_screen.led_config) {
-                        config.led_config.theme = _screen.led_config.theme || 4;
+                        config.led_config.theme = _screen.led_config.theme || 4;    // off by default
                         config.led_config.intensity = _screen.led_config.intensity || 3;
                         config.led_config.speed = _screen.led_config.speed || 3;
                     }
 
-                    _screen.widgets = _screen.widgets.sort((a, b) => a.id - b.id);
+                    _screen.widgets.sort((a, b) => a.id - b.id);
 
                     init_web_gui(_state, config, theme).then(() => {
             

@@ -1,5 +1,5 @@
 {
-   "listen": "0.0.0.0:8686",
+   "listen": "127.0.0.1:8686",
    "theme": "themes/simple_demo/portrait_simple.json",
    "poll": 500,
    "refresh": 1200,
@@ -36,6 +36,13 @@
          "config": {
             "max_points": 300
          }
+      },
+      {
+         "module": "sensors/network.js",
+         "config": {
+            "interface": "enp2s0",
+            "max_points": 300
+         }
       }
    ],
    "widgets": [
@@ -43,6 +50,7 @@
       "widgets/custom_bar.js",
       "widgets/line_chart.js",
       "widgets/doughnut_chart.js",
+      "widgets/bar_chart.js",
       "widgets/image.js"
    ],
    "canvas": {
@@ -53,8 +61,9 @@
    "device": "1-8:1.1",
    "led_config": {
       "device": "/dev/ttyUSB0",
-      "theme": 1,
-      "speed": 3
+      "theme": 2,
+      "speed": 3,
+      "intensity": 3
    },
    "portrait": true,
    "unsaved_changes": false
