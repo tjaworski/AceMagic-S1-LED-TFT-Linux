@@ -358,7 +358,14 @@ Core 2:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
 Core 3:        +42.0°C  (high = +105.0°C, crit = +105.0°C)
 ```
 
-if anyone knows how to get the fan speed, please reach out.
+### UPDATE 2024-4-11 on the FAN speed: 
+
+Upon opening my S1 mini to locate the fan's connection point, I unplugged it to trace the wires. To my surprise, the fan speed indicator remained at 1000. Curiously, I stress-tested the CPU, and despite the fan being off and disconnected, the fan RPM increased. This experience solidifies my belief that the fan speed indication is <strong>BS</strong>. Quite disappointing, indeed.
+
+<div>
+<img src="images/fan1.png" data-canonical-src="images/fan1.png" width="220" />
+<img src="images/fan2.png" data-canonical-src="images/fan2.png" width="400" />
+</div>
 
 
 ## Additional Documentation and Acknowledgments
