@@ -1,5 +1,5 @@
 # AceMagic-S1-LED-TFT-Linux
-ACEMAGIC S1 Mini TFT/LCD Control for Linux
+ACEMAGIC S1 Mini LCD/LED Control for Linux
 
 # First: My Rant
 
