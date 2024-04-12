@@ -11,7 +11,7 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
   - added the widget position change buttons (up, down, top, bottom)
   - fixed clock sensor's 12-hr format showed 0 at midnight
 
-#### 2924-04-10
+#### 2024-04-10
   - Fixed screen sensor polling when on rotation
   - Fixed calendar sensor and added more tokens
   - Added network sensor
