@@ -367,6 +367,22 @@ Upon opening my S1 mini to locate the fan's connection point, I unplugged it to 
 <img src="images/fan2.png" data-canonical-src="images/fan2.png" width="400" />
 </div>
 
+### Final Thoughts
+
+This mini PC is manufactured and sold by Shenzhen CYX Industrial Co., Ltd., but OEMed by Acemagic. You can find N95 models on Alibaba and similar marketplaces for as little as $100 (with a minimum order quantity of 50), and you can even get your name slapped on the side of it. However, I purchased my three units on Amazon for around $230 each. Although mine are the N97 models, I'm sure Acemagic still managed to turn a decent profit on these. Overall, I like this machine! the N97 is a low power mobile processor, and for a retro gaming and development it is pretty decent. What I don't understand is why they invested so much in developing the front screen LCD and even gave us control over the LED strip, yet they couldn't figure out how to connect the FAN so we can read the RPMs. 
+
+#### Advantages
+1. Love that you can stand it up. takes less space on desk.
+2. The front LCD screen can display what ever you want.  
+
+#### Disadvantages
+1. LCD screen needs more functionality, like the ability to turn it off (like you can with the LED strip)
+2. Ability to read the Cooling FAN speed.
+
+
+> [!TIP]
+> See the [s1panel](s1panel/README.md) for source/app to control the LCD/LED.
+
 
 ## Additional Documentation and Acknowledgments
 
