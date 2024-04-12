@@ -377,7 +377,7 @@ This mini PC is manufactured and sold by Shenzhen CYX Industrial Co., Ltd., but 
 
 #### Disadvantages
 1. LCD screen needs more functionality, like the ability to turn it off (like you can with the LED strip)
-2. Ability to read the Cooling FAN speed.
+2. Ability to read the Cooling FAN speed is missing. 
 
 
 > [!TIP]
