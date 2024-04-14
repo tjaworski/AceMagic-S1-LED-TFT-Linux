@@ -73,7 +73,7 @@ function sample(rate, format) {
                 case '8':   // 4 digit year
                     return _value.getFullYear();
                 case '9':   // get month
-                    return 1 +_value.getMonth()
+                    return 1 +_value.getMonth();
                 case '10':  // 2 digit year
                     return _short_year;                               
                 case '11':  // dot notation

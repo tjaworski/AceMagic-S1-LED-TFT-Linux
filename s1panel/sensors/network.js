@@ -114,7 +114,7 @@ function sample(rate, format, config) {
                         return _private.history_rx_packets[_private.history_rx_packets.length - 1];
                     case '8':
                         _max = _private.max_rx_packets;
-                        return _private.history_rx_packets[_private.history_rx_packets.length - 1] + ' rx/pps'
+                        return _private.history_rx_packets[_private.history_rx_packets.length - 1] + ' rx/pps';
                     case '9':
                         _max = _private.max_rx_packets;
                         return _private.history_rx_packets.join();

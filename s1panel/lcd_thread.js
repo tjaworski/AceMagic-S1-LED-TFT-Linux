@@ -140,7 +140,7 @@ function refresh_device(handle, state) {
                 case 'heartbeat':
                     _promise = start_lcd_heartbeat(handle);
                     break;
-            };  
+            }  
         }      
     }
     else {

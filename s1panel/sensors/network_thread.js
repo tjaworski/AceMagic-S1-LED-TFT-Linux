@@ -63,7 +63,7 @@ function collect(message) {
         
         return network_usage(message.iface).then(results => {
         
-            const _link_mtu = Number(results[0])
+            const _link_mtu = Number(results[0]);
             const _link_speed = Number(results[1]);
 
             const _current_rx_bytes = Number(results[2]);
@@ -95,7 +95,7 @@ function collect(message) {
 
                 collect(message);
 
-            }, message.rate || DEFAULT_RATE_MS)
+            }, message.rate || DEFAULT_RATE_MS);
         
         }, err => {
 

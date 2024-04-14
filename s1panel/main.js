@@ -653,9 +653,9 @@ function main() {
                 unsaved_changes    : false,
 
                 // helpers to keep things consistant between here and api
-                pending_redraw     : (state) => { return state.redraw_count < state.redraw_want },
-                force_redraw       : (state) => { return state.redraw_want++ },
-                done_redraw        : (state) => { return state.redraw_count < state.redraw_want ? state.redraw_count++ : state.redraw_count } 
+                pending_redraw     : (state) => state.redraw_count < state.redraw_want,
+                force_redraw       : (state) => state.redraw_want++,
+                done_redraw        : (state) => state.redraw_count < state.redraw_want ? state.redraw_count++ : state.redraw_count 
             };
 
             initialize(_state, config, theme).then(() => {
