@@ -66,9 +66,8 @@ function draw(context, value, min, max, config) {
         const _zoom = (config.zoom || DEFAULT_ZOOM) * 2;
         const _points = new Array(config.points);
         const _labels = new Array(config.points);
-
         var _max_points = Math.min(config.points, _data.length); 
-
+        
         var _count = 0;
         for (var i = _data.length - _max_points; i < _data.length; i++) {    
 

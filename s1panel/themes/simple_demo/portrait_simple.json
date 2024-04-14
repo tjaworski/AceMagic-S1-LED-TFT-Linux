@@ -217,9 +217,9 @@
                "group": 1,
                "name": "line_chart",
                "rect": {
-                  "x": 4,
+                  "x": 0,
                   "y": 10,
-                  "width": 166,
+                  "width": 170,
                   "height": 25
                },
                "sensor": true,
@@ -332,12 +332,132 @@
             {
                "id": 7,
                "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 90,
+                  "y": 125,
+                  "width": 10,
+                  "height": 35
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{12}",
+               "refresh": 1000,
+               "debug_frame": true,
+               "outline": "#ffffff",
+               "fill": "#ffffff",
+               "points": 1,
+               "thickness": 10,
+               "zoom": 0,
+               "horizontal": false
+            },
+            {
+               "id": 8,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 10,
+                  "y": 125,
+                  "width": 10,
+                  "height": 35
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{10}",
+               "refresh": 1000,
+               "debug_frame": true,
+               "outline": "#ffffff",
+               "fill": "#d7ecee",
+               "points": 1,
+               "thickness": 10,
+               "zoom": 0,
+               "horizontal": false
+            },
+            {
+               "id": 9,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 104,
+                  "y": 127,
+                  "width": 62,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{15}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "11px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 10,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 105,
+                  "y": 148,
+                  "width": 30,
+                  "height": 16
+               },
+               "sensor": false,
+               "value": "swap",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "10px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 11,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 25,
+                  "y": 127,
+                  "width": 62,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{14}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "10px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 12,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 25,
+                  "y": 148,
+                  "width": 30,
+                  "height": 16
+               },
+               "sensor": false,
+               "value": "used",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "11px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 13,
+               "group": 1,
                "name": "line_chart",
                "rect": {
                   "x": 0,
-                  "y": 151,
+                  "y": 164,
                   "width": 170,
-                  "height": 50
+                  "height": 35
                },
                "sensor": true,
                "value": "network_enp2s0",
@@ -350,34 +470,34 @@
                "area": true
             },
             {
-               "id": 8,
+               "id": 14,
                "group": 1,
                "name": "bar_chart",
                "rect": {
                   "x": 0,
-                  "y": 193,
+                  "y": 201,
                   "width": 170,
-                  "height": 20
+                  "height": 10
                },
                "sensor": true,
                "value": "network_enp2s0",
-               "format": "{2}",
+               "format": "{1}",
                "refresh": 1000,
                "debug_frame": false,
                "outline": "#37139c",
                "fill": "#7a23f7",
                "points": 1,
-               "thickness": 10,
+               "thickness": 15,
                "zoom": 0,
                "horizontal": true
             },
             {
-               "id": 9,
+               "id": 15,
                "group": 1,
                "name": "text",
                "rect": {
                   "x": 5,
-                  "y": 210,
+                  "y": 212,
                   "width": 15,
                   "height": 15
                },
@@ -391,33 +511,33 @@
                "align": "left"
             },
             {
-               "id": 10,
+               "id": 16,
                "group": 1,
                "name": "text",
                "rect": {
-                  "x": 100,
-                  "y": 210,
-                  "width": 70,
+                  "x": 90,
+                  "y": 212,
+                  "width": 80,
                   "height": 15
                },
                "sensor": true,
                "value": "network_enp2s0",
-               "format": "{3}",
+               "format": "{15}",
                "refresh": 1000,
                "debug_frame": false,
                "font": "12px Arial",
-               "color": "#02cc70",
+               "color": "#26ff00",
                "align": "right"
             },
             {
-               "id": 11,
+               "id": 17,
                "group": 1,
                "name": "line_chart",
                "rect": {
                   "x": 0,
-                  "y": 226,
+                  "y": 245,
                   "width": 170,
-                  "height": 50
+                  "height": 35
                },
                "sensor": true,
                "value": "network_enp2s0",
@@ -430,34 +550,34 @@
                "area": true
             },
             {
-               "id": 12,
+               "id": 18,
                "group": 1,
                "name": "bar_chart",
                "rect": {
                   "x": 0,
-                  "y": 269,
+                  "y": 282,
                   "width": 170,
-                  "height": 20
+                  "height": 10
                },
                "sensor": true,
                "value": "network_enp2s0",
-               "format": "{5}",
+               "format": "{4}",
                "refresh": 1000,
                "debug_frame": false,
                "outline": "#f5054d",
                "fill": "#ff0091",
                "points": 1,
-               "thickness": 9,
+               "thickness": 15,
                "zoom": 0,
                "horizontal": true
             },
             {
-               "id": 13,
+               "id": 19,
                "group": 1,
                "name": "text",
                "rect": {
                   "x": 5,
-                  "y": 291,
+                  "y": 293,
                   "width": 15,
                   "height": 15
                },
@@ -467,26 +587,26 @@
                "refresh": 1000,
                "debug_frame": false,
                "font": "12px Arial",
-               "color": "#02cc70",
+               "color": "#26ff00",
                "align": "left"
             },
             {
-               "id": 14,
+               "id": 20,
                "group": 1,
                "name": "text",
                "rect": {
-                  "x": 100,
-                  "y": 291,
-                  "width": 70,
+                  "x": 90,
+                  "y": 293,
+                  "width": 80,
                   "height": 15
                },
                "sensor": true,
                "value": "network_enp2s0",
-               "format": "{6}",
+               "format": "{16}",
                "refresh": 1000,
                "debug_frame": false,
                "font": "12px Arial",
-               "color": "#02cc70",
+               "color": "#26ff00",
                "align": "right"
             }
          ],

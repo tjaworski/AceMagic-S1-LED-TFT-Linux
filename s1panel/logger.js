@@ -14,8 +14,7 @@ function as_service() {
     
     return winston.createLogger({
 
-        format: winston.format.combine(
-            winston.format.printf(i => `[${i.level}] ${i.message}`)),
+        format: winston.format.combine(winston.format.printf(i => `[${i.level}] ${i.message}`)),
         transports: [new winston.transports.Console()],
     });
 }
@@ -25,9 +24,11 @@ function as_cmdline() {
     return winston.createLogger({
 
         format: winston.format.combine(
+            
             winston.format.colorize(), 
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.sss' }), 
             winston.format.printf(i => `${i.timestamp} [${i.level}] ${i.message}`)),
+
         transports: [new winston.transports.Console()],
     });
 }

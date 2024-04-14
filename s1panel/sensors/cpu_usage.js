@@ -8,6 +8,14 @@ const fs = require('fs');
 
 const logger = require('../logger');
 
+var _fault = false;
+
+var _max_points = 10;
+var _last_sampled = 0;
+var _history = [];
+
+var _previous = null;
+
 function read_file(path) {
   
     return new Promise((fulfill, reject) => {
@@ -15,7 +23,7 @@ function read_file(path) {
         fs.readFile(path, 'utf8', (err, data) => {
             
             if (err) {
-                return reject();
+                return reject(err);
             }
 
             fulfill(data);
@@ -30,8 +38,8 @@ function calc_cpu_usage(previous, current) {
 
     for (var i = 1; i < 10; i++) {
 
-        var _current_value = Number(current[i]);
-        var _previous_value = Number(previous[i]);
+        const _current_value = Number(current[i]);
+        const _previous_value = Number(previous[i]);
 
         _total_diff += _current_value - _previous_value; 
         if (i < 4) {
@@ -42,17 +50,14 @@ function calc_cpu_usage(previous, current) {
     return (_major_diff / _total_diff) * 100.0;
 }
 
-var _previous = null;
-
 function cpu_usage() {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         read_file('/proc/stat').then(cpuinfo => {
 
-            var _response = { usage: 0.00 };
-
-            var _current = cpuinfo.match(/^cpu\s\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)/);
+            const _response = { usage: 0.00 };
+            const _current = cpuinfo.match(/^cpu\s\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)\s(\d+)/);
             
             if (_previous) {
                 var _cpu_usage = calc_cpu_usage(_previous, _current);
@@ -62,17 +67,23 @@ function cpu_usage() {
             _previous = _current;
             
             fulfill(_response);
+        
+        }, err => {
+            
+            if (!_fault) {
+                logger.error('cpu_usage: failed to read /proc/stat: ' + err);
+                _fault = true;
+            }
+
+            fulfill();
         });
     });
 }
 
-var _max_points = 10;
-var _last_sampled = 0;
-var _history = [];
 
 function sample(rate, format) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _diff = Math.floor(Number(process.hrtime.bigint()) / 1000000) - _last_sampled;
         var _dirty = false;
@@ -103,10 +114,13 @@ function sample(rate, format) {
             const _output = format.replace(/{(\d+)}/g, function (match, number) { 
         
                 switch (number) {
+
                     case '0':
                         return _history[_history.length - 1];
+                        
                     case '1':
                         return _history.join();
+
                     default:
                         return 'null';
                 }

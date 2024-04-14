@@ -34,10 +34,9 @@ function get_ordinal_suffix(number) {
     }
 }
 
-
 function sample(rate, format) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _diff = Math.floor(Number(process.hrtime.bigint()) / 1000000) - _last_sampled;
 

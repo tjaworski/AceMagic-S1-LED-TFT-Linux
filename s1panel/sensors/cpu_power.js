@@ -8,6 +8,13 @@ const fs = require('fs');
 
 const logger = require('../logger');
 
+var _fault = false;
+var _previous = null;
+
+var _max_points = 10;
+var _last_sampled = 0;
+var _history = [];
+
 function read_file(path) {
   
     return new Promise((fulfill, reject) => {
@@ -15,7 +22,7 @@ function read_file(path) {
         fs.readFile(path, 'utf8', (err, data) => {
             
             if (err) {
-                return reject();
+                return reject(err);
             }
 
             fulfill(data);
@@ -25,8 +32,10 @@ function read_file(path) {
 
 function file_exists(path) {
     
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
+
         fs.stat(path, (err, stats) => {
+
             if (err) {
                 return fulfill();
             }
@@ -36,21 +45,28 @@ function file_exists(path) {
     });
 }
 
-var _previous = null;
-
 function power_usage() {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
-        var _base_dir = '/sys/class/powercap/'; 
+        const _base_dir = '/sys/class/powercap/'; 
 
         fs.readdir(_base_dir, (err, dir) => {
-            
+
+            if (err) {
+
+                if (!_fault) {
+                    logger.error('cpu_power: /sys/class/powercap/ directory error: ' + err);
+                    _fault = true;
+                }
+                return fulfill();
+            }
+
             const _promises = [];
 
             dir.forEach(each => {
 
-                var _path_to_energy = _base_dir + each + '/energy_uj';
+                const _path_to_energy = _base_dir + each + '/energy_uj';
 
                 _promises.push(file_exists(_path_to_energy).then(exists => {
 
@@ -62,8 +78,8 @@ function power_usage() {
 
             Promise.all(_promises).then(results => {
 
-                var _response = { watts: 0.00 };
-                var _current = [];
+                const _response = { watts: 0.00 };
+                const _current = [];
 
                 results.forEach(each => {
                    
@@ -79,8 +95,8 @@ function power_usage() {
 
                     for (var i = 0; i < _current.length; i++) {
 
-                        var _curr_value = _current[i];
-                        var _prev_value = _previous[i];
+                        const _curr_value = _current[i];
+                        const _prev_value = _previous[i];
 
                         _watts += (_curr_value - _prev_value) / 1000000;
                     }
@@ -91,19 +107,22 @@ function power_usage() {
                 _previous = _current;
         
                 fulfill(_response);
+            
+            }, err => {
+
+                if (!_fault) {
+                    logger.error('cpu_power: failed get a reading: ' + err);
+                    _fault = true;
+                }
+                fulfill();
             });
         });
-
     });
 }
 
-var _max_points = 10;
-var _last_sampled = 0;
-var _history = [];
-
 function sample(rate, format) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _diff = Math.floor(Number(process.hrtime.bigint()) / 1000000) - _last_sampled;
         var _dirty = false;
@@ -140,10 +159,13 @@ function sample(rate, format) {
             const _output = format.replace(/{(\d+)}/g, function (match, number) { 
         
                 switch (number) {
+
                     case '0':
                         return _history[_history.length - 1];
+
                     case '1':
                         return _history.join();
+                        
                     default:
                         return 'null';
                 }

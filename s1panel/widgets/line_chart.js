@@ -45,7 +45,7 @@ function get_private(config) {
 
 function draw(context, value, min, max, config) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _private = get_private(config);
         const _rect = config.rect;
@@ -144,6 +144,7 @@ function draw(context, value, min, max, config) {
         if (!_private.chart || _private.chart._width != _rect.width || _private.chart._height != _rect.height) {
 
             if (_private.chart) {
+
                 delete _private.chart;
             }
             _private.chart = new ChartJSNodeCanvas({ width: _rect.width, height: _rect.height });
@@ -152,10 +153,12 @@ function draw(context, value, min, max, config) {
         draw_chart(context, _rect.x, _rect.y, _rect.width, _rect.height, _private.chart, _configuration).then(() => {
 
             if (_has_changed) {
+
                 _private.last_value = value;
             }
 
             if (config.debug_frame) {
+                
                 debug_rect(context, _rect);
             }
 

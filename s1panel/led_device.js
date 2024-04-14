@@ -105,7 +105,7 @@ function port_byte_write(port, buffer, index, size, fulfill) {
 
 function set_rainbow(device, intensity, speed) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer);
@@ -131,7 +131,7 @@ function set_rainbow(device, intensity, speed) {
 
 function set_breathing(device, intensity, speed) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer);
@@ -157,7 +157,7 @@ function set_breathing(device, intensity, speed) {
 
 function set_color(device, intensity, speed) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer);
@@ -183,7 +183,7 @@ function set_color(device, intensity, speed) {
 
 function set_automatic(device, intensity, speed) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer);
@@ -209,7 +209,7 @@ function set_automatic(device, intensity, speed) {
 
 function set_off(device) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer);

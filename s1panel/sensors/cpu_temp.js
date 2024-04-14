@@ -8,6 +8,15 @@ const spawn = require('child_process').exec;
 
 const logger = require('../logger');
 
+var _fault = false;
+
+var _max_points = 10;
+var _fahrenheit = false;
+var _last_sampled = 0;
+var _history = [];
+var _max_temp = 0;
+var _min_temp = 0;
+
 function run_command(cmdline) {
 
     return new Promise((fulfill, reject) => {
@@ -16,6 +25,7 @@ function run_command(cmdline) {
         var _output = '';
 
         _runit.stdout.on('data', function(data) {
+
             _output += data;
         });
 
@@ -27,6 +37,7 @@ function run_command(cmdline) {
         });
 
         _runit.on('error', err => {
+
             reject(err);
         });
     });
@@ -34,7 +45,7 @@ function run_command(cmdline) {
 
 function cpu_temp() {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         var _command_line = 'sensors -j';
 
@@ -45,16 +56,19 @@ function cpu_temp() {
         run_command(_command_line).then(output => {
 
             fulfill(JSON.parse(output));
+        
+        }, err => {
+
+            if (!_fault) {
+
+                logger.error('cpu_temp: sensors reported error: ' + err);
+                _fault = true;
+            }
+
+            fulfill();
         });
     });
 }
-
-var _max_points = 10;
-var _fahrenheit = false;
-var _last_sampled = 0;
-var _history = [];
-var _max_temp = 0;
-var _min_temp = 0;
 
 function get_current_value(json) {
 
@@ -78,6 +92,7 @@ function get_current_value(json) {
                 else {
                     _max_temp = _fahrenheit ? 230.0 : 105.0;
                 }
+
                 logger.info('initialize: cpu temp max set to ' + _max_temp);
             }
             if (!_min_temp) {
@@ -88,6 +103,7 @@ function get_current_value(json) {
                 else {
                     _min_temp = _fahrenheit ? 70.0 : 21;
                 }
+                
                 logger.info('initialize: cpu temp max set to ' + _min_temp);
             }
         }
@@ -106,6 +122,7 @@ function sample(rate, format) {
         if (!_last_sampled || _diff > rate) {
 
             _last_sampled = Math.floor(Number(process.hrtime.bigint()) / 1000000);
+
             _temp_promise = cpu_temp();
             _dirty = true;
         }
@@ -130,12 +147,16 @@ function sample(rate, format) {
             const _output = format.replace(/{(\d+)}/g, function (match, number) { 
         
                 switch (number) {
+
                     case '0':   // degrees
                         return _history[_history.length - 1];
+
                     case '1':   // history
-                        return _history.join();    
+                        return _history.join();  
+
                     case '2':
-                        return _fahrenheit ? 'F' : 'C';           
+                        return _fahrenheit ? 'F' : 'C';  
+                                 
                     default:
                         return 'null';
                 }

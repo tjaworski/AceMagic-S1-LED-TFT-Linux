@@ -2,8 +2,8 @@
    "listen": "127.0.0.1:8686",
    "theme": "themes/simple_demo/portrait_simple.json",
    "poll": 500,
-   "refresh": 1200,
-   "heartbeat": 10000,
+   "refresh": 1600,
+   "heartbeat": 60000,
    "debug_update": false,
    "theme_list": [
       {
@@ -41,6 +41,19 @@
          "module": "sensors/network.js",
          "config": {
             "interface": "enp2s0",
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/network.js",
+         "config": {
+            "interface": "enp4s0",
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/memory.js",
+         "config": {
             "max_points": 300
          }
       }

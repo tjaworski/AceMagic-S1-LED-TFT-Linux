@@ -18,6 +18,19 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
   - Added bar_chart widget
   - Added 2 more screens on rotation to demo theme
 
+#### 2024-04-14
+  - Moved the lcd handling to a separate thread, the main thread should be more responsive now.
+  - Changed the refresh and heartbeat values in config.json
+  - Enhanced the network sensor to be able to monitor multiple interfaces
+  - Added more tokens to network sensor, and changed the max scale value
+  - Fixed a bug where config save wouldn’t save the current value for heartbeat
+  - Moved the GUI "unsaved changes" variable from config to state
+  - Added some more error handling in sensors
+  - Cleaned up 2nd screen on demo theme
+  - Added memory sensor, and added it to 2nd screen
+
+
+
 ## Dependencies
 
 Until I do an official release and figure out how to package all this, you will need to follow the below steps. You should at least have minimal version of node+npm installed. 
@@ -114,7 +127,7 @@ Each theme consists of one or more screens, each of which contains one or multip
 
 current sensors are:
 
-     calendar, clock, cpu_power, cpu_temp, cpu_usage, network 
+     calendar, clock, cpu_power, cpu_temp, cpu_usage, network, memory 
 
 current widgets are:
 

@@ -130,7 +130,7 @@ function redraw_next(handle, header, image, buffer, index, fulfill) {
 
 function redraw(handle, image) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _buffer = new Uint8ClampedArray(REPORT_SIZE + BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer, REPORT_SIZE);

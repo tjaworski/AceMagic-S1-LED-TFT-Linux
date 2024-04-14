@@ -14,7 +14,7 @@ function get_private(config) {
 
 function draw(context, value, min, max, config) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _private = get_private(config);
 

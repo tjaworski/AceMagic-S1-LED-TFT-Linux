@@ -10,21 +10,47 @@ const fs          = require('fs');
 const http        = require('http');
 
 const express     = require('express');
-const node_hid    = require('node-hid');
 const node_canvas = require('canvas');
 
-const lcd         = require('./lcd_device');
 const logger      = require('./logger');
 const api         = require('./api');
-
-const usb_hid = node_hid.HIDAsync;
-
-const START_COOL_DOWN = 3000;
-
 
 function get_hr_time() {
 
     return Math.floor(Number(process.hrtime.bigint()) / 1000000);
+}
+
+function lcd_redraw(state, imageData) {
+    
+    state.drawing = true;
+
+    const pixelData = new Uint16Array(imageData.data);
+
+    state.lcd_thread.postMessage({ type: 'redraw', pixelData}, [pixelData.buffer]);
+}
+
+function lcd_update(state, rect, imageData) {
+
+    state.drawing = true;
+
+    const pixelData = new Uint16Array(imageData.data);
+
+    state.lcd_thread.postMessage({ type: 'update', rect, pixelData }, [pixelData.buffer]);
+}
+
+function lcd_orientation(state, portrait) {
+
+    state.lcd_thread.postMessage({ type: 'orientation', portrait });
+}
+
+function lcd_set_time(state) {
+
+    state.lcd_thread.postMessage({ type: 'heartbeat' });
+}
+
+function lcd_set_config(state, config) {
+
+    state.lcd_thread.postMessage({ type: 'config', poll: config.poll, refresh: config.refresh, heartbeat: config.heartbeat });
 }
 
 function load_config(filename) {
@@ -54,11 +80,10 @@ function translate_rect(portrait, rect, height) {
     return portrait ? { x: rect.y, y: (height - (rect.x + rect.width)), width: rect.height, height: rect.width } : rect;
 }
 
-function next_update_region(handle, context, state, config, fulfill) {
+function next_update_region(context, state, config, fulfill) {
 
     if (!state.changes.length) {
 
-        state.last_activity = get_hr_time();
         return fulfill();
     }
 
@@ -73,143 +98,59 @@ function next_update_region(handle, context, state, config, fulfill) {
     
     state.change_count--;
     
-    lcd.refresh(handle, _rect.x, _rect.y, _rect.width, _rect.height, _image).then(() => {
+    lcd_update(state, _rect, _image);
 
-        // intentionally blank
-    
-    }, err => {
-
-        //console.log({ x: _rect.x, y: _rect.y, w: _rect.width, h: _rect.height });
-        logger.error('next_update_region: lcd.refresh error ' + err);
-
-    }).finally(() => {
-
-        next_update_region(handle, context, state, config, fulfill);        
-    });
+    next_update_region(context, state, config, fulfill);
 }
 
-function start_update_screen(handle, context, state, config, fulfill) {
+function start_update_screen(context, state, config, fulfill) {
 
     const _start = get_hr_time();
     const _count = state.change_count;
 
-    next_update_region(handle, context, state, config, () => {
+    next_update_region(context, state, config, () => {
 
         state.stat_update = get_hr_time() - _start;
         state.stat_count = _count;
+
         fulfill(_count ? true : false);
     });
 }
 
-function fullscreen_redraw(handle, context, state, config, fulfill) {
-    
-    const _now = get_hr_time();
-    const _last_heartbeat = _now - state.last_heartbeat;
+function clear_pending_screen_updates(state) {
 
-    if (_last_heartbeat > config.heartbeat) {
+    while (state.changes.length) {
 
-        //console.log('heartbeat forced = ' + _last_heartbeat);
-
-        lcd.heartbeat(handle).then(() => {
-
-            const _finished = get_hr_time();
-
-            state.last_activity = _finished;
-            state.last_heartbeat = _finished;
-
-            //fulfill();
-            setTimeout(fulfill, 1000);
-
-        }, err => {
-
-            logger.error('fullscreen_redraw: lcd.heartbeat error ' + err);
-            fulfill();
-        });
-    }
-    else {
-
-        //console.log('lcd_redraw forced = ' + _last_heartbeat);
-
-        lcd.redraw(handle, context.getImageData(0, 0, config.canvas.width, config.canvas.height)).then(() => {
-
-            const _finished = get_hr_time();
-
-            state.last_activity = _finished;
-            state.full_draw = false;
-
-            // since we did a full screen redraw, 
-            // clear any pending screen updates
-            while (state.changes.length > 0) {
-                state.changes.shift();
-                state.change_count--;
-            }              
-
-            fulfill(true);
-
-        }, err => {
-
-            logger.error('fullscreen_redraw: lcd.redraw error ' + err);
-            fulfill();
-        });
+        state.changes.shift();
+        state.change_count--;
     }
 }
 
-function update_device_screen(handle, context, state, config, theme) {
+function update_device_screen(context, state, config, theme) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
-        const _now = get_hr_time();
-        const _last_activity = _now - state.last_activity;
-        
-        if (_last_activity > config.refresh) {
-
-            if (state.update_orientation) {
+        if (state.update_orientation) {
                 
-                config.portrait = theme.orientation === 'portrait';
+            config.portrait = theme.orientation === 'portrait';
 
-                return lcd.set_orientation(handle, config.portrait).then(() => {
-                    
-                    const _finished = get_hr_time();
-    
-                    state.last_activity = _finished;
-                    state.update_orientation = false;
-                    state.full_draw = true; // next cycle redraw the whole screen...       
+            state.update_orientation = false;
+            
+            lcd_orientation(state, config.portrait);
 
-                    logger.info('update_device_screen: device orientation set to ' + (config.portrait ? 'portrait' : 'landscape'));
+            return fulfill();
+        }
+        else if (!state.drawing) {
 
-                }, err => {
-
-                    logger.error('update_device_screen: set_orientation failed ' + err);
-
-                }).finally(fulfill);
-            }
-            else if (state.full_draw) {
-
-                return fullscreen_redraw(handle, context, state, config, fulfill);
+            if ('redraw' === theme.refresh || state.pending_redraw(state)) {
+                
+                clear_pending_screen_updates(state);
+                
+                lcd_redraw(state, context.getImageData(0, 0, config.canvas.width, config.canvas.height));
+                
+                return fulfill(true);
             }        
-            else if (state.change_count) {
-                
-                const _last_heartbeat = _now - state.last_heartbeat;
-
-                if (_last_heartbeat > config.heartbeat) {
-                    
-                    //console.log('heartbeat forced = ' + _last_heartbeat);
-
-                    return lcd.heartbeat(handle).then(() => {
-
-                        const _finished = get_hr_time();
-    
-                        state.last_activity = _finished;
-                        state.last_heartbeat = _finished;
-    
-                    }, err => {
-    
-                        logger.error('update_device_screen: lcd.heartbeat error ' + err);
-    
-                    }).finally(fulfill);
-                }
-
-                //console.log('update last idle = ' + _last_activity);
+            else if (state.changes.length) {
 
                 // lcd update methods:
                 //
@@ -224,51 +165,17 @@ function update_device_screen(handle, context, state, config, theme) {
                 switch (theme.refresh) {
                   
                     case 'update':
-                        start_update_screen(handle, context, state, config, fulfill);
-                        break;
+                        return start_update_screen(context, state, config, fulfill);
 
                     case 'row':
-                        fulfill();
-                        break;
-
                     case 'column':
-                        fulfill();
-                        break;
-
                     case 'gridx':
-                        fulfill();
-                        break;
-
                     case 'gridy':
-                        fulfill();
-                        break;
-
-                    default:
-                        fulfill();
                         break;
                 }
             }
-            else {
-
-                //console.log('heartbeat idle = ' + _last_activity);
-
-                lcd.heartbeat(handle).then(() => {
-
-                    const _finished = get_hr_time();
-
-                    state.last_activity = _finished;
-                    state.last_heartbeat = _finished;
-
-                }, err => {
-
-                    logger.error('update_device_screen: lcd.heartbeat error ' + err);
-
-                }).finally(fulfill);
-            }
         }
-        else {
-            fulfill();
-        }
+        fulfill();
     });
 }
 
@@ -276,6 +183,7 @@ function fetch_screen(state, config, theme) {
 
     const _count = theme.screens.length;
     const _old_index = state.screen_index;
+
     var _screen = theme.screens[state.screen_index];
 
     if (_count > 1) {
@@ -287,19 +195,23 @@ function fetch_screen(state, config, theme) {
             
             // jump to change_screen
             if (state.change_screen < _count) {
+
                 state.screen_index = state.change_screen;
             }
             else {
+
                 state.change_screen = 0;
             }
         }
         else if (_screen.duration && _diff > _screen.duration) {
 
             if (!state.screen_paused) {
+
                 // move to next screen, or cycle back
                 state.screen_index++;
                 
                 if (state.screen_index >= _count) {
+
                     state.screen_index = 0;
                 }
             }
@@ -315,10 +227,12 @@ function fetch_screen(state, config, theme) {
 
             // does new screen have a wallpaper? 
             if (_screen.wallpaper) {
+
                 state.wallpaper_image = null;
             }
 
             if (_screen.led_config) {
+
                 config.led_config.theme = _screen.led_config.theme || 4;
                 config.led_config.intensity = _screen.led_config.intensity || 3;
                 config.led_config.speed = _screen.led_config.speed || 3;
@@ -328,7 +242,7 @@ function fetch_screen(state, config, theme) {
             // sync up everything, and force full screen redraw
             state.change_screen = state.screen_index;
             state.screen_start = get_hr_time();
-            state.full_draw = true;
+            state.force_redraw(state);
         }
     }
     else {
@@ -356,14 +270,13 @@ function calc_update_region(rect) {
 
                 const _areaX = rect.x + j * _area_width;
                 const _areaY = rect.y + i * _area_height;
-                const _area = {
+
+                _chunks.push({
                     x: _areaX,
                     y: _areaY,
                     width: Math.min(_area_width, rect.width - j * _area_width),
                     height: Math.min(_area_height, rect.height - i * _area_height)
-                };
-
-                _chunks.push(_area);
+                });
             }
         }     
     }
@@ -386,17 +299,19 @@ function fix_rect_bounds(config, rect) {
     const _max_height = config.portrait ? config.canvas.width : config.canvas.height;
 
     if (_total_width > _max_width) {
+
         _width -= _total_width - _max_width;
     }
 
-    if (_total_height > _max_height) {            
+    if (_total_height > _max_height) {    
+
         _height -= _total_height - _max_height;
     }
 
     return { x: rect.x, y: rect.y, width: _width, height: _height };
 }
 
-function next_draw_widgets(handle, context, state, config, widgets, index, total, fulfill) {
+function next_draw_widgets(context, state, config, widgets, index, total, fulfill) {
 
     if (index < total) {
         
@@ -409,6 +324,7 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
             const _sensor = state.sensors[_widget_config.value];
             
             if (_sensor) {
+
                 _sensor_reading = _sensor.sample(_widget_config.refresh, _widget_config.format);  
             }          
         }
@@ -429,7 +345,7 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
 
             _draw_promise.then(changed => {
 
-                if (!state.full_draw && changed) {
+                if (!state.drawing && changed) {
                 
                     calc_update_region(fix_rect_bounds(config, _widget_config.rect)).forEach(each => {
 
@@ -438,7 +354,7 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
                     });                    
                 }
 
-                next_draw_widgets(handle, context, state, config, widgets, 1 + index, total, fulfill);
+                next_draw_widgets(context, state, config, widgets, 1 + index, total, fulfill);
             });
         });
     }
@@ -448,7 +364,7 @@ function next_draw_widgets(handle, context, state, config, widgets, index, total
 
 function load_wallpaper(context, state, config, screen) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         if (screen.background) {
 
@@ -476,13 +392,13 @@ function load_wallpaper(context, state, config, screen) {
     });
 }
 
-function draw_screen(handle, context, state, config, screen) {
+function draw_screen(context, state, config, screen) {
     
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         context.resetTransform();
         context.rotate(0);
-        context.clearRect(0, 0, config.canvas.width, config.canvas.height);    
+        context.clearRect(0, 0, config.canvas.width, config.canvas.height);
 
         load_wallpaper(context, state, config, screen).then(image => {
 
@@ -497,7 +413,7 @@ function draw_screen(handle, context, state, config, screen) {
                 context.rotate(-Math.PI / 2);
             }
 
-            next_draw_widgets(handle, context, state, config, screen.widgets, 0, screen.widgets.length, () => {
+            next_draw_widgets(context, state, config, screen.widgets, 0, screen.widgets.length, () => {
 
                 fulfill();
             });
@@ -507,7 +423,7 @@ function draw_screen(handle, context, state, config, screen) {
 
 function update_led_strip(state, config) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         if (!state.update_led) {
             return fulfill();
@@ -576,11 +492,7 @@ function poll_inactive_screen_sensors(state, screens, index, active, fulfill) {
 }
 
 
-function start_draw_canvas(handle, state, config, theme) {
-
-    if (theme.refresh === 'redraw') {
-        state.full_draw = true;
-    }
+function start_draw_canvas(state, config, theme) {
 
     const _context = state.canvas_context[state.active_context];
     const _active_screen = fetch_screen(state, config, theme);
@@ -588,10 +500,10 @@ function start_draw_canvas(handle, state, config, theme) {
     poll_inactive_screen_sensors(state, theme.screens, 0, _active_screen, () => {
 
         // pick a screen and draw it
-        draw_screen(handle, _context, state, config, _active_screen).then(() => {
+        draw_screen(_context, state, config, _active_screen).then(() => {
 
             // update lcd screen
-            update_device_screen(handle, _context, state, config, theme).then(device_updated => {
+            update_device_screen(_context, state, config, theme).then(device_updated => {
                 
                 state.output_context.putImageData(_context.getImageData(0, 0, config.canvas.width, config.canvas.height), 0, 0);
 
@@ -604,7 +516,9 @@ function start_draw_canvas(handle, state, config, theme) {
 
                     setTimeout(() => {
 
-                        start_draw_canvas(handle, state, config, theme);
+                        lcd_set_config(state, config);
+
+                        start_draw_canvas(state, config, theme);
                     
                     }, config.poll);
                 });            
@@ -613,7 +527,7 @@ function start_draw_canvas(handle, state, config, theme) {
     });
 }
 
-function initialize(handle, state, config, theme) {
+function initialize(state, config, theme) {
     
     config.widgets.forEach(widget => {
 
@@ -626,7 +540,7 @@ function initialize(handle, state, config, theme) {
 
             logger.info('initialize: widget ' + _name + ' loaded...');
 
-            state.widgets[_name] = _module;
+            state.widgets[_name] = { name: _name, info: _module.info, draw: _module.draw };
         }
     });
 
@@ -636,12 +550,15 @@ function initialize(handle, state, config, theme) {
         const _module = require(_file);
 
         if (_module) {
-            
-            const  _name = _module.init(sensor.config);
-            
+
+            const _config = sensor.config || {};
+            const _name = _module.init(_config);
+
             logger.info('initialize: sensor ' + _name + ' loaded...');
             
-            state.sensors[_name] = _module;
+            state.sensors[_name] = { config: _config, name: _name, sample: (rate, format) => {
+                return _module.sample(rate, format, _config);
+            }};
         }
     });
 
@@ -652,25 +569,27 @@ function initialize(handle, state, config, theme) {
     // sort screens by id
     theme.screens.sort((a, b) => a.id - b.id);
     
-    return lcd.heartbeat(handle);
+    lcd_set_time(state);
+
+    return Promise.resolve();
 }
 
 function init_web_gui(state, config, theme) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
-        const web = express();
+        const _web = express();
 
         const _listen = config.listen.split(':');
         const _ip = _listen[0];
         const _port = Number(_listen[1]);
         
-        web.use(express.static('gui/dist'));
-        web.use(express.json());
+        _web.use(express.static('gui/dist'));
+        _web.use(express.json());
 
-        api.init(web, { state, config, theme });
+        api.init(_web, { state, config, theme });
 
-        http.createServer(web).listen(_port, _ip, () => {
+        http.createServer(_web).listen(_port, _ip, () => {
 
             logger.info('initialize: gui started on ' + _ip + ':' + _port);
             fulfill();
@@ -678,68 +597,93 @@ function init_web_gui(state, config, theme) {
     });
 }
 
-function main() {
+function lcd_thread_status(state, theme, message) {
 
-    node_hid.setDriverType('libusb');
+    if (state.drawing && message.complete) {
+
+        if ('redraw' === message.type) {
+
+            state.done_redraw(state);
+        }
+
+        state.drawing = false;
+    }
+}
+
+function main() {
 
     load_config('config.json').then(config => {
 
         load_config(config.theme).then(theme => {
             
-            usb_hid.open(config.device).then(handle => {
+            const _output_canvas = node_canvas.createCanvas(config.canvas.width, config.canvas.height);
+            const _canvas1 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
+            const _canvas2 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
 
-                const _output_canvas = node_canvas.createCanvas(config.canvas.width, config.canvas.height);
-                const _canvas1 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
-                const _canvas2 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
+            const _state = {
 
-                const _state = {
+                widgets            : {},
+                sensors            : {},
 
-                    widgets            : {},
-                    sensors            : {},
-                    last_heartbeat     : get_hr_time(),
-                    last_activity      : get_hr_time(),
-                    output_canvas      : _output_canvas,
-                    output_context     : _output_canvas.getContext('2d', { pixelFormat: config.canvas.pixel }),
-                    active_context     : 0,
-                    canvas_context     : [ _canvas1, _canvas2 ],            
-                    change_screen      : 0,     // index of forced screen change
-                    screen_paused      : false, // pause screen change         
-                    screen_index       : 0,     // array index into screens, not screen id
-                    screen_start       : get_hr_time(),   
-                    full_draw          : true,
-                    update_orientation : true,
-                    change_count       : 0,
-                    changes            : [],
-                    wallpaper_image    : null,
-                    update_led         : true,
-                    led_thread         : new threads.Worker('./led_thread.js', { workerData: config.led_config })
-                };
+                redraw_want        : 1,
+                redraw_count       : 0,
 
-                initialize(handle, _state, config, theme).then(() => {
-            
-                    const _screen = theme.screens[_state.screen_index];
+                drawing            : false,             // drawing in progress
+                changes            : [],                // screen update regions
+                change_count       : 0,                 // screen update count
 
-                    if (_screen.led_config) {
-                        config.led_config.theme = _screen.led_config.theme || 4;    // off by default
-                        config.led_config.intensity = _screen.led_config.intensity || 3;
-                        config.led_config.speed = _screen.led_config.speed || 3;
-                    }
+                output_canvas      : _output_canvas,
+                output_context     : _output_canvas.getContext('2d', { pixelFormat: config.canvas.pixel }),
+                active_context     : 0,
+                canvas_context     : [ _canvas1, _canvas2 ],
 
-                    _screen.widgets.sort((a, b) => a.id - b.id);
-
-                    init_web_gui(_state, config, theme).then(() => {
-            
-                        start_draw_canvas(handle, _state, config, theme);
-                    });
+                change_screen      : 0,                 // index of forced screen change
+                screen_paused      : false,             // pause screen change         
+                screen_index       : 0,                 // array index into screens, not screen id
+                screen_start       : get_hr_time(),
                 
-                }, err => {
-                    
-                    logger.error('initialization failed');
+                update_orientation : true,
+                update_led         : true,
+
+                wallpaper_image    : null,
+
+                led_thread         : new threads.Worker('./led_thread.js', { workerData: config.led_config }),
+                lcd_thread         : new threads.Worker('./lcd_thread.js', { workerData: { device: config.device, poll: config.poll, refresh: config.refresh, heartbeat: config.heartbeat }}),  
+
+                unsaved_changes    : false,
+
+                // helpers to keep things consistant between here and api
+                pending_redraw     : (state) => { return state.redraw_count < state.redraw_want },
+                force_redraw       : (state) => { return state.redraw_want++ },
+                done_redraw        : (state) => { return state.redraw_count < state.redraw_want ? state.redraw_count++ : state.redraw_count } 
+            };
+
+            initialize(_state, config, theme).then(() => {
+        
+                const _screen = theme.screens[_state.screen_index];
+
+                if (_screen.led_config) {
+
+                    config.led_config.theme = _screen.led_config.theme || 4;    // off by default
+                    config.led_config.intensity = _screen.led_config.intensity || 3;
+                    config.led_config.speed = _screen.led_config.speed || 3;
+                }
+
+                _screen.widgets.sort((a, b) => a.id - b.id);
+
+                _state.lcd_thread.on('message', message => {
+
+                    lcd_thread_status(_state, theme, message);
                 });
 
+                init_web_gui(_state, config, theme).then(() => {
+        
+                    start_draw_canvas(_state, config, theme);
+                });
+            
             }, err => {
-
-                logger.error('failed to open usbhid ' + config.device);
+                
+                logger.error('initialization failed');
             });
 
         }, err => {
@@ -755,5 +699,4 @@ function main() {
 
 logger.info('starting up ' + __filename);
 
-// cool down period
-setTimeout(main, START_COOL_DOWN);
+main();

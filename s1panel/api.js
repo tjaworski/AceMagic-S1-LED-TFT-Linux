@@ -15,14 +15,14 @@ const service = process.env.SERVICE || false;
 
 function set_dirty(context, redraw) {
 
-    const _config = context.config;
     const _state = context.state;
 
     if (redraw) {
-        _state.full_draw = true;
-    }                    
+        _state.force_redraw(_state);
+    }
+                       
     _state.screen_paused = true;
-    _config.unsaved_changes = true;
+    _state.unsaved_changes = true;
 }
 
 function find_theme_screen(context, id) {
@@ -90,15 +90,17 @@ function get_widget_list(context) {
 
 function get_config(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
+        
+        const _state = context.state;
 
-        fulfill(context.config);
+        fulfill({ ...context.config, unsaved_changes: _state.unsaved_changes });
     });
 }
 
 function get_lcd_screen(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
 
@@ -108,7 +110,7 @@ function get_lcd_screen(context) {
 
 function get_sensor_list(context) {
     
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
         const _list = [];
@@ -124,7 +126,7 @@ function get_sensor_list(context) {
 
 function get_theme(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         fulfill(JSON.parse(JSON.stringify(context.theme, (key, value) => '_private' === key ? undefined : value, 3)));
     });
@@ -132,7 +134,7 @@ function get_theme(context) {
 
 function get_active_screen(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _theme = context.theme;
         const _state = context.state;
@@ -274,7 +276,7 @@ function set_led_settings(led_config, request) {
 
 function set_led_strip(context, request) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
         const _config = context.config;
@@ -317,7 +319,7 @@ function set_led_strip(context, request) {
 
 function get_led_strip(context) {
     
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
         
         const _config = context.config;
         const _led_config = _config.led_config;
@@ -328,7 +330,7 @@ function get_led_strip(context) {
 
 function set_orientation(context, request) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _theme = context.theme;
         const _state = context.state;
@@ -348,7 +350,7 @@ function set_orientation(context, request) {
 
             _state.update_orientation = true;
 
-            set_dirty(context);
+            set_dirty(context, true);
         }
 
         fulfill({ orientation: _theme.orientation });
@@ -357,7 +359,7 @@ function set_orientation(context, request) {
 
 function set_refresh(context, request) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _theme = context.theme;
         const _config = context.config;
@@ -480,9 +482,9 @@ function get_config_dirty(context) {
 
     return new Promise((fulfill, reject) => {
 
-        const _config = context.config;
+        const _state = context.state;
 
-        fulfill({ unsaved_changes: _config.unsaved_changes || false });
+        fulfill({ unsaved_changes: _state.unsaved_changes || false });
     });
 }
 
@@ -497,6 +499,7 @@ function next_screen(context, request) {
         // calculate the "next" screen
         var _next_screen_index = _state.screen_index + 1;
         if (_next_screen_index >= _count) {
+
             _next_screen_index = 0;
         }
 
@@ -509,6 +512,7 @@ function next_screen(context, request) {
             if (request.id) {
                 // if id was passed, use that
                 if (_screen.id === request.id) {
+
                     _id = _screen.id;
                     _next_screen_index = i;
                     break;
@@ -813,13 +817,13 @@ function save_config(context, request) {
 
             if (request.heartbeat && _live_config.heartbeat !== request.heartbeat) {
 
-                _live_config.refresh = _file_config.heartbeat = request.heartbeat;
+                _live_config.heartbeat = _file_config.heartbeat = request.heartbeat;
                 _changed = true;
             }
 
             if (_changed) {
                 
-                return write_file('config.json', JSON.stringify(_live_config, null, 3)).then(() => {
+                return write_file('config.json', JSON.stringify(_live_config, (key, value) => '_private' === key ? undefined : value, 3)).then(() => {
 
                     logger.info('api: config.json updated');
 
@@ -838,7 +842,7 @@ function save_config(context, request) {
 
 function theme_save(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
         
         const _state = context.state;
         const _config = context.config;
@@ -849,7 +853,7 @@ function theme_save(context) {
             logger.info('api: theme ' + _config.theme + ' saved');
 
             _state.screen_paused = false;
-            _config.unsaved_changes = false;
+            _state.unsaved_changes = false;
         
             fulfill(_theme);
         });
@@ -858,7 +862,7 @@ function theme_save(context) {
 
 function theme_revert(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
         const _config = context.config;
@@ -871,7 +875,7 @@ function theme_revert(context) {
             _screen.widgets.sort((a, b) => a.id - b.id);
             
             _state.update_orientation = true;
-            _state.full_draw = true;
+            _state.redraw_want++;
             _state.screen_index = _state.change_screen = 0;
             
             if (_screen.led_config) {
@@ -885,7 +889,8 @@ function theme_revert(context) {
             context.theme.refresh = _theme.refresh;
             context.theme.screens = _theme.screens;
 
-            _config.unsaved_changes = false;
+            _state.force_redraw(_state);
+            _state.unsaved_changes = false;
 
             logger.info('api: theme reverted back from ' + _config.theme);
         
@@ -1139,13 +1144,14 @@ module.exports.init = function(web, context) {
         { method: 'post', url: '/api/top_widget',          type: 'application/json', callback: top_widget },
         { method: 'post', url: '/api/bottom_widget',       type: 'application/json', callback: bottom_widget },
 
-
     ].forEach(each => {
 
         switch (each.method) {
+
             case 'get':
                 web.get(each.url, (req, res) => callback_wrapper(each.method, each.url, req, res, each.callback, each.type, context));
                 break;
+
             case 'post':
                 web.post(each.url, (req, res) => callback_wrapper(each.method, each.url, req, res, each.callback, each.type, context));
                 break;
