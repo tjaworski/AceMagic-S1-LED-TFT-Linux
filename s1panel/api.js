@@ -154,6 +154,8 @@ function toggle_debug_rect(context, request) {
 
             _widget.debug_frame = !_widget.debug_frame;
 
+            set_dirty(context, true);
+
             return fulfill({ value: _widget.debug_frame });
         }
 
@@ -194,6 +196,7 @@ function update_property(context, request) {
             const _value = _widget[request.key] = request.value;
 
             if ('value' === request.key && _value.sensor) {
+
                 _widget.sensor = false;       
             }
 
@@ -276,7 +279,7 @@ function set_led_settings(led_config, request) {
 
 function set_led_strip(context, request) {
 
-    return new Promise(fulfill => {
+    return new Promise((fulfill, reject) => {
 
         const _state = context.state;
         const _config = context.config;
@@ -312,8 +315,10 @@ function set_led_strip(context, request) {
                 logger.info('api set_led_strip: config.json updated');
                 
                 fulfill({ theme: _led_config.theme, intensity: _led_config.intensity, speed: _led_config.speed, dirty: true });
-            });
-        }); 
+            
+            }, reject);
+        
+        }, reject); 
     });
 }
 
@@ -452,7 +457,7 @@ function add_screen(context, request) {
 
 function remove_screen(context, request) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
         const _theme = context.theme;
@@ -480,7 +485,7 @@ function remove_screen(context, request) {
 
 function get_config_dirty(context) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
 
@@ -490,7 +495,7 @@ function get_config_dirty(context) {
 
 function next_screen(context, request) {
 
-    return new Promise((fulfill, reject) => {
+    return new Promise(fulfill => {
 
         const _state = context.state;
         const _theme = context.theme;
@@ -532,6 +537,7 @@ function next_screen(context, request) {
 }
 
 function get_random_color() {
+
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
     const b = Math.floor(Math.random() * 256);
@@ -836,13 +842,14 @@ function save_config(context, request) {
             }
 
             fulfill(_live_config);
-        });
+        
+        }, reject);
     });            
 }
 
 function theme_save(context) {
 
-    return new Promise(fulfill => {
+    return new Promise((fulfill, reject) => {
         
         const _state = context.state;
         const _config = context.config;
@@ -856,13 +863,14 @@ function theme_save(context) {
             _state.unsaved_changes = false;
         
             fulfill(_theme);
-        });
+        
+        }, reject);
     });
 }
 
 function theme_revert(context) {
 
-    return new Promise(fulfill => {
+    return new Promise((fulfill, reject) => {
 
         const _state = context.state;
         const _config = context.config;
@@ -895,7 +903,8 @@ function theme_revert(context) {
             logger.info('api: theme reverted back from ' + _config.theme);
         
             fulfill(_theme);
-        });
+        
+        }, reject);
     });
 }
 

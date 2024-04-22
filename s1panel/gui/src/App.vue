@@ -811,7 +811,8 @@ export default {
             });
         }, 
         onSetDebugFrame(id) {
-            return api.toggle_debug_frame(this.screen.id, id).then(response => {
+            return api.toggle_debug_frame(this.screen.id, id).then(() => {
+                this.unsaved_changes = true;
             });
         },
         onUpdateRect(id, value) {

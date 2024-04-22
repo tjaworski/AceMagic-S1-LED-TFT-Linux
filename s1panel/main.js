@@ -661,6 +661,8 @@ function main() {
             initialize(_state, config, theme).then(() => {
         
                 const _screen = theme.screens[_state.screen_index];
+                
+                _screen.widgets.sort((a, b) => a.id - b.id);
 
                 if (_screen.led_config) {
 
@@ -668,8 +670,6 @@ function main() {
                     config.led_config.intensity = _screen.led_config.intensity || 3;
                     config.led_config.speed = _screen.led_config.speed || 3;
                 }
-
-                _screen.widgets.sort((a, b) => a.id - b.id);
 
                 _state.lcd_thread.on('message', message => {
 

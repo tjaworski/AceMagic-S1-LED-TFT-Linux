@@ -29,6 +29,10 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
   - Cleaned up 2nd screen on demo theme
   - Added memory sensor, and added it to 2nd screen
 
+#### 2024-04-22
+  - made more changes to lcd_thread to refine timing
+  - added debug frame as unsaved changes
+  - general code cleanup
 
 
 ## Dependencies
