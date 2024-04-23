@@ -400,6 +400,7 @@ You can actually buy an SSD with RGB lights, and I was able to find a couple of 
 
   - Patriot Memory Viper VPR400 RGB PCIe SSD 
   - XPG SPECTRIX RGB PCIe SSD
+  - Addlink Addgame X70 2TB PCIe SSD
 
 I haven't tested the above, nor do I endorse them, but if you really want to pimp your S1 out, any gaming SSD with RGB lights should work (up to Gen 4 - NVMe M.2 2280) :smile:
 
