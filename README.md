@@ -384,23 +384,24 @@ This mini PC is manufactured and sold by Shenzhen CYX Industrial Co., Ltd., but 
 > See the [s1panel](s1panel/README.md) for source/app to control the LCD/LED.
 
 
-#### Addendum
+## Addendum
 
 You ever wondered what that little window on the side is for? The original image released for S1 actually showed RGB lights through it:
 
-<img src="images/rgb-ssd.png" data-canonical-src="images/rgb-ssd.png" width="220" />
+<img src="images/rgb-ssd.png" data-canonical-src="images/rgb-ssd.png" width="300" />
 
 You can actually buy an SSD with RGB lights, and I was able to find a couple of manufacturers that make these:
 
 <div>
-<img src="images/viper-ssd.png" data-canonical-src="images/viper-ssd.png" width="100" />
-<img src="images/xpg-ssd.png" data-canonical-src="images/xpg-ssd.png" width="100" />
+<img src="images/viper-ssd.png" data-canonical-src="images/viper-ssd.png" width="230" />
+<img src="images/xpg-ssd.png" data-canonical-src="images/xpg-ssd.png" width="200" />
 </div>
+<br>
 
   - Patriot Memory Viper VPR400 RGB PCIe SSD 
   - XPG SPECTRIX RGB PCIe SSD
 
-I haven't tested the above, nor do I endorse them, but if you really want to pimp your S1 out, any gaming SSD with RGB lights should work. :smile:
+I haven't tested the above, nor do I endorse them, but if you really want to pimp your S1 out, any gaming SSD with RGB lights should work :smile:
 
 
 ## Additional Documentation and Acknowledgments
