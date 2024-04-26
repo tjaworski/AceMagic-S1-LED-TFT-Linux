@@ -3,7 +3,16 @@ ACEMAGIC S1 Mini LCD/LED Control for Linux
 
 # First: My Rant
 
-While this mini PC offers impressive features, the absence of information regarding the TFT front screen and LED strip is frustrating. Despite being advertised as 'with DIY LCD Display' on Amazon, the lack of Linux support is disappointing. My objective is to enable control of these devices in Linux, facilitating integration with projects like Batocera.linux. If you're interested in contributing to this effort, please reach out. work is much in progress.
+While this mini PC offers impressive features, the absence of information regarding the TFT front screen and LED strip is frustrating. Despite being advertised as 'with DIY LCD Display' on Amazon, the lack of Linux support is disappointing. My objective is to enable control of these components in Linux, facilitating integration with projects like Batocera.linux. 
+
+I don't really trust reviews from people who received gadgets for free in exchange for a review. Getting free stuff can definitely cloud judgment. Seriously, I found more insightful reviews for ancient computers like the Apple IIe and Commodore 64 (and those things haven't been made in decades!) Something is lost when everyone tries to make a career out of YouTube videos. So, after wading through over 30 reviews, I present you with 3 that I'll call: the good, the bad, and the cute.
+
+ - [@Robtech](https://youtu.be/6UT2CNC_NKw)
+ - [@NovaspiritTech](https://youtu.be/gnL6fkKT9B4)
+ - [@MKV2020](https://youtu.be/nJE3rzMHo80)
+
+> [!WARNING]
+> This git page may contain trace amounts of sarcasm. Do not operate heavy machinery or attempt brain surgery after reading. My opinion is worth about as much as a free fortune cookie (but hopefully less confusing).
 
 ## LED Strip
 
@@ -158,6 +167,9 @@ data looks like this (image data omited):
 > [!NOTE]
 > You can set any size update region (up to 254 width, and 170 height) as long as the pixel data does not exceed the total size of the 4096 buffer limit. for example, w=51, h=40 (51 x 40 x 2 = 4080 bytes) or w=102, h=20 (102 x 20 x 2 = 4080). there is a fine balance between how big each update region is vs how fast you need the area updated. The max update region size are 254 x 4 and 12 x 170.
 
+> [!TIP]
+> You can find the js code for the LCD [here](s1panel/lcd_device.js).
+
 ## Image Data
 
 the screen is a 320 x 170 x 2 (16-bit color) framebuffer. the 0,0 is upper right when in portrait orientation, or upper left when in landscape. the pixel format is RGB565. had to do an endian swap when setting the pixel.
@@ -298,6 +310,9 @@ crc = LSB(signature + theme + intensity + speed)
 
 turning off the LED strip you will need to send the intesity and speed too. 
 
+> [!TIP]
+> You can find the js code for the LED [here](s1panel/led_device.js).
+
 ## Flow
 
 - set_orientation
@@ -337,6 +352,10 @@ node_hid.HIDAsync.open('1-8:1.1').then(handle => {
 Here is a sample of 7pt to 24pt Arial font:
 
 ![alt text](images/text-sizes.png?raw=true)
+
+> [!TIP]
+> See the [s1panel](s1panel/README.md) for source/app to control the LCD/LED.
+
 
 as for the sensors on this S1, using the lm_sensors it only discovers the coretemp:
 
@@ -380,9 +399,6 @@ This mini PC is manufactured and sold by Shenzhen CYX Industrial Co., Ltd., but 
 2. Ability to read the Cooling FAN speed is missing. 
 
 
-> [!TIP]
-> See the [s1panel](s1panel/README.md) for source/app to control the LCD/LED.
-
 
 ## Addendum
 
@@ -412,4 +428,5 @@ I haven't tested the above, nor do I endorse them, but if you really want to pim
 * [Application Notes for AN0619](https://www.holtek.com/page/applicationNotes/AN0619)
 * [ESK32-A2A31_UserManual v100 pdf](https://www.holtek.com/WebAPI/187541/ESK32-A2A31_UserManualv100.pdf/c8975661-c04f-4b33-8cc2-dc2e5aa3026c)
 * [ESK32-A2A31 Dev Kit](https://www.holtek.com/page/detail/dev_kit/ESK32-A2A31)
+
 
