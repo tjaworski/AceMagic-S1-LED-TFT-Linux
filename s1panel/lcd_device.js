@@ -28,7 +28,7 @@ const LCD_REDRAW_END      = 0xF2;
 
 function printBytesInHex(array) {
     var _hexString = "";
-    for (var i = 1; i < Math.min(array.length, HEADER_SIZE); i++) {
+    for (var i = 1; i < Math.min(array.length, REPORT_SIZE + HEADER_SIZE); i++) {
         _hexString += ('0' + array[i].toString(16)).slice(-2) + ' ';
     }
     console.log(_hexString);
@@ -76,7 +76,7 @@ function heartbeat(handle) {
     });
 }
 
-function redraw_next(handle, header, image, buffer, index, fulfill) {
+function redraw_next(handle, header, image, buffer, index, fulfill, reject) {
 
     if (index < 27) {
 
@@ -94,22 +94,20 @@ function redraw_next(handle, header, image, buffer, index, fulfill) {
 
         const _length = (index < 26) ? DATA_SIZE : 2304;    // hard coded for now
 
-        header.setUint8(3, 1 + index);
-        header.setUint16(5, index * DATA_SIZE);
-        header.setUint16(7, _length);
+        header.setUint8(3, 1 + index);              // sequence, 1, 2, 3...
+        header.setUint16(5, index * DATA_SIZE);     // offset into image
+        header.setUint16(7, _length);               // chunk size
 
+        // copy from part of the image to xmit buffer
         {
             const _data = new DataView(buffer.buffer, REPORT_SIZE + HEADER_SIZE);
             const _pixel_start = (index * DATA_SIZE) / 2;
             const _pixel_length = _length / 2;
             var _offset = 0;
 
-            for (var i = 0; i < _pixel_length; i++) {
-                
-                var _pixel = image.data[_pixel_start + i];
-
-                _data.setUint8(_offset++, (_pixel >> 8) & 0xFF);
-                _data.setUint8(_offset++, (_pixel & 0xFF));
+            for (var i = 0; i < _pixel_length; i++) {                
+                _data.setUint16(_offset, image.data[_pixel_start + i]);
+                _offset += 2;
             }
         }
 
@@ -117,11 +115,9 @@ function redraw_next(handle, header, image, buffer, index, fulfill) {
 
         handle.write(buffer).then(() => {
 
-            redraw_next(handle, header, image, buffer, ++index, fulfill);
+            redraw_next(handle, header, image, buffer, ++index, fulfill, reject);
 
-        }, () => {
-            fulfill();
-        });
+        }, reject);
     }
     else {
         fulfill();
@@ -130,7 +126,7 @@ function redraw_next(handle, header, image, buffer, index, fulfill) {
 
 function redraw(handle, image) {
 
-    return new Promise(fulfill => {
+    return new Promise((fulfill, reject) => {
 
         const _buffer = new Uint8ClampedArray(REPORT_SIZE + BUFFER_SIZE);
         const _header = new DataView(_buffer.buffer, REPORT_SIZE);
@@ -140,7 +136,7 @@ function redraw(handle, image) {
 
         //console.log('lcd_redraw');
 
-        redraw_next(handle, _header, image, _buffer, 0, fulfill);
+        redraw_next(handle, _header, image, _buffer, 0, fulfill, reject);
     });
 }
 
