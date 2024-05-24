@@ -34,15 +34,18 @@
             {
                "id": 2,
                "group": 1,
-               "name": "image",
+               "name": "material_icon",
+               "value": "memory",
+               "color": "#878787",
+               "family": "baseline",
                "rect": {
-                  "x": 65,
-                  "y": 35,
-                  "width": 40,
-                  "height": 40
+                  "x": 60,
+                  "y": 30,
+                  "width": 50,
+                  "height": 50
                },
-               "value": "themes/simple_demo/cpu.png",
                "refresh": 0,
+               "sensor": false,
                "debug_frame": false
             },
             {
@@ -66,14 +69,17 @@
             {
                "id": 4,
                "group": 2,
-               "name": "image",
+               "name": "material_icon",
+               "value": "thermostat",
+               "color": "#878787",
+               "family": "baseline",
                "rect": {
-                  "x": 70,
-                  "y": 134,
-                  "width": 34,
-                  "height": 51
+                  "x": 60,
+                  "y": 135,
+                  "width": 50,
+                  "height": 50
                },
-               "value": "themes/simple_demo/temp.png",
+               "sensor": false,
                "refresh": 0,
                "debug_frame": false
             },
@@ -98,14 +104,17 @@
             {
                "id": 6,
                "group": 3,
-               "name": "image",
+               "name": "material_icon",
+               "value": "lightbulb",
+               "color": "#878787",
+               "family": "outline",
                "rect": {
-                  "x": 70,
-                  "y": 243,
-                  "width": 40,
-                  "height": 40
+                  "x": 60,
+                  "y": 238,
+                  "width": 50,
+                  "height": 50
                },
-               "value": "themes/simple_demo/lightbulb.png",
+               "sensor": false,
                "refresh": 0,
                "debug_frame": false
             },

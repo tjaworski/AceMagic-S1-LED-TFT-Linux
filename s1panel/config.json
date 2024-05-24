@@ -64,7 +64,8 @@
       "widgets/line_chart.js",
       "widgets/doughnut_chart.js",
       "widgets/bar_chart.js",
-      "widgets/image.js"
+      "widgets/image.js",
+      "widgets/material_icon.js"
    ],
    "canvas": {
       "width": 320,
