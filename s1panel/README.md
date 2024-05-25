@@ -121,23 +121,23 @@ expanding each widget shows you the configuration for that widget
 
 ## Work in Progress
 
-Things i still need to work on are theme management, more widgets and sensors. I'm still trying to find the fan speed. but with all this you can roll your own widgets and sensors. I will be creating a more detail wiki on how all this works in the coming weeks.
+Things I still need to work on are theme management, more widgets and sensors. With all this you can roll your own widgets and sensors. I will be creating a more detail wiki on how all this works.
 
-if you make changes to config.json or the theme.json manually make sure you restart the service.
+If you make changes to config.json or the theme.json manually make sure you restart the service.
 
 ## Quick "How does it work"
 
-Each theme consists of one or more screens, each of which contains one or multiple widgets. A widget is an element responsible for rendering content on the screen, while a sensor gathers data for the widgets to utilize. Themes may feature multiple screens set on a rotation schedule, with specified durations for display before transitioning to the next screen. When rendering widgets it's essential to ensure correct z-ordering in the cases of overlapping widgets. Everything is always sorted on the 'id' field (ascending order). You have the option to either always perform a full-screen redraw or update only the widget region. Using the screen wallpaper or image widget, please make sure you have the correct sizes, I do not perform any resizing of the images. Regardless of the orientation, the wallpaper is always 320x170. The image widget will rotate the image depending on the orientation. PNG transparency is supported. The LED strip configuration is associated with each screen individually, allowing for a unique LED theme to be displayed alongside the current screen.
+Each theme consists of one or more screens, each of which contains one or multiple widgets. A widget is an element responsible for rendering content on the screen, while a sensor gathers data for the widgets to utilize. Themes may feature multiple screens set on a rotation schedule, with specified durations for display before transitioning to the next screen. When rendering widgets it's essential to ensure correct z-ordering in the cases of overlapping widgets. Everything is always sorted on the 'id' field (ascending order). You have the option to either always perform a full-screen redraw or update only the widget region. Using the screen wallpaper or image widget, please make sure you have the correct sizes, I do not perform any resizing of the images. Regardless of the orientation, the wallpaper is always 320x170. Unlike the wallpaper the image widget will rotate the image depending on the orientation. PNG transparency is supported. The LED strip configuration is associated with each screen individually, allowing for a unique LED theme to be displayed alongside the current screen. The screen rotation is mostly great to prevent screen burn in.
 
 current sensors are:
 
-     calendar, clock, cpu_power, cpu_temp, cpu_usage, network, memory 
+     calendar, clock, cpu_power, cpu_temp, cpu_usage, memory, network 
 
 current widgets are:
 
-     custom_bar, doughnut_chart, image, line_chart, bar_chart, text
+     custom_bar, doughnut_chart, image, line_chart, bar_chart, text, material_icon
 
-Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, including the elusive fan speed sensor, a ping sensor, and several new widgets such as animated PNG (APNG), and a slideshow PNG. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off.
+Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, a ping sensor, and several new widgets such as animated PNG (APNG), and a slideshow PNG. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off. Big shout-out to [@SBRK](https://github.com/SBRK) for the material_icon widget. Thank You!
 
 #### demo theme has 3 screens on 1 minute rotation
 
