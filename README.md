@@ -14,6 +14,9 @@ I don't really trust reviews from people who received gadgets for free in exchan
 > [!WARNING]
 > This git page may contain trace amounts of sarcasm. Do not operate heavy machinery or attempt brain surgery after reading. My opinion is worth about as much as a free fortune cookie (but hopefully less confusing).
 
+> [!TIP]
+> If techie stuff makes your eyes glaze over, feel free to jump straight into the fun part with the [s1panel](s1panel/README.md) app!
+
 ## LED Strip
 
 The LED strip from what I gather is controlled by the USB-SERIAL CH340.
@@ -260,7 +263,8 @@ update function at work:
 
 With the update function, Some cool animations can be done. Although I did notice that after a few cycles, the screen starts to slow down a bit. It seems like there might be an issue with the firmware. My guess is that it was designed to handle a few updates and then take a quick nap for about a second. So, bursts of updates followed by short breaks seem to keep this device happy. But hey, even with that, you can still create some neat stuff, like an analog watch face or even small bursts of animation.
 
-** UPDATE: I noticed when you send the set_time/heartbeat too often it will slow down. if i leave the heartbeat to hit every 1 second, and send the screen updates every 10ms, the animation is much smoother. still have to sleep a little between updates, otherwise you will get a send error.
+> [!NOTE] 
+> UPDATE: I noticed when you send the set_time/heartbeat too often it will slow down. if i leave the heartbeat to hit every 1 second, and send the screen updates every 10ms, the animation is much smoother. still have to sleep a little between updates, otherwise you will get a send error.
 
 ![alt text](images/animation1.gif?raw=true)
 ![alt text](images/animation2.gif?raw=true)
