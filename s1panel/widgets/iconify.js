@@ -5,10 +5,15 @@
  * GPL-3 Licensed
  */
 const node_canvas = require('canvas');
+const logger = require('../logger');
 
 function replaceRootSVGProperties(svgData, properties) {
 
     const groups = /^<svg ([^>]*)>/.exec(svgData);
+
+    if (!groups) {
+        return svgData;
+    }
 
     const newProperties = [];
 
@@ -37,25 +42,29 @@ function replaceRootSVGProperties(svgData, properties) {
         newProperties.push(`${key}='${value}'`);
     }
 
-    return svgData.replace(/^<svg [^>]*>/, `<svg ${newProperties.join(' ')}>`);
+    return svgData
+        .replace(/^<svg [^>]*>/, `<svg ${newProperties.join(' ')}>`)
+        .replaceAll(/[\r\n]+/g, '')
+        .replaceAll(/fill=[\'\"]currentColor[\'\"]/g, `fill='${properties.fill || "currentColor"}'`);
 }
 
-function load_icon(name, family, _private) {
+function load_icon(name, iconSet, _private) {
 
     return new Promise((fulfill, reject) => {
 
-        const slug = `${name}/${family}`;
+        const slug = `${iconSet}/${name}`;
 
         if (_private.icons[slug]) {
 
             return fulfill(_private.icons[slug]);
         }
-
-        const url = `https://material-icons.github.io/material-icons/svg/${slug}.svg`;
+        
+        const url = `https://api.iconify.design/${slug}.svg`
 
         fetch(url).then(response => {
 
             if (response.status !== 200) {
+                logger.error(`error ${response.status} for ${url}`);
 
                 return reject();
             }
@@ -68,6 +77,7 @@ function load_icon(name, family, _private) {
             });
         
         }, (error) => {
+            logger.error(`error ${error} for ${url}`);
             reject();
         });
     });
@@ -100,7 +110,7 @@ function draw(context, value, min, max, config) {
 
         const color = config.color || '#ffffff';
         
-        load_icon(value, config.family, _private).then(image => {
+        load_icon(value, config.iconSet || 'mdi', _private).then(image => {
 
             image = replaceRootSVGProperties(image, {
                 width: _rect.width,
@@ -140,10 +150,10 @@ function draw(context, value, min, max, config) {
 
 function info() {
     return {
-        name: 'material_icon',
-        description: 'a material icon svg',
+        name: 'iconify',
+        description: 'an icon from iconify',
         fields: [
-            { name: "family", value: "list:baseline,sharp,outline,round,two-tone" },
+            { name: "iconSet", value: "list:mdi,material-symbols,simple-icons" },
             { name: "color", value: "color" }
         ]
     };

@@ -65,7 +65,7 @@
       "widgets/doughnut_chart.js",
       "widgets/bar_chart.js",
       "widgets/image.js",
-      "widgets/material_icon.js"
+      "widgets/iconify.js"
    ],
    "canvas": {
       "width": 320,

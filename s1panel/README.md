@@ -135,9 +135,13 @@ current sensors are:
 
 current widgets are:
 
-     custom_bar, doughnut_chart, image, line_chart, bar_chart, text, material_icon
+     custom_bar, doughnut_chart, image, line_chart, bar_chart, text, iconify
 
-Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, a ping sensor, and several new widgets such as animated PNG (APNG), and a slideshow PNG. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off. Big shout-out to [@SBRK](https://github.com/SBRK) for the material_icon widget. Thank You!
+Each sensor will return data based on a format token. For example, when setting the clock, the format field with {0} will return the 24-hour time, while {1} will return the 12-hour time. Additionally, you can add {3} for AM/PM. So, having the format "The current time is {1} {3}" will display "The current time is 12:00 pm". To determine the available tokens, please review the details within each sensor. I'm currently developing new sensors and widgets, a ping sensor, and several new widgets such as animated PNG (APNG), and a slideshow PNG. I'm also experimenting with a widget featuring a walking bug on the screen :) Another feature I'd like to add is a 'night mode', which clears the screen and sets the background color to black. I have the S1 on my desk, and it can be quite bright at night. I wish the acemagic guys had included a firmware functionality/command to control the LCD screen on and off. Big shout-out to [@SBRK](https://github.com/SBRK) for the iconify widget. Thank You!
+
+### Iconify
+
+The iconify widget will display svg icons coming from iconify icon sets. The available sets are [Material Design Icons (mdi)](https://icon-sets.iconify.design/mdi/), [Material Symbols (material-symbols)](https://icon-sets.iconify.design/material-symbols) and [Simple Icons (simple-icons)](https://icon-sets.iconify.design/simple-icons/). Search for the icon you want, then use its name as the widget `value`. These three sets are some of the most complete, but if you need an icon from a different set, you can easily add it to the `iconSet` list of the widget.
 
 #### demo theme has 3 screens on 1 minute rotation
 
