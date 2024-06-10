@@ -34,10 +34,10 @@
             {
                "id": 2,
                "group": 1,
-               "name": "material_icon",
+               "name": "iconify",
                "value": "memory",
                "color": "#878787",
-               "family": "baseline",
+               "iconSet": "mdi",
                "rect": {
                   "x": 60,
                   "y": 30,
@@ -69,10 +69,10 @@
             {
                "id": 4,
                "group": 2,
-               "name": "material_icon",
-               "value": "thermostat",
+               "name": "iconify",
+               "value": "temperature-lines",
                "color": "#878787",
-               "family": "baseline",
+               "iconSet": "mdi",
                "rect": {
                   "x": 60,
                   "y": 135,
@@ -104,10 +104,10 @@
             {
                "id": 6,
                "group": 3,
-               "name": "material_icon",
+               "name": "iconify",
                "value": "lightbulb",
                "color": "#878787",
-               "family": "outline",
+               "iconSet": "mdi",
                "rect": {
                   "x": 60,
                   "y": 238,
