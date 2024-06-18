@@ -1,6 +1,6 @@
 {
-   "listen": "127.0.0.1:8686",
-   "theme": "themes/simple_demo/portrait_simple.json",
+   "listen": "0.0.0.0:8686",
+   "theme": "themes/tari_demo/tari_portrait.json",
    "poll": 500,
    "refresh": 1600,
    "heartbeat": 60000,
@@ -9,6 +9,10 @@
       {
          "name": "a simple demo portrait orientation",
          "config": "themes/simple_demo/portrait_simple.json"
+      },
+      {
+         "name": "tari demo portrait",
+         "config": "themes/tari_demo/tari_portrait.json"
       }
    ],
    "sensors": [

@@ -1,0 +1,43 @@
+{
+   "orientation": "portrait",
+   "refresh": "redraw",
+   "screens": [
+      {
+         "id": 1,
+         "name": "Screen 1",
+         "background": "#282828",
+         "duration": 60000,
+         "led_config": {
+            "theme": 3,
+            "intensity": 3,
+            "speed": 3
+         },
+         "widgets": [
+            {
+               "id": 1,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 10,
+                  "y": 10,
+                  "width": 160,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "clock",
+               "format": "{0}:{2}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "18px Arial",
+               "color": "#c48ca8",
+               "align": "center"
+            }
+         ],
+         "wallpaper_frames": [
+            "themes/tari_demo/Acemagic sm_00000.png",
+            "themes/tari_demo/Acemagic sm_00001.png",
+            "themes/tari_demo/Acemagic sm_00002.png"
+         ]
+      }
+   ]
+}

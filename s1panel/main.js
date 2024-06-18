@@ -387,6 +387,36 @@ function load_wallpaper(context, state, config, screen) {
                 return fulfill(state.wallpaper_image);
             });
         }
+        else if (screen.wallpaper_frames) {
+
+            if (state.wallpaper_images) {
+
+                state.wallpaper_frame++;
+                if (state.wallpaper_frame >= state.wallpaper_images.length) {
+                    state.wallpaper_frame = 0;
+                }
+                return fulfill(state.wallpaper_images[state.wallpaper_frame]);
+            }
+            else
+            {                
+                var _promises = [];
+
+                screen.wallpaper_frames.forEach(image => {
+
+                    logger.info('initialize: loading wallapaper ' + image);
+                    _promises.push(node_canvas.loadImage(image));
+                });
+                    
+                return Promise.all(_promises).then(images => {
+
+                    state.wallpaper_images = images;
+
+                    state.wallpaper_frame = 0;
+
+                    fulfill(state.wallpaper_images[state.wallpaper_frame]);
+                });
+            }
+        }
 
         fulfill();
     });

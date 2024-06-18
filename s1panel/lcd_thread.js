@@ -29,7 +29,7 @@ function start_lcd_redraw(handle, state, job) {
 
         }, err => {
 
-            logger.error('lcd_thread: start_lcd_redraw hid error: ' + err);
+            //logger.error('lcd_thread: start_lcd_redraw hid error: ' + err);
 
         }).finally(() => {
             
