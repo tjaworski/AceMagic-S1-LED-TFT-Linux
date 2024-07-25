@@ -125,7 +125,8 @@ function set_rainbow(device, intensity, speed) {
 
                 fulfill();
             });
-        });
+
+        }, fulfill);
     });
 }
 
@@ -151,7 +152,8 @@ function set_breathing(device, intensity, speed) {
 
                 fulfill();
             });
-        });
+        
+        }, fulfill);
     });
 }
 
@@ -177,7 +179,8 @@ function set_color(device, intensity, speed) {
 
                 fulfill();
             });
-        });
+        
+        }, fulfill);
     });
 }
 
@@ -203,7 +206,8 @@ function set_automatic(device, intensity, speed) {
 
                 fulfill();
             });
-        });
+
+        }, fulfill);
     });
 }
 
@@ -229,7 +233,8 @@ function set_off(device) {
 
                 fulfill();
             });
-        });
+            
+        }, fulfill);
     });
 }
 
