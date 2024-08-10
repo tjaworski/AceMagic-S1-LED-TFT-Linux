@@ -74,6 +74,7 @@ function read_ip(iface) {
                 logger.error('network_thread: sensors reported error: ' + err);
                 _fault = true;
             }
+            fulfill();
         });
     });
 }
