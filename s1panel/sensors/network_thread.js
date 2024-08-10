@@ -7,6 +7,7 @@
 const fs       = require('fs');
 const threads  = require('worker_threads');
 const logger   = require('../logger');
+const spawn    = require('child_process').exec;
 
 const DEFAULT_RATE_MS = 1000;
 const TIMEOUT_COUNT = 30;
@@ -31,6 +32,52 @@ function read_file(path) {
     });
 }
 
+function run_command(cmdline) {
+
+    return new Promise((fulfill, reject) => {
+
+        var _runit = spawn(cmdline);
+        var _output = '';
+
+        _runit.stdout.on('data', function(data) {
+
+            _output += data;
+        });
+
+        _runit.stderr.on('data', function(data) {});
+
+        _runit.on('close', code => {
+
+            return code === 0 ? fulfill(_output) : reject('error executing');
+        });
+
+        _runit.on('error', err => {
+
+            reject(err);
+        });
+    });
+}
+
+
+function read_ip(iface) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _cmdline = 'ip -j a show dev ' + iface;
+
+        run_command(_cmdline).then(output => {
+
+            fulfill(JSON.parse(output));
+
+        }, err => {
+            if (!_fault) {
+                logger.error('network_thread: sensors reported error: ' + err);
+                _fault = true;
+            }
+        });
+    });
+}
+
 function network_usage(iface) {
 
     const _base_path = '/sys/class/net/' + iface;
@@ -38,6 +85,7 @@ function network_usage(iface) {
     const _path = _base_path + '/statistics';
     
     return Promise.all([
+
         read_file(_base_path + '/mtu'),
         read_file(_base_path + '/speed'),
 
@@ -45,8 +93,9 @@ function network_usage(iface) {
         read_file(_path + '/tx_bytes'),
         
         read_file(_path + '/rx_packets'),
-        read_file(_path + '/tx_packets')
+        read_file(_path + '/tx_packets'),
     
+        read_ip(iface)
     ]);
 }
 
@@ -84,11 +133,42 @@ function collect(message) {
             _last_rx_packets = _current_rx_packets;
             _last_tx_packets = _current_tx_packets;
 
+            const _netf = results[6];
+            var _ipv4 = 'n/a';
+            var _ipv4_count = 0;
+            var _ipv6 = 'n/a';
+            var _ipv6_count = 0;
+
+            if (_netf) {
+                _netf.forEach(each => {
+                    each.addr_info.forEach(info => {
+                        if ('global' === info.scope) {
+                            switch (info.family) {
+                                case 'inet':
+                                    if (!_ipv4_count) {
+                                        _ipv4 = info.local;
+                                        _ipv4_count++;
+                                    }
+                                    break;
+                                case 'inet6':
+                                    if (!_ipv6_count) {
+                                        _ipv6 = info.local;
+                                        _ipv6_count++;
+                                    }
+                                    break;
+                            }
+                        }
+                    });
+                });
+            }
+
             threads.parentPort.postMessage({ 
                 mtu: _link_mtu,
                 speed: _link_speed,
                 rx: { bytes: _delta_rx_bytes, packets: _delta_rx_packets }, 
-                tx: { bytes: _delta_tx_bytes, packets: _delta_tx_packets } 
+                tx: { bytes: _delta_tx_bytes, packets: _delta_tx_packets },
+                ipv4: _ipv4,
+                ipv6: _ipv6
             });
             
             setTimeout(() => {
