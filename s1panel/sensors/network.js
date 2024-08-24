@@ -139,6 +139,12 @@ function sample(rate, format, config) {
                     case '16':
                         return bytes_to_data_rate(_private.history_tx_bytes[_private.history_tx_bytes.length - 1], true);
 
+                    case '17':
+                        return _private.ipv4;
+
+                    case '18':
+                        return _private.ipv6;
+
                     default:
                         return 'null';
                 }
@@ -191,6 +197,9 @@ function init(config) {
         record_sample(_private.history_rx_packets, message.rx.packets, _private.max_points);
         record_sample(_private.history_tx_packets, message.tx.packets, _private.max_points);
     
+        _private.ipv4 = message.ipv4;
+        _private.ipv6 = message.ipv6;
+
         _private.thread_checkin_count++;
     });
 
