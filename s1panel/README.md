@@ -151,7 +151,12 @@ The iconify widget will display svg icons coming from iconify icon sets. The ava
 <img src="screenshots/demo_screen3.png" data-canonical-src="screenshots/demo_screen3.png" width="200" />
 </div>
  
+#### community themes:
 
+<img src="https://github.com/Piero24/acemagic-S1-panel-conf/blob/main/.github/screen.png?raw=true" />
+https://github.com/Piero24/acemagic-S1-panel-conf
+
+>
 
 > [!TIP]
 > Please share photos of your creations with me, and I'll feature them here. I'm genuinely excited and can't wait to see what you all come up with! I created a subreddit here https://www.reddit.com/r/s1panel/
