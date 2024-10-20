@@ -32,6 +32,12 @@ threads.parentPort.on('message', message => {
         case 5:
             _promise = led.set_automatic(message.device, message.intensity, message.speed);
             break;
+
+        case 6:
+            // ignore
+            logger.info('led_thread: ignore');
+            _promise = Promise.resolve();
+            break;
     }
 
     return _promise;
