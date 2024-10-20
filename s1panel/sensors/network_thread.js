@@ -18,11 +18,11 @@ var _collect_count = 0;
 var _fault = false;
 
 function read_file(path) {
-  
+
     return new Promise((fulfill, reject) => {
 
         fs.readFile(path, 'utf8', (err, data) => {
-            
+
             if (err) {
                 return reject();
             }
@@ -84,7 +84,7 @@ function network_usage(iface) {
     const _base_path = '/sys/class/net/' + iface;
 
     const _path = _base_path + '/statistics';
-    
+
     return Promise.all([
 
         read_file(_base_path + '/mtu'),
@@ -92,10 +92,10 @@ function network_usage(iface) {
 
         read_file(_path + '/rx_bytes'),
         read_file(_path + '/tx_bytes'),
-        
+
         read_file(_path + '/rx_packets'),
         read_file(_path + '/tx_packets'),
-    
+
         read_ip(iface)
     ]);
 }
@@ -110,9 +110,9 @@ function collect(message) {
     _collect_count++;
 
     if (_collect_count < TIMEOUT_COUNT) {
-        
+
         return network_usage(message.iface).then(results => {
-        
+
             const _link_mtu = Number(results[0]);
             const _link_speed = Number(results[1]);
 
@@ -163,27 +163,28 @@ function collect(message) {
                 });
             }
 
-            threads.parentPort.postMessage({ 
+            threads.parentPort.postMessage({
                 mtu: _link_mtu,
                 speed: _link_speed,
-                rx: { bytes: _delta_rx_bytes, packets: _delta_rx_packets }, 
+                rx: { bytes: _delta_rx_bytes, packets: _delta_rx_packets },
                 tx: { bytes: _delta_tx_bytes, packets: _delta_tx_packets },
                 ipv4: _ipv4,
                 ipv6: _ipv6
             });
-            
+
             setTimeout(() => {
 
                 collect(message);
 
             }, message.rate || DEFAULT_RATE_MS);
-        
+
         }, err => {
 
             if (!_fault) {
                 logger.error('network_thread: network stats read error: ' + err);
                 _fault = true;
-            }         
+                _running = false;
+            }
         });
     }
 
@@ -194,14 +195,18 @@ function collect(message) {
 
 threads.parentPort.on('message', message => {
 
-    _collect_count = 0; // reset 
-    
+    _collect_count = 0; // reset
+
     if (!_running) {
 
         _running = true;
+        if (_fault) {
+            logger.error('network_thread: restart after read error');
+            _fault = false;
+        }
 
         logger.info('network_thread: collector started for iface ' + message.iface);
-        
+
         collect(message);
     }
 });
