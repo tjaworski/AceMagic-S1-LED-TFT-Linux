@@ -57,7 +57,7 @@ function draw(context, value, min, max, config) {
         context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
         context.clip();
 
-        const _points = [ Number(value) - min, Number(max)];
+        const _points = [ Number(value) - min, Number(max) - Number(value) ];
         const _labels = [ 'used', 'unused '];
 
         const _configuration = {
