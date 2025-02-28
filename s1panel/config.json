@@ -56,6 +56,13 @@
          "config": {
             "max_points": 300
          }
+      },
+      {
+         "module": "sensors/space.js",
+         "config": {
+            "mount_point": "/",
+            "max_points": 300
+         }
       }
    ],
    "widgets": [
