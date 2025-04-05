@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - led_thread
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const threads     = require('worker_threads');

@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - lcd_thread
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const threads     = require('worker_threads');
@@ -11,8 +11,13 @@ const logger      = require('./logger');
 
 const usb_hid     = node_hid.HIDAsync;
 
+node_hid.setDriverType('libusb');
+
 const START_COOL_DOWN = 1000;
 const POLL_TIMEOUT = 10;
+
+// my hid throws way too many of these errors, hide them by default!
+const DEBUG_TRACE = false;
 
 function get_hr_time() {
 
@@ -29,7 +34,9 @@ function start_lcd_redraw(handle, state, job) {
 
         }, err => {
 
-            logger.error('lcd_thread: start_lcd_redraw hid error: ' + err);
+            if (DEBUG_TRACE) {
+                logger.error('lcd_thread: start_lcd_redraw hid error: ' + err);
+            }
 
         }).finally(() => {
             
@@ -48,7 +55,9 @@ function start_lcd_update(handle, state, job, fulfill) {
 
         }, err => {          
 
-            logger.error('lcd_thread: next_lcd_update hid error: ' + err);
+            if (DEBUG_TRACE) {
+                logger.error('lcd_thread: start_lcd_update hid error: ' + err);
+            }
 
         }).finally(() => {
           
@@ -67,7 +76,9 @@ function start_lcd_heartbeat(handle, state, job, fulfill) {
 
     }, err => {
 
-        logger.error('lcd_thread: start_lcd_heartbeat hid error: ' + err);
+        if (DEBUG_TRACE) {
+            logger.error('lcd_thread: start_lcd_heartbeat hid error: ' + err);
+        }
 
     }).finally(() => {
         
@@ -83,7 +94,9 @@ function start_lcd_orientation(handle, state, job, fulfill) {
 
     }, err => {
 
-        logger.error('lcd_thread: start_lcd_orientation hid error: ' + err);
+        if (DEBUG_TRACE) {
+            logger.error('lcd_thread: start_lcd_orientation hid error: ' + err);
+        }
 
     }).finally(() => {
         
@@ -225,8 +238,6 @@ function main(state) {
     threads.parentPort.on('message', message => {
         message_handler(state, message);
     });
-
-    node_hid.setDriverType('libusb');
 
     usb_hid.open(state.device).then(handle => {
     

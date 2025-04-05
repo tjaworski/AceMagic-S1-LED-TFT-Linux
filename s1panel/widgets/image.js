@@ -1,10 +1,25 @@
 'use strict';
 /*!
  * s1panel - widget/image
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const node_canvas = require('canvas');
+
+function start_draw(context, rect) {
+    context.save();
+    context.beginPath();
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.clip();
+}
+
+function debug_rect(context, rect) {
+
+    context.lineWidth = 1;
+    context.strokeStyle = "red";
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.stroke();
+}
 
 function load_image(name, _private) {
 
@@ -40,29 +55,23 @@ function draw(context, value, min, max, config) {
 
         const _rect = config.rect;
 
-        context.save();
-        context.beginPath();
-        context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-        context.clip();
+        start_draw(context, _rect);
         
         if (value) {
 
             load_image(value, _private).then(image => {
             
                 context.drawImage(image, _rect.x, _rect.y);
+                
+            }, () => {
+
+                // something went wrong
+
+            }).finally(() => {
 
                 if (config.debug_frame) {
-                    context.lineWidth = 1;
-                    context.strokeStyle = "red";
-                    context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-                    context.stroke();
+                    debug_rect(context, _rect);
                 }
-                
-                context.restore();
-                
-                fulfill(false);
-
-            }, () => {
 
                 context.restore();
 
@@ -71,6 +80,10 @@ function draw(context, value, min, max, config) {
         }
         else {
 
+            if (config.debug_frame) {                                
+                debug_rect(context, _rect);
+            }
+            
             context.restore();
 
             fulfill(false);

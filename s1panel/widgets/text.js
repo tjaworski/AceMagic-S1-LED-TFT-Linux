@@ -1,9 +1,25 @@
 'use strict';
 /*!
  * s1panel - widget/text
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
+
+function start_draw(context, rect) {
+    context.save();
+    context.beginPath();
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.clip();
+}
+
+function debug_rect(context, rect) {
+
+    context.lineWidth = 1;
+    context.strokeStyle = "red";
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.stroke();
+}
+
 function get_private(config) {
 
     if (!config._private) {
@@ -22,10 +38,7 @@ function draw(context, value, min, max, config) {
 
         const _has_changed = _private.last_value !== value ? true : false;
 
-        context.save();   
-        context.beginPath();
-        context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-        context.clip();
+        start_draw(context, _rect);
 
         context.font = config.font || '20px Arial';
         context.fillStyle = config.color || 'white';
@@ -47,11 +60,7 @@ function draw(context, value, min, max, config) {
         context.fillText(value, _rect.x + _offset, _rect.y);
 
         if (config.debug_frame) {
-            
-            context.lineWidth = 1;
-            context.strokeStyle = "red";
-            context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-            context.stroke();
+            debug_rect(context, _rect);
         }
 
         context.restore();

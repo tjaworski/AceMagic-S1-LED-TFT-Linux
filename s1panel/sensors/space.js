@@ -1,6 +1,7 @@
 'use strict';
 /*!
  * s1panel - sensor/space
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  * 
  * inspired by https://github.com/Ex161/AceMagic-S1-LED-TFT-Linux/blob/main/s1panel/sensors/storage_space.js
