@@ -137,7 +137,7 @@ If you make changes to config.json or the theme.json manually make sure you rest
 
 Each theme consists of one or more screens, each of which contains one or multiple widgets. A widget is an element responsible for rendering content on the screen, while a sensor gathers data for the widgets to utilize. Themes may feature multiple screens set on a rotation schedule, with specified durations for display before transitioning to the next screen. When rendering widgets it's essential to ensure correct z-ordering in the cases of overlapping widgets. Everything is always sorted on the 'id' field (ascending order). You have the option to either always perform a full-screen redraw or update only the widget region. Using the screen wallpaper or image widget, please make sure you have the correct sizes, I do not perform any resizing of the images. Regardless of the orientation, the wallpaper is always 320x170. Unlike the wallpaper the image widget will rotate the image depending on the orientation. PNG transparency is supported. The LED strip configuration is associated with each screen individually, allowing for a unique LED theme to be displayed alongside the current screen. The screen rotation is mostly great to prevent screen burn in.
 
-current sensors are (token descriptions)[https://github.com/tjaworski/AceMagic-S1-LED-TFT-Linux/wiki/Sensors]:
+current [sensors](https://github.com/tjaworski/AceMagic-S1-LED-TFT-Linux/wiki/Sensors) are:
 
      calendar, clock, cpu_power, cpu_temp, cpu_usage, memory, network, space, weather 
 
@@ -155,7 +155,7 @@ The iconify widget will display svg icons coming from iconify icon sets. The ava
 
 This project uses the [open-meteo.com](https://open-meteo.com) API to fetch weather data. The API is free and does not require an API key. To prevent overloading the service, the fetch interval is set to 5 minutes by default. If you only need the current weather conditions, you only need to set up a single sensor. However, if you want future forecasts, you’ll need to configure multiple sensors—one for each forecast day. The forecast configuration determines which day’s data is retrieved: 0 gives the current conditions, 1 provides today’s high and low temperatures, 2 is for tomorrow, 3 for the day after tomorrow, and so on, up to 7, which gives a full week’s forecast. Setting up your location is simple. If you’re in the United States, you can use your ZIP code. For other countries, just use your city name and make sure to set the correct two-letter country code (for example, US for the United States, UK for the United Kingdom, or AU for Australia). In addition to temperature and forecasts, you can also use the weather_icon widget, which provides a graphical representation of the weather (such as sunny or cloudy), as well as wind direction representation.
 
-#### demo theme has 3 screens on 1 minute rotation
+#### demo theme has 4 screens on 1 minute rotation
 
 <div>
 <img src="screenshots/demo_screen1.png" data-canonical-src="screenshots/demo_screen1.png" width="200" />
