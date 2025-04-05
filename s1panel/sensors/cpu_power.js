@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - sensor/power
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const fs = require('fs');
@@ -179,7 +179,7 @@ function sample(rate, format) {
 function init(config) {
     
     if (config) {
-        _max_points = config.max_points;
+        _max_points = config.max_points || 10;
     }
 
     logger.info('initialize: cpu power max points are set to ' + _max_points);

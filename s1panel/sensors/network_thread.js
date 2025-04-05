@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - sensor/network_thread
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const fs       = require('fs');
@@ -17,16 +17,33 @@ var _collect_count = 0;
 
 var _fault = false;
 
-function read_file(path) {
+function read_file(path, retry) {
 
     return new Promise((fulfill, reject) => {
 
         fs.readFile(path, 'utf8', (err, data) => {
 
             if (err) {
-                return reject();
-            }
 
+                if (!retry) {
+                    // retry
+                    return setTimeout(() => {
+
+                        read_file(path, true).then(data2 => {
+
+                            fulfill(data2);
+
+                        }, err2 => {
+
+                            reject(path + ': ' + err2);
+                        });
+        
+                    }, 100);
+                }
+                
+                return reject(path + ': ' + err);
+            }
+            
             fulfill(data);
         });
     });
@@ -67,7 +84,10 @@ function read_ip(iface) {
 
         run_command(_cmdline).then(output => {
 
-            fulfill(JSON.parse(output));
+            if (output) {
+                return fulfill(JSON.parse(output));
+            }
+            return reject("ip returned no output");
 
         }, err => {
             if (!_fault) {

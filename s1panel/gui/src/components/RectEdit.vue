@@ -42,7 +42,7 @@
 
 /*!
  * s1panel-gui - RectEdit.vue
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 

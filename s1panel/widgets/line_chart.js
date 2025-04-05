@@ -1,13 +1,20 @@
 'use strict';
 /*!
  * s1panel - widget/line_chart
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const logger = require('../logger');
 
 const { loadImage }         = require('canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+
+function start_draw(context, rect) {
+    context.save();
+    context.beginPath();
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.clip();
+}
 
 function debug_rect(context, rect) {
 
@@ -49,19 +56,10 @@ function draw(context, value, min, max, config) {
 
         const _private = get_private(config);
         const _rect = config.rect;
-
         const _data = value.split(',');
-
         var _has_changed = false;
-
-        context.save();
-        context.beginPath();
-        context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-        context.clip();
-
         const _points = new Array(config.points);
         const _labels = new Array(config.points);
-
         var _max_points = Math.min(config.points, _data.length); 
 
         var _count = 0;
@@ -150,6 +148,8 @@ function draw(context, value, min, max, config) {
             _private.chart = new ChartJSNodeCanvas({ width: _rect.width, height: _rect.height });
         }
 
+        start_draw(context, _rect);
+
         draw_chart(context, _rect.x, _rect.y, _rect.width, _rect.height, _private.chart, _configuration).then(() => {
 
             if (_has_changed) {
@@ -157,18 +157,17 @@ function draw(context, value, min, max, config) {
                 _private.last_value = value;
             }
 
-            if (config.debug_frame) {
-                
-                debug_rect(context, _rect);
-            }
-
-            context.restore();
-
         }, () => {
 
             logger.error('line chart failed to draw');
 
         }).finally(() => {
+
+            if (config.debug_frame) {                
+                debug_rect(context, _rect);
+            }
+            
+            context.restore();
 
             fulfill(_has_changed);
         });       

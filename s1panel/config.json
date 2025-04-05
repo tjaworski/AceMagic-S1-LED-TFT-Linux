@@ -1,5 +1,5 @@
 {
-   "listen": "127.0.0.1:8686",
+   "listen": "0.0.0.0:8686",
    "theme": "themes/simple_demo/portrait_simple.json",
    "poll": 500,
    "refresh": 1600,
@@ -63,6 +63,24 @@
             "mount_point": "/",
             "max_points": 300
          }
+      },
+      {
+         "module": "sensors/weather.js",
+         "config": {
+            "name": "nyc",
+            "country": "US",
+            "imperial": true,
+            "forecast": 0
+         }
+      },
+      {
+         "module": "sensors/weather.js",
+         "config": {
+            "name": "nyc",
+            "country": "US",
+            "imperial": true,
+            "forecast": 1
+         }
       }
    ],
    "widgets": [
@@ -72,7 +90,8 @@
       "widgets/doughnut_chart.js",
       "widgets/bar_chart.js",
       "widgets/image.js",
-      "widgets/iconify.js"
+      "widgets/iconify.js",
+      "widgets/weather_icon.js"
    ],
    "canvas": {
       "width": 320,

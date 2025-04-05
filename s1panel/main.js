@@ -2,7 +2,7 @@
 'use strict';
 /*!
  * s1panel - main
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const threads     = require('worker_threads');
@@ -179,6 +179,19 @@ function update_device_screen(context, state, config, theme) {
     });
 }
 
+// keep screen at least for 10 seconds
+// prevents from fast screen switching...
+function has_screen_expired(elapsed, duration) {
+
+    const _min_time_ms = 10 * 1000;
+
+    if (duration > _min_time_ms) {
+        return elapsed > duration ? true : false;
+    }
+
+    return elapsed > _min_time_ms ? true : false;
+}
+
 function fetch_screen(state, config, theme) {
 
     const _count = theme.screens.length;
@@ -203,7 +216,7 @@ function fetch_screen(state, config, theme) {
                 state.change_screen = 0;
             }
         }
-        else if (_screen.duration && _diff > _screen.duration) {
+        else if (_screen.duration && has_screen_expired(_diff, _screen.duration)) {
 
             if (!state.screen_paused) {
 
@@ -216,6 +229,7 @@ function fetch_screen(state, config, theme) {
                 }
             }
             else {
+
                 state.screen_start = get_hr_time();
             }
         }
@@ -614,13 +628,13 @@ function main() {
     // additional commandline args
     var args = process.argv.slice(2);
 
-    var config_file = null
+    var config_file = null;
 
     if (args.length > 0) {
-        config_file = args[0]
+        config_file = args[0];
     }
     else {
-        config_file = 'config.json'
+        config_file = 'config.json';
     }
 
     load_config(config_file).then(config => {

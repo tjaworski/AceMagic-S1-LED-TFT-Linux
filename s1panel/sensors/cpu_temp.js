@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - sensor/cpu_temp
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const spawn = require('child_process').exec;
@@ -104,7 +104,7 @@ function get_current_value(json) {
                     _min_temp = _fahrenheit ? 70.0 : 21;
                 }
                 
-                logger.info('initialize: cpu temp max set to ' + _min_temp);
+                logger.info('initialize: cpu temp min set to ' + _min_temp);
             }
         }
     }

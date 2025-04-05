@@ -1,6 +1,8 @@
 {
   "name": "s1panel-gui",
   "version": "0.0.1",
+  "author": "Tomasz Jaworski",
+  "license": "GPL-3.0",  
   "scripts": {
     "dev": "vite",
     "build": "vite build",

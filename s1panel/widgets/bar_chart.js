@@ -1,7 +1,7 @@
 'use strict';
 /*!
  * s1panel - widget/bar_chart
- * Copyright (c) 2024 Tomasz Jaworski
+ * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
 const logger = require('../logger');
@@ -10,6 +10,13 @@ const { loadImage }         = require('canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 const DEFAULT_ZOOM = 0;
+
+function start_draw(context, rect) {
+    context.save();
+    context.beginPath();
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.clip();
+}
 
 function debug_rect(context, rect) {
 
@@ -57,11 +64,6 @@ function draw(context, value, min, max, config) {
         const _data = value.split(',');
 
         var _has_changed = false;
-
-        context.save();
-        context.beginPath();
-        context.rect(_rect.x, _rect.y, _rect.width, _rect.height);
-        context.clip();
 
         const _zoom = (config.zoom || DEFAULT_ZOOM) * 2;
         const _points = new Array(config.points);
@@ -157,23 +159,25 @@ function draw(context, value, min, max, config) {
             _private.chart = new ChartJSNodeCanvas({ width: _rect.width + _zoom, height: _rect.height });
         }
 
+        start_draw(context, _rect);
+
         draw_chart(context, _rect.x, _rect.y, _rect.width + _zoom, _rect.height, _zoom, _private.chart, _configuration).then(() => {
 
             if (_has_changed) {
                 _private.last_value = value;
             }
 
-            if (config.debug_frame) {
-                debug_rect(context, _rect);
-            }
-
-            context.restore();
-
         }, () => {
 
             logger.error('bar chart failed to draw');
 
         }).finally(() => {
+
+            if (config.debug_frame) {
+                debug_rect(context, _rect);
+            }
+            
+            context.restore();
 
             fulfill(_has_changed);
         });       
