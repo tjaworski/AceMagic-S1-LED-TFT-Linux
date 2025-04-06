@@ -58,6 +58,11 @@ $ npm -v
 > [!NOTE]
 > If you need to build any of the dependencies from source, you will need to have a build environment set up. For example, on Debian-based systems, you can install it with: "apt-get install build-essential"
 
+make sure your pc can access the following urls, test with curl for icons and weather:
+
+    curl https://api.iconify.design/wi/alien.svg
+    curl https://geocoding-api.open-meteo.com/v1/search?name=nyc&count=1&country=US
+    
 
 ## Upgrade
 
