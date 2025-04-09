@@ -120,7 +120,7 @@ function load_icon(name, _private) {
             return fulfill(_private.icons[_slug]);
         }
         
-        const _url = 'https://api.iconify.design/' + _slug + '.svg';
+        const _url = 'https://api.iconify.design/' + (_slug || 'carbon/document-unknown') + '.svg';
 
         fetch(_url).then(response => {
 

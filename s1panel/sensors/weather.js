@@ -14,7 +14,7 @@ const wmo_weather_codes = {
      2: 'Partly cloudy',        
      3: 'Overcast',             
     45: 'Fog',                  
-    48: '"Depositing rime fog', 
+    48: 'Depositing rime fog', 
     51: 'Light drizzle',        
     53: 'Moderate drizzle',     
     55: 'Dense drizzle',        
@@ -56,7 +56,7 @@ function process_weather(priv, message) {
                 priv.weathercode = _weather.weathercode[0];
             }
             else {
-                priv.weathercode = -1;
+                priv.weathercode = 0;
             }  
         }
 
@@ -106,13 +106,13 @@ function process_weather(priv, message) {
             priv.is_day = _weather.is_day ? true : false;
         }
 
-        if (_units.weathercode && _weather.weathercode) {
+        if (_units.weathercode) {
 
             if ('wmo code' === _units.weathercode) {
                 priv.weathercode = _weather.weathercode;
             }
             else {
-                priv.weathercode = -1;
+                priv.weathercode = 0;
             }
         }
 
@@ -190,10 +190,10 @@ function sample(rate, format, config) {
                 case '4':   // wmo code
                     _min = _private.imperial ? true : false;
                     _max = _private?.is_day || 0;
-                    return _private?.weathercode || -1;
+                    return _private?.weathercode || 0;
 
                 case '5':   // wmo code description
-                    return (_private.weathercode >= 0) ? (wmo_weather_codes[_private.weathercode] || 'alien weather') : 'alien weather';
+                    return wmo_weather_codes[_private.weathercode] || 'alien weather';
 
                 case '6':   // daytime/nighttime
                     return _private?.is_day || 0;
@@ -393,7 +393,65 @@ function init(config) {
     return _label + '_weather_' + _private.name;
 }
 
+function stop(config) {
+    
+    return new Promise(fulfill => {
+
+        if (config && config._private) {
+            
+            const _private = config._private;
+
+            if (_private.worker) {
+
+                // notify thread to exit
+                _private.worker.postMessage({ stop: true });
+                
+                // wait for at least 10 second to kill it
+                const _timer = setTimeout(() => {
+                    _private.worker.terminate().then(() => {
+                        logger.info('killed weather thread for ' + _private.name);                
+                        fulfill();
+                    });
+                }, 10000);
+
+                // if thread stopped gracefully, we're good!
+                _private.worker.on('exit', () => {
+                    clearTimeout(_timer);
+                    logger.info('stopped weather thread for ' + _private.name);
+                    fulfill();                
+                });
+            }
+            else {
+                fulfill();
+            }
+        }
+        else {
+            fulfill();
+        }
+    });
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'weather',
+        description: 'weather sensor',
+        icon: 'pi-cloud',
+        multiple: true,
+        ident: [ 'name', 'forecast'],   // which fields will change the identity of the sensor
+        fields: [
+            { name: 'name', type: 'string', value: 'nyc' },
+            { name: 'country', type: 'string', value: 'US' },
+            { name: 'forecast', type: 'number', value: 0, min: 0, max: 7 },
+            { name: 'imperial', type: 'boolean', value: true }
+        ]
+    };
+}
+
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };

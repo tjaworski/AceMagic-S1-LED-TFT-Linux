@@ -7,6 +7,7 @@
  */
 const threads     = require('worker_threads');
 const fs          = require('fs');
+const path        = require('path');
 const http        = require('http');
 
 const express     = require('express');
@@ -14,6 +15,8 @@ const node_canvas = require('canvas');
 
 const logger      = require('./logger');
 const api         = require('./api');
+
+const home_dir = process.env.S1PANEL_CONFIG || __dirname;
 
 function get_hr_time() {
 
@@ -545,7 +548,7 @@ function initialize(state, config, theme) {
 
     config.widgets.forEach(widget => {
 
-        const _file = './' + widget;
+        const _file = './' + widget;    // relative path to install dir ./widget/xyz.js
         const _module = require(_file);
 
         if (_module) {
@@ -560,18 +563,21 @@ function initialize(state, config, theme) {
 
     config.sensors.forEach(sensor => {
 
-        const _file = './' + sensor.module;
+        const _file = './' + sensor.module; // relative path to install dir ./sensors/abc.js
         const _module = require(_file);
 
         if (_module) {
 
             const _config = sensor.config || {};
             const _name = _module.init(_config);
+            const _info = { ..._module.settings(), module: sensor.module };
 
             logger.info('initialize: sensor ' + _name + ' loaded...');
 
-            state.sensors[_name] = { config: _config, name: _name, sample: (rate, format) => {
+            state.sensors[_name] = { config: _config, name: _name, info: _info, sample: (rate, format) => {
                 return _module.sample(rate, format, _config);
+            }, stop: () => {
+                return _module.stop(_config);
             }};
         }
     });
@@ -626,26 +632,26 @@ function lcd_thread_status(state, theme, message) {
 
 function main() {
     // additional commandline args
-    var args = process.argv.slice(2);
+    const _args = process.argv.slice(2);
+    const _config_file = (_args.length > 0) ? _args[0] : path.join(home_dir, 'config.json'); // {dir}/config.json
 
-    var config_file = null;
+    logger.info('config ' + _config_file);
+    
+    load_config(_config_file).then(config => {
+        
+        const _theme_file = path.join(home_dir, config.theme); // {dir}/themes/simple_demo/portrait_simple.json
+        
+        logger.info('theme ' + _theme_file);
 
-    if (args.length > 0) {
-        config_file = args[0];
-    }
-    else {
-        config_file = 'config.json';
-    }
-
-    load_config(config_file).then(config => {
-
-        load_config(config.theme).then(theme => {
+        load_config(_theme_file).then(theme => {
 
             const _output_canvas = node_canvas.createCanvas(config.canvas.width, config.canvas.height);
             const _canvas1 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
             const _canvas2 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
 
             const _state = {
+
+                config_file        : _config_file,
 
                 widgets            : {},
                 sensors            : {},

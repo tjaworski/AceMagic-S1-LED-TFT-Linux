@@ -1,0 +1,37 @@
+name: Publish Snap
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Snapcraft
+        uses: snapcore/action-build@v1
+
+      - name: Log in to Snap Store
+        uses: snapcore/action-publish@v1
+        with:
+          store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
+
+      - name: Build and Upload Snap
+        working-directory: ./s1panel
+        run: |
+          snapcraft --destructive-mode
+          SNAP_FILE=$(ls *.snap | head -1)
+          echo "Built $SNAP_FILE"
+          if [[ "${GITHUB_REF##*/}" =~ ^v[0-9] ]]; then
+            CHANNEL="stable"
+          else
+            CHANNEL="edge"
+          fi          
+          snapcraft upload "$SNAP_FILE" --release=$CHANNEL

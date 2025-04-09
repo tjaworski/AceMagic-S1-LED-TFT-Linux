@@ -208,7 +208,65 @@ function init(config) {
     return 'network_' + _private.iface;
 }
 
+function stop(config) {
+    
+    return new Promise(fulfill => {
+
+        if (config && config._private) {
+            
+            const _private = config._private;
+
+            if (_private.worker) {
+
+                // notify thread to exit
+                _private.worker.postMessage({ stop: true });
+                
+                // wait for at least 10 second to kill it
+                const _timer = setTimeout(() => {
+                    _private.worker.terminate().then(() => {
+                        logger.info('killed network thread for ' + _private.name);                
+                        fulfill();
+                    });
+                }, 10000);
+
+                // if thread stopped gracefully, we're good!
+                _private.worker.on('exit', () => {
+                    clearTimeout(_timer);
+                    logger.info('stopped network thread for ' + _private.name);
+                    fulfill();                
+                });
+            }
+            else {
+                fulfill();
+            }
+        }
+        else {
+            fulfill();
+        }
+    });
+}
+
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'network',
+        description: 'monitor nic statistics',
+        icon: 'pi-wifi',
+        multiple: true,
+        ident: [ 'interface' ],   // which fields will change the identity of the sensor
+        fields: [
+            { name: 'max_points', type: 'number', value: 300 },
+            { name: 'interface', type: 'string', value: 'enp2s0' },
+            { name: 'scaling', type: 'string', value: '1.5' }
+        ]
+    };
+}
+
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };

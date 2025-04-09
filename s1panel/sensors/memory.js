@@ -276,8 +276,28 @@ function init(config) {
     return 'memory';
 }
 
+function stop() {
+    return Promise.resolve();
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'memory',
+        description: 'memory monitor',
+        icon: 'pi-chart-pie',        
+        multiple: false,
+        ident: [],        
+        fields: [
+            { name: 'max_points', type: 'number', value: 300 },
+        ]
+    };
+}
 
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };

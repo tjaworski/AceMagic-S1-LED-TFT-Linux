@@ -7,6 +7,16 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
 
 ## Release Notes
 
+#### 2025-04-09
+  - added sensor management from the GUI (the red bolt upper right hand)
+  - added additional callbacks in sensors for GUI support
+  - added code to stop any sensor threads
+  - removed spawning to get network/ip and cpu_temp/sensors to prevent pid count from going up
+  - fixed some weather bugs (clear sky was not working)
+  - added ubuntu snap package building (regisred in the store under 's1panel' name)
+  - added github workflow to build snap package and release it 
+  - fixed minor issues here and there
+
 #### 2025-04-05
   - added weather sensor and weather_icon widget
   - cleaned up code and error handling in bunch of places
@@ -38,6 +48,21 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
   - added debug frame as unsaved changes
   - general code cleanup
 
+## Install (ubuntu snap)
+
+s1panel is now registered in the snap store. 
+
+```
+sudo snap install s1panel
+```
+
+the config/theme files should be in /root/.config/s1panel and if you want to modify them manually, make sure you stop the snap first. Here are some commands to use with snap:
+
+```
+sudo snap stop s1panel
+sudo snap start s1panel
+sudo snap remove s1panel
+```
 
 ## Dependencies
 

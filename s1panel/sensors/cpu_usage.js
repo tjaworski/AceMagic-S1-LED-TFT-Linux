@@ -142,8 +142,28 @@ function init(config) {
     return 'cpu_usage';
 }
 
+function stop() {
+    return Promise.resolve();
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'cpu_usage',
+        description: 'cpu load monitor',
+        icon: 'pi-chart-line',
+        multiple: false,
+        ident: [],
+        fields: [
+            { name: 'max_points', type: 'number', value: 300 },
+        ]
+    };
+}
 
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };
