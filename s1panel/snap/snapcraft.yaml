@@ -50,8 +50,9 @@ parts:
     override-build: |
       set -e
       snapcraftctl build
-      curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-      apt-get install -y nodejs build-essential python3 python3-dev libcairo2-dev libpango1.0-dev libjpeg-dev libjpeg-dev libgif-dev librsvg2-dev libusb-1.0-0-dev libudev-dev
+      curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+      sudo apt-get update
+      sudo apt-get install -y nodejs build-essential python3 python3-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libusb-1.0-0-dev libudev-dev
       npm ci --build-from-source
       (cd gui; npm ci)
       (cd gui; npm run build)
