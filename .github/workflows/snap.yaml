@@ -15,8 +15,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Snapcraft
+      - name: Prepare Snapcraft environment
         run: |
+          sudo systemctl restart snapd
+          sleep 5
+          sudo snap install core22 --channel=latest/stable
           sudo snap install snapcraft --classic
           
       - name: Build and Upload Snap
@@ -24,10 +27,12 @@ jobs:
         run: |
           echo "Current directory: $(pwd)"
           ls snap || echo "No snap directory found!"
-          snapcraft --destructive-mode -v
-          SNAP_FILE=$(ls *.snap | head -1)
           
+          snapcraft --destructive-mode -v
+          
+          SNAP_FILE=$(ls *.snap | head -1)
           echo "Built $SNAP_FILE"
+          
           TAG_NAME="${GITHUB_REF##*/}"
           if [[ "$TAG_NAME" =~ ^v[0-9] ]]; then
             CHANNEL="stable"
