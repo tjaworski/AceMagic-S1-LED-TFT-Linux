@@ -15,11 +15,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Log in to Snap Store
-        uses: snapcore/action-publish@v1
-        with:
-          store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
-
       - name: Build and Upload Snap
         working-directory: ./s1panel
         run: |
