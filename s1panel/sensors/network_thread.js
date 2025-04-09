@@ -5,9 +5,9 @@
  * GPL-3 Licensed
  */
 const fs       = require('fs');
+const os       = require('os');
 const threads  = require('worker_threads');
 const logger   = require('../logger');
-const spawn    = require('child_process').exec;
 
 const DEFAULT_RATE_MS = 1000;
 const TIMEOUT_COUNT = 30;
@@ -15,6 +15,7 @@ const TIMEOUT_COUNT = 30;
 var _running = false;
 var _collect_count = 0;
 
+var _timer = null;
 var _fault = false;
 
 function read_file(path, retry) {
@@ -49,53 +50,29 @@ function read_file(path, retry) {
     });
 }
 
-function run_command(cmdline) {
-
-    return new Promise((fulfill, reject) => {
-
-        var _runit = spawn(cmdline);
-        var _output = '';
-
-        _runit.stdout.on('data', function(data) {
-
-            _output += data;
-        });
-
-        _runit.stderr.on('data', function(data) {});
-
-        _runit.on('close', code => {
-
-            return code === 0 ? fulfill(_output) : reject('error executing');
-        });
-
-        _runit.on('error', err => {
-
-            reject(err);
-        });
-    });
-}
-
-
 function read_ip(iface) {
 
     return new Promise((fulfill, reject) => {
 
-        const _cmdline = 'ip -j a show dev ' + iface;
+        const _nets = os.networkInterfaces();
+        const _nic = _nets[iface];
 
-        run_command(_cmdline).then(output => {
+        const _result = { ipv4: 'n/a', ipv6: 'n/a' };
 
-            if (output) {
-                return fulfill(JSON.parse(output));
+        if (_nic) {
+
+            const ipv4 = _nic.find(net => net.family === 'IPv4' && !net.internal);
+            const ipv6 = _nic.find(net => net.family === 'IPv6' && !net.internal);
+                
+            if (ipv4 && ipv4.address) {
+                _result.ipv4 = ipv4.address;
             }
-            return reject("ip returned no output");
-
-        }, err => {
-            if (!_fault) {
-                logger.error('network_thread: sensors reported error: ' + err);
-                _fault = true;
+            if (ipv6 && ipv6.address) {
+                _result.ipv6 = ipv6.address;
             }
-            fulfill();
-        });
+        }
+
+        fulfill(_result);
     });
 }
 
@@ -154,45 +131,18 @@ function collect(message) {
             _last_rx_packets = _current_rx_packets;
             _last_tx_packets = _current_tx_packets;
 
-            const _netf = results[6];
-            var _ipv4 = 'n/a';
-            var _ipv4_count = 0;
-            var _ipv6 = 'n/a';
-            var _ipv6_count = 0;
-
-            if (_netf) {
-                _netf.forEach(each => {
-                    each.addr_info.forEach(info => {
-                        if ('global' === info.scope) {
-                            switch (info.family) {
-                                case 'inet':
-                                    if (!_ipv4_count) {
-                                        _ipv4 = info.local;
-                                        _ipv4_count++;
-                                    }
-                                    break;
-                                case 'inet6':
-                                    if (!_ipv6_count) {
-                                        _ipv6 = info.local;
-                                        _ipv6_count++;
-                                    }
-                                    break;
-                            }
-                        }
-                    });
-                });
-            }
+            const _netf = results[6];   // ip address
 
             threads.parentPort.postMessage({
                 mtu: _link_mtu,
                 speed: _link_speed,
                 rx: { bytes: _delta_rx_bytes, packets: _delta_rx_packets },
                 tx: { bytes: _delta_tx_bytes, packets: _delta_tx_packets },
-                ipv4: _ipv4,
-                ipv6: _ipv6
+                ipv4: _netf ? _netf.ipv4 : 'n/a',
+                ipv6: _netf ? _netf.ipv6 : 'n/a'
             });
 
-            setTimeout(() => {
+            _timer = setTimeout(() => {
 
                 collect(message);
 
@@ -217,9 +167,23 @@ threads.parentPort.on('message', message => {
 
     _collect_count = 0; // reset
 
+    if (message.stop) {
+
+        logger.info('network_thread: requested to stop ' + threads.workerData.name);
+        
+        // clear any outstanding timers...
+        if (_timer) {
+            clearTimeout(_timer);
+        }
+
+        // good bye
+        return process.exit(0);
+    }
+
     if (!_running) {
 
         _running = true;
+
         if (_fault) {
             logger.error('network_thread: restart after read error');
             _fault = false;

@@ -8,8 +8,6 @@
  */
 const fs = require('fs');
 
-const spawn = require('child_process').exec;
-
 const logger = require('../logger');
 
 function record_sample(array, value, max_points) {
@@ -48,7 +46,7 @@ function space_info(path) {
                 _info.size = _total_bytes;
             }
             
-            fulfill(_info)
+            fulfill(_info);
         });
     });
 }
@@ -147,8 +145,30 @@ function init(config) {
     return 'space_' + _private.name;
 }
 
+function stop() {
+    return Promise.resolve();
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'space',
+        description: 'disk space monitor',
+        icon: 'pi-database',
+        multiple: true,
+        ident: [ 'name', 'mount_point' ],   // which fields will change the identity of the sensor
+        fields: [
+            { name: 'max_points', type: 'number', value: 300 },
+            { name: 'name', type: 'string', value: 'root' },
+            { name: 'mount_point', type: 'string', value: '/' }
+        ]
+    };
+}
 
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };

@@ -4,9 +4,9 @@
  * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
-const spawn = require('child_process').exec;
-
-const logger = require('../logger');
+const fs        = require('fs');
+const path      = require('path');
+const logger    = require('../logger');
 
 var _fault = false;
 
@@ -17,28 +17,42 @@ var _history = [];
 var _max_temp = 0;
 var _min_temp = 0;
 
-function run_command(cmdline) {
-
+function read_file(path) {
+  
     return new Promise((fulfill, reject) => {
 
-        var _runit = spawn(cmdline);
-        var _output = '';
+        fs.readFile(path, 'utf8', (err, data) => {
+            
+            if (err) {
+                return reject(err);
+            }
 
-        _runit.stdout.on('data', function(data) {
-
-            _output += data;
+            fulfill(data);
         });
+    });
+}
 
-        _runit.stderr.on('data', function(data) {});
+function celsius_fahrenheit(c) {
+    return (c * 9/5) + 32;
+}
 
-        _runit.on('close', code => {
+function walk_directory(dir, cb) {
 
-            return code === 0 ? fulfill(_output) : reject('error executing');
-        });
+    return new Promise((fulfill, reject) => {
+        
+        fs.readdir(dir, (err, files) => {
+            
+            if (err) {
+                return reject;
+            }
+            
+            var _promises = [];
 
-        _runit.on('error', err => {
-
-            reject(err);
+            files.forEach(file => {                
+                _promises.push(cb(path.join(dir, file)));
+            });
+            
+            Promise.all(_promises).then(fulfill, reject);
         });
     });
 }
@@ -47,68 +61,109 @@ function cpu_temp() {
 
     return new Promise(fulfill => {
 
-        var _command_line = 'sensors -j';
+        const _hwmon = '/sys/class/hwmon/';
 
-        if (_fahrenheit) {
-            _command_line += ' --fahrenheit';
-        }
-
-        run_command(_command_line).then(output => {
-
-            fulfill(JSON.parse(output));
+        // /sys/class/hwmon/
+        // /sys/class/hwmon/hwmon1/name === 'coretemp'
+        // /sys/class/hwmon/hwmon1/temp1_label === 'Package id 0'
+        // /sys/class/hwmon/hwmon1/temp1_input 47000 / 1000 = C
         
-        }, err => {
+        var _found_coretemp = false;
+        var _path_coretemp = null;
 
-            if (!_fault) {
+        walk_directory(_hwmon, fullpath => {
 
-                logger.error('cpu_temp: sensors reported error: ' + err);
-                _fault = true;
+            const _hwmon_name = path.join(fullpath, 'name');
+            
+            return read_file(_hwmon_name).then(name => {
+
+                if (name.startsWith('coretemp')) {
+                                        
+                    _path_coretemp = fullpath;
+                    _found_coretemp = true;
+                }
+
+                return Promise.resolve();
+            });
+
+        }).then(() => {
+
+            if (_found_coretemp) {
+
+                var _temp_path = null;
+                var _temp_found = false;
+
+                return walk_directory(_path_coretemp, fullpath => {
+                    
+                    if (fullpath.includes('temp') && fullpath.includes('label')) {
+
+                        return read_file(fullpath).then(name => {
+                        
+                            if (name.startsWith('Package id 0')) {
+                                _temp_path = fullpath;
+                                _temp_found = true;
+                            }
+                        });
+                    }
+                    
+                    return Promise.resolve();
+
+                }).then(() => {
+
+                    if (_temp_found) {
+
+                        const _input_path = _temp_path.replace('_label', '_input');
+                        const _max_path = _temp_path.replace('_label', '_max');
+
+                        return Promise.all([read_file(_input_path), read_file(_max_path) ]).then(values => {
+
+                            var _value = Number(values[0]) / 1000;
+                            var _max = Number(values[1]) / 1000;
+
+                            fulfill({ 
+                                value: _fahrenheit ? celsius_fahrenheit(_value) : _value, 
+                                max: _fahrenheit ? celsius_fahrenheit(_max) : _max 
+                            });
+
+                        });
+                    }
+
+                    fulfill();
+                });
+
             }
-
-            fulfill();
+            return fulfill();            
         });
     });
 }
 
 function get_current_value(json) {
 
-    var _value = 0;
+    if (!_max_temp) {
 
-    const _coretemp = json['coretemp-isa-0000'];
-
-    if (_coretemp) {
-
-        const _package = _coretemp['Package id 0'];
-        
-        if (_package) {
-
-            _value = _package.temp1_input;
-
-            if (!_max_temp) {
-
-                if (_package.temp1_max) {
-                    _max_temp = _package.temp1_max;
-                }
-                else {
-                    _max_temp = _fahrenheit ? 230.0 : 105.0;
-                }
-
-                logger.info('initialize: cpu temp max set to ' + _max_temp);
-            }
-            if (!_min_temp) {
-
-                if (_package.temp1_min) {
-                    _min_temp = _package.temp1_min;
-                }
-                else {
-                    _min_temp = _fahrenheit ? 70.0 : 21;
-                }
-                
-                logger.info('initialize: cpu temp min set to ' + _min_temp);
-            }
+        if (json.max) {
+            _max_temp = json.max;
         }
+        else {
+            _max_temp = _fahrenheit ? 230.0 : 105.0;
+        }
+
+        logger.info('initialize: cpu temp max set to ' + _max_temp);
     }
-    return _value;
+
+    if (!_min_temp) {
+
+        if (json.min) {
+            _min_temp = json.min;
+        }
+        else {
+            _min_temp = _fahrenheit ? 70.0 : 21;
+        }
+        
+        logger.info('initialize: cpu temp min set to ' + _min_temp);
+    }
+
+    return json.value;
 }
 
 function sample(rate, format) {
@@ -163,6 +218,16 @@ function sample(rate, format) {
             }); 
 
             fulfill({ value: _output, min: _min_temp, max: _max_temp });
+        
+        }, err => {
+        
+            if (!_fault) {
+
+                logger.error('cpu_temp: sensors reported error: ' + err);
+                _fault = true;
+            }
+
+            fulfill({ value: 0, min: 0, max: 0 });
         });
     });
 }
@@ -183,8 +248,29 @@ function init(config) {
     return 'cpu_temp';
 }
 
+function stop() {
+    return Promise.resolve();
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'cpu_temp',
+        description: 'cpu temp monitor',
+        icon: 'pi-sun',
+        multiple: false,
+        ident: [],        
+        fields: [
+            { name: 'max_points', type: 'number', value: 300 },
+            { name: 'fahrenheit', type: 'boolean', value: true },
+        ]
+    };
+}
 
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };

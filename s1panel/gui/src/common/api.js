@@ -527,39 +527,113 @@ function api_bottom_widget(screen, widget) {
     });
 }
 
+function api_config_sensor_list() {
+
+    return new Promise(fulfill => {
+
+        fetch('/api/config_sensor_list').then(response => {
+        
+            response.json().then(list => {  
+
+                fulfill(list);             
+            });
+        });
+    });
+}
+
+function api_config_sensor_scan() {
+
+    return new Promise(fulfill => {
+
+        fetch('/api/config_sensor_scan').then(response => {
+        
+            response.json().then(list => {  
+
+                fulfill(list);             
+            });
+        });
+    });
+}
+
+function api_config_sensor_add(module, config) {
+
+    return new Promise(fulfill => {
+
+        fetch('/api/config_sensor_add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ module, config })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+function api_config_sensor_remove(name, module) {
+
+    return new Promise(fulfill => {
+
+        fetch('/api/config_sensor_remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, module })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
+function api_config_sensor_edit(name, module, config) {
+
+    return new Promise(fulfill => {
+
+        fetch('/api/config_sensor_edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, module, config })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
 
 export default {
-    set_poll_time       : set_poll_time,
-    fetch_config        : api_fetch_config,
-    fetch_theme         : api_fetch_theme,
-    fetch_screen        : api_fetch_screen,
-    fetch_widgets       : api_fetch_widgets,
-    fetch_sensors       : api_fetch_sensors,
-    load_image          : api_load_image,
-    toggle_debug_frame  : api_toggle_debug_frame,
-    adjust_rect         : api_adjust_rect,
-    update_property     : api_update_property,
-    set_background      : api_set_background,
-    set_sensor          : api_set_sensor,
-    set_orientation     : api_set_orientation,
-    set_refresh         : api_set_refresh,
-    fetch_config_dirty  : api_fetch_config_dirty,
-    set_screen_name     : api_set_screen_name,
-    set_screen_duration : api_set_screen_duration,
-    add_screen          : api_add_screen,
-    remove_screen       : api_remove_screen,
-    next_screen         : api_next_screen,
-    add_widget          : api_add_widget,
-    delete_widget       : api_delete_widget,
-    clear_wallpaper     : api_clear_wallpaper,
-    clear_image         : api_clear_image,
-    save_config         : api_save_config,
-    theme_save          : api_theme_save,
-    theme_revert        : api_theme_revert,
-    set_led_strip       : api_set_led_strip,
-    get_led_strip       : api_get_led_strip,
-    up_widget           : api_up_widget,
-    down_widget         : api_down_widget,
-    top_widget          : api_top_widget,
-    bottom_widget       : api_bottom_widget
+    set_poll_time        : set_poll_time,
+    fetch_config         : api_fetch_config,
+    fetch_theme          : api_fetch_theme,
+    fetch_screen         : api_fetch_screen,
+    fetch_widgets        : api_fetch_widgets,
+    fetch_sensors        : api_fetch_sensors,
+    load_image           : api_load_image,
+    toggle_debug_frame   : api_toggle_debug_frame,
+    adjust_rect          : api_adjust_rect,
+    update_property      : api_update_property,
+    set_background       : api_set_background,
+    set_sensor           : api_set_sensor,
+    set_orientation      : api_set_orientation,
+    set_refresh          : api_set_refresh,
+    fetch_config_dirty   : api_fetch_config_dirty,
+    set_screen_name      : api_set_screen_name,
+    set_screen_duration  : api_set_screen_duration,
+    add_screen           : api_add_screen,
+    remove_screen        : api_remove_screen,
+    next_screen          : api_next_screen,
+    add_widget           : api_add_widget,
+    delete_widget        : api_delete_widget,
+    clear_wallpaper      : api_clear_wallpaper,
+    clear_image          : api_clear_image,
+    save_config          : api_save_config,
+    theme_save           : api_theme_save,
+    theme_revert         : api_theme_revert,
+    set_led_strip        : api_set_led_strip,
+    get_led_strip        : api_get_led_strip,
+    up_widget            : api_up_widget,
+    down_widget          : api_down_widget,
+    top_widget           : api_top_widget,
+    bottom_widget        : api_bottom_widget,
+    config_sensor_list   : api_config_sensor_list,
+    config_sensor_scan   : api_config_sensor_scan,
+    config_sensor_add    : api_config_sensor_add,
+    config_sensor_remove : api_config_sensor_remove,
+    config_sensor_edit   : api_config_sensor_edit
 };

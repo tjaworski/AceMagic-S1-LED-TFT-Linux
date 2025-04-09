@@ -1,0 +1,79 @@
+name: s1panel
+adopt-info: s1panel
+license: GPL-3.0-or-later
+base: core22
+summary: control panel for S1 mini pc
+description: |
+  A control panel for S1 mini pc
+  
+grade: devel
+confinement: classic
+architectures:
+  - build-on: amd64
+
+apps:
+  s1panel:
+    command: launch-s1panel.sh
+    daemon: simple
+    restart-condition: on-failure
+    restart-delay: 5s
+    plugs: [network, network-bind]
+    environment:
+        SERVICE: 'true'
+        NODE_ENV: 'production'
+
+parts:
+  s1panel:
+    source: .
+    plugin: nil
+    build-packages:
+      - git
+      - curl
+      - ca-certificates
+    override-pull: |
+      snapcraftctl pull
+      BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      COMMIT=$(git rev-parse HEAD)
+      COMMIT_SHORT=$(git rev-parse --short HEAD)      
+      TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+      if echo "$TAG" | grep -q '^v'; then
+        SNAP_VERSION="$TAG"
+        GRADE=stable
+      else
+        SNAP_VERSION="$COMMIT_SHORT"
+        GRADE=devel
+      fi
+      echo "Setting snap version: $SNAP_VERSION"
+      echo "Setting snap grade: $GRADE"
+      snapcraftctl set-grade "$GRADE"
+      snapcraftctl set-version "$SNAP_VERSION"
+    override-build: |
+      set -e
+      snapcraftctl build
+      curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+      apt-get install -y nodejs build-essential python3 python3-dev libcairo2-dev libpango1.0-dev libjpeg-dev libjpeg-dev libgif-dev librsvg2-dev libusb-1.0-0-dev libudev-dev
+      npm ci --build-from-source
+      (cd gui; npm ci)
+      (cd gui; npm run build)
+      mkdir -p $SNAPCRAFT_PART_INSTALL/s1panel
+      cp -r . $SNAPCRAFT_PART_INSTALL/s1panel
+      cat << 'EOF' > $SNAPCRAFT_PART_INSTALL/launch-s1panel.sh
+      #!/bin/sh
+      
+      cd "$SNAP/s1panel"
+    
+      if [ ! -d "$CONFIG_PATH" ]; then
+        mkdir -p "$CONFIG_PATH/themes"
+
+        cp "$SNAP/s1panel/config.json" "$CONFIG_PATH/config.json"
+        cp -r "$SNAP/s1panel/themes/"* "$CONFIG_PATH/themes/"
+      fi
+      
+      export S1PANEL_CONFIG="$CONFIG_PATH"
+      
+      exec node main.js
+      EOF
+      chmod +x $SNAPCRAFT_PART_INSTALL/launch-s1panel.sh
+
+
+

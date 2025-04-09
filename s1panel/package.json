@@ -1,6 +1,7 @@
 {
   "name": "s1panel",
   "version": "0.0.1",
+  "private": true,
   "description": "S1 LCD/LED info panel",
   "main": "main.js",
   "scripts": {

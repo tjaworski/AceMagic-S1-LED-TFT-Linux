@@ -1,8 +1,9 @@
 {
   "name": "s1panel-gui",
   "version": "0.0.1",
+  "private": true,
   "author": "Tomasz Jaworski",
-  "license": "GPL-3.0",  
+  "license": "GPL-3.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,9 +14,7 @@
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
     "primevue": "^3.35.0",
-    "vue": "^3.2.41"
-  },
-  "devDependencies": {
+    "vue": "^3.2.41",
     "@vitejs/plugin-vue": "^3.1.2",
     "vite": "^3.1.8"
   }

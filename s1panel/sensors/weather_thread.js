@@ -4,17 +4,17 @@
  * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
  */
-const fs       = require('fs');
 const threads  = require('worker_threads');
 const logger   = require('../logger');
 
-const DEFAULT_RATE_MS = (5 * (60 * 1000));  // capped at 5 minutes, please watch the api rate limits
+const DEFAULT_RATE_MS = (1 * (60 * 1000));  // capped at 5 minutes, please watch the api rate limits
 const TIMEOUT_COUNT = 30;
 
 var _running = false;
 var _collect_count = 0;
 
 var _fault = false;
+var _timer = null;
 
 function init_weather(config) {
 
@@ -135,7 +135,7 @@ function collect(config, rate) {
                     threads.parentPort.postMessage(results);                        
                 }
 
-                setTimeout(() => {
+                _timer = setTimeout(() => {
 
                     collect(config, rate);
 
@@ -159,6 +159,19 @@ threads.parentPort.on('message', message => {
 
     _collect_count = 0; // reset
 
+    if (message.stop) {
+
+        logger.info('weather_thread: requested to stop ' + threads.workerData.name);
+        
+        // clear any outstanding timers...
+        if (_timer) {
+            clearTimeout(_timer);
+        }
+
+        // good bye
+        return process.exit(0);
+    }
+    
     if (!_running) {
 
         _running = true;

@@ -68,7 +68,26 @@ function init(config) {
     return 'clock';
 }
 
+function stop() {
+    return Promise.resolve();
+}
+
+/* this will only be used for GUI configuration */
+
+function settings() {
+    return {
+        name: 'clock',
+        description: 'current time info',
+        icon: 'pi-clock',
+        multiple: false,
+        ident: [],
+        fields: []
+    };
+}
+
 module.exports = {
     init,
-    sample
+    settings,
+    sample,
+    stop
 };
