@@ -15,9 +15,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Snapcraft
-        uses: snapcore/action-build@v1
-
       - name: Log in to Snap Store
         uses: snapcore/action-publish@v1
         with:
@@ -26,12 +23,16 @@ jobs:
       - name: Build and Upload Snap
         working-directory: ./s1panel
         run: |
-          snapcraft --destructive-mode
+          echo "Current directory: $(pwd)"
+          ls snap || echo "No snap directory found!"
+          snapcraft --destructive-mode -v
           SNAP_FILE=$(ls *.snap | head -1)
           echo "Built $SNAP_FILE"
-          if [[ "${GITHUB_REF##*/}" =~ ^v[0-9] ]]; then
+          TAG_NAME="${GITHUB_REF##*/}"
+          if [[ "$TAG_NAME" =~ ^v[0-9] ]]; then
             CHANNEL="stable"
           else
             CHANNEL="edge"
-          fi          
+          fi
+          echo "Releasing to: $CHANNEL"
           snapcraft upload "$SNAP_FILE" --release=$CHANNEL
