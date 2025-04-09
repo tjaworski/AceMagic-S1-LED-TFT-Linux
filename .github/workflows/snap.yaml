@@ -15,6 +15,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+          
       - name: Build and Upload Snap
         working-directory: ./s1panel
         run: |
@@ -22,6 +26,7 @@ jobs:
           ls snap || echo "No snap directory found!"
           snapcraft --destructive-mode -v
           SNAP_FILE=$(ls *.snap | head -1)
+          
           echo "Built $SNAP_FILE"
           TAG_NAME="${GITHUB_REF##*/}"
           if [[ "$TAG_NAME" =~ ^v[0-9] ]]; then
@@ -29,5 +34,10 @@ jobs:
           else
             CHANNEL="edge"
           fi
+          
+          echo "Logging in to Snap Store..."
+          echo "${{ secrets.SNAPCRAFT_LOGIN }}" > snap-login.json
+          snapcraft login --with snap-login.json          
+          
           echo "Releasing to: $CHANNEL"
           snapcraft upload "$SNAP_FILE" --release=$CHANNEL
