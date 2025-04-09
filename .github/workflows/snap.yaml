@@ -24,11 +24,13 @@ jobs:
           
       - name: Build and Upload Snap
         working-directory: ./s1panel
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_LOGIN }}
         run: |
           echo "Current directory: $(pwd)"
           ls snap || echo "No snap directory found!"
           
-          snapcraft --destructive-mode -v
+          snapcraft --destructive-mode
           
           SNAP_FILE=$(ls *.snap | head -1)
           echo "Built $SNAP_FILE"
@@ -39,10 +41,6 @@ jobs:
           else
             CHANNEL="edge"
           fi
-          
-          echo "Logging in to Snap Store..."
-          echo "${{ secrets.SNAPCRAFT_LOGIN }}" > snap-login.json
-          snapcraft login --with snap-login.json          
           
           echo "Releasing to: $CHANNEL"
           snapcraft upload "$SNAP_FILE" --release=$CHANNEL
