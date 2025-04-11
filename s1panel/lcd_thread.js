@@ -239,6 +239,13 @@ function main(state) {
         message_handler(state, message);
     });
 
+    node_hid.devices().find(each => {
+
+        if (1241 === each.vendorId && 64769 === each.productId) {
+            logger.info(JSON.stringify(each, null, 3));
+        }
+    });
+
     usb_hid.open(state.device).then(handle => {
     
         setTimeout(() => {

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <!-- Add font directories -->
+    <dir>@SNAP@/usr/share/fonts</dir>
+    <dir>@SNAP@/s1panel/fonts</dir>
+</fontconfig>

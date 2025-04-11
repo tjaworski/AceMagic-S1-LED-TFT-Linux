@@ -7,6 +7,10 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
 
 ## Release Notes
 
+#### 2025-04-11
+  - made some changes for the snap
+  - added fonts registering
+
 #### 2025-04-09
   - added sensor management from the GUI (the red bolt upper right hand)
   - added additional callbacks in sensors for GUI support
@@ -54,15 +58,20 @@ s1panel is now registered in the snap store.
 
 ```
 sudo snap install s1panel
+sudo snap connect s1panel:raw-usb
+sudo snap connect s1panel:hardware-observe
 ```
 
-the config/theme files should be in /root/.config/s1panel and if you want to modify them manually, make sure you stop the snap first. Here are some commands to use with snap:
+The config/theme files should be in /root/snap/s1panel/current/ and if you want to modify them manually, make sure you stop the snap first. Here are some commands to use with snap:
 
 ```
 sudo snap stop s1panel
 sudo snap start s1panel
 sudo snap remove s1panel
 ```
+> [!NOTE]
+> The disk monitoring (sensor/space.js) will not work inside the snap at this time. 
+
 
 ## Dependencies
 

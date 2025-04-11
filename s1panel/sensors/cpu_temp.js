@@ -59,7 +59,7 @@ function walk_directory(dir, cb) {
 
 function cpu_temp() {
 
-    return new Promise(fulfill => {
+    return new Promise((fulfill, reject) => {
 
         const _hwmon = '/sys/class/hwmon/';
 
@@ -84,7 +84,8 @@ function cpu_temp() {
                 }
 
                 return Promise.resolve();
-            });
+
+            }, reject);
 
         }).then(() => {
 
@@ -103,7 +104,7 @@ function cpu_temp() {
                                 _temp_path = fullpath;
                                 _temp_found = true;
                             }
-                        });
+                        }, reject);
                     }
                     
                     return Promise.resolve();
@@ -125,15 +126,18 @@ function cpu_temp() {
                                 max: _fahrenheit ? celsius_fahrenheit(_max) : _max 
                             });
 
-                        });
+                        }, reject);
                     }
 
                     fulfill();
-                });
+
+                }, reject);
 
             }
-            return fulfill();            
-        });
+
+            return fulfill();
+
+        }, reject);
     });
 }
 
@@ -220,7 +224,7 @@ function sample(rate, format) {
             fulfill({ value: _output, min: _min_temp, max: _max_temp });
         
         }, err => {
-        
+
             if (!_fault) {
 
                 logger.error('cpu_temp: sensors reported error: ' + err);
