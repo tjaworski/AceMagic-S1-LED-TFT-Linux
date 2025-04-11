@@ -7,7 +7,7 @@
 const threads  = require('worker_threads');
 const logger   = require('../logger');
 
-const DEFAULT_RATE_MS = (1 * (60 * 1000));  // capped at 5 minutes, please watch the api rate limits
+const DEFAULT_RATE_MS = (5 * (60 * 1000));  // capped at 5 minutes, please watch the api rate limits
 const TIMEOUT_COUNT = 30;
 
 var _running = false;
