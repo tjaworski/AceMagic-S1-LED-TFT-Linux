@@ -28,16 +28,15 @@ apps:
         SERVICE: 'true'
         NODE_ENV: 'production'
         S1PANEL_CONFIG: $HOME
+        PATH: "$SNAP/node/bin:$PATH"
+        FONTCONFIG_PATH: "$SNAP_USER_COMMON/fonts"
+        FONTCONFIG_FILE: "fonts.conf"
+        FONTCONFIG_CACHE: "$SNAP_USER_COMMON/fonts-cache"
 
 parts:
   s1panel:
     source: .
     plugin: nil
-    build-packages:
-      - git
-      - curl
-      - ca-certificates
-
     stage-packages:
       - libudev1
       - libusb-1.0-0
@@ -56,7 +55,6 @@ parts:
       - fonts-ebgaramond
       - fontconfig
       - fontconfig-config
-      - nodejs
 
     override-pull: |
       craftctl default
@@ -81,11 +79,12 @@ parts:
 
     override-build: |
       craftctl default
-      
+
+      echo "Installing Development Packages..."
+ 
       sudo apt-get update
       sudo apt-get install -y \
         build-essential \
-        nodejs \
         libcairo2-dev \
         libgdk-pixbuf-2.0-0 \
         libgif-dev \
@@ -97,10 +96,25 @@ parts:
         libx11-6 \
         poppler-data \
         fonts-noto-color-emoji
-      
+
+      echo "Installing Node.js v18.20.8..."
+
+      NODE_VERSION=v18.20.8
+      NODE_DIST=node-$NODE_VERSION-linux-x64
+      NODE_URL=https://nodejs.org/dist/$NODE_VERSION/$NODE_DIST.tar.xz
+
+      mkdir -p $SNAPCRAFT_PART_INSTALL/node
+      curl -sSL $NODE_URL | tar -xJf - -C $SNAPCRAFT_PART_INSTALL/node --strip-components=1
+
+      echo "Building s1panel..."
+
+      export PATH="$SNAPCRAFT_PART_INSTALL/node/bin:$PATH"
+
       npm ci --build-from-source
       (cd gui; npm ci)
       (cd gui; npm run build)
+
+      echo "Installing s1panel..."
 
       APP_HOME="$SNAPCRAFT_PART_INSTALL/s1panel"
 
@@ -127,10 +141,6 @@ parts:
       mkdir -p "$SNAP_USER_COMMON/fonts-cache"
       sed "s|@SNAP@|$SNAP|g" "$SNAP/s1panel/in.conf/fonts.conf.in" > "$SNAP_USER_COMMON/fonts/fonts.conf"
 
-      export FONTCONFIG_PATH="$SNAP_USER_COMMON/fonts"
-      export FONTCONFIG_FILE="fonts.conf"
-      export FONTCONFIG_CACHE="$SNAP_USER_COMMON/fonts-cache"
-
       fc-cache -f -r || true
       
       cd "$SNAP/s1panel"
@@ -138,6 +148,3 @@ parts:
       EOF
 
       chmod +x $SNAPCRAFT_PART_INSTALL/launch-s1panel.sh
-
-
-
