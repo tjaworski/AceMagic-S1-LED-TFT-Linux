@@ -37,19 +37,6 @@ parts:
       - git
       - curl
       - ca-certificates
-      - build-essential
-      - libudev-dev
-      - libusb-1.0-0-dev
-      - libx11-6
-      - libcairo2-dev
-      - libpango1.0-dev
-      - libjpeg-dev
-      - libgif-dev
-      - libgdk-pixbuf-2.0-0
-      - librsvg2-dev
-      - nodejs
-      - fonts-noto-color-emoji
-      - poppler-data
 
     stage-packages:
       - libudev1
@@ -94,6 +81,24 @@ parts:
 
     override-build: |
       craftctl default
+      
+      sudo apt-get update
+      sudo apt-get install -y \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        libcairo2-dev \
+        libgdk-pixbuf-2.0-0 \
+        libgif-dev \
+        libjpeg-dev \
+        libpango1.0-dev \
+        librsvg2-dev \
+        libudev-dev \
+        libusb-1.0-0-dev \
+        libx11-6 \
+        poppler-data \
+        fonts-noto-color-emoji
       
       npm ci --build-from-source
       (cd gui; npm ci)
