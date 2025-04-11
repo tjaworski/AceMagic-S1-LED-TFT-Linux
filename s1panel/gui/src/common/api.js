@@ -14,7 +14,7 @@ function api_fetch_config() {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/config').then(response => {
+        fetch('./api/config').then(response => {
 
             response.json().then(config => {
 
@@ -28,7 +28,7 @@ function api_fetch_theme() {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/theme').then(response => {
+        fetch('./api/theme').then(response => {
         
             response.json().then(theme => {  
 
@@ -42,7 +42,7 @@ function api_fetch_screen() {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/screen').then(response => {
+        fetch('./api/screen').then(response => {
         
             response.json().then(theme => {  
 
@@ -55,7 +55,7 @@ function api_fetch_screen() {
 function api_fetch_widgets() {
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/widget_list').then(response => {
+        fetch('./api/widget_list').then(response => {
         
             response.json().then(list => {  
 
@@ -68,7 +68,7 @@ function api_fetch_widgets() {
 function api_fetch_sensors() {
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/sensor_list').then(response => {
+        fetch('./api/sensor_list').then(response => {
         
             response.json().then(list => {  
 
@@ -92,7 +92,7 @@ function api_load_image() {
             reject();
         };
 
-        img.src = '/api/lcd_screen?r' + new Date().getTime();
+        img.src = './api/lcd_screen?r' + new Date().getTime();
     });
 }
 
@@ -100,7 +100,7 @@ function api_toggle_debug_frame(screen, id) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/toggle_debug_frame', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id })}).then(response => {
+        fetch('./api/toggle_debug_frame', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id })}).then(response => {
 
             response.json().then(json => {  
 
@@ -123,7 +123,7 @@ function api_adjust_rect(screen, id, rect) {
 
         _throttle_adjust_rect = setTimeout(() => {
 
-            fetch('/api/adjust_rect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, rect: rect })}).then(response => {
+            fetch('./api/adjust_rect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, rect: rect })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -148,7 +148,7 @@ function api_update_property(screen, id, key, value) {
 
         _throttle_update_property[key] = setTimeout(() => {
 
-            fetch('/api/update_property', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, key: key, value: value })}).then(response => {
+            fetch('./api/update_property', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, key: key, value: value })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -173,7 +173,7 @@ function api_set_background(screen, value) {
 
         _throttle_set_background = setTimeout(() => {
 
-            fetch('/api/set_background', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, value })}).then(response => {
+            fetch('./api/set_background', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, value })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -189,7 +189,7 @@ function api_set_sensor(screen, id, value) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/set_sensor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, sensor: value })}).then(response => {
+        fetch('./api/set_sensor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, sensor: value })}).then(response => {
 
             response.json().then(json => {  
 
@@ -203,7 +203,7 @@ function api_set_orientation(value) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/set_orientation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orientation: value })}).then(response => {
+        fetch('./api/set_orientation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orientation: value })}).then(response => {
 
             response.json().then(json => {  
 
@@ -217,7 +217,7 @@ function api_set_refresh(value) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/set_refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: value })}).then(response => {
+        fetch('./api/set_refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: value })}).then(response => {
 
             response.json().then(json => {  
 
@@ -231,7 +231,7 @@ function api_fetch_config_dirty() {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/config_dirty').then(response => {
+        fetch('./api/config_dirty').then(response => {
         
             response.json().then(json => {  
 
@@ -254,7 +254,7 @@ function api_set_screen_name(screen, name) {
 
         _throttle_set_name = setTimeout(() => {
 
-            fetch('/api/set_screen_name', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
+            fetch('./api/set_screen_name', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -279,7 +279,7 @@ function api_set_screen_duration(screen, duration) {
 
         _throttle_set_duration = setTimeout(() => {
 
-            fetch('/api/set_screen_duration', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, duration })}).then(response => {
+            fetch('./api/set_screen_duration', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, duration })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -295,7 +295,7 @@ function api_add_screen(name) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/add_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name })}).then(response => {
+        fetch('./api/add_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name })}).then(response => {
 
             response.json().then(json => {  
 
@@ -309,7 +309,7 @@ function api_remove_screen(id) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/remove_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
+        fetch('./api/remove_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
 
             response.json().then(json => {  
 
@@ -323,7 +323,7 @@ function api_next_screen(id) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/next_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
+        fetch('./api/next_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
 
             response.json().then(json => {  
 
@@ -337,7 +337,7 @@ function api_add_widget(screen, name) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/add_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
+        fetch('./api/add_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
 
             response.json().then(json => {  
 
@@ -351,7 +351,7 @@ function api_delete_widget(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/delete_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/delete_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
@@ -365,7 +365,7 @@ function api_clear_wallpaper(screen) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/clear_wallpaper', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen })}).then(response => {
+        fetch('./api/clear_wallpaper', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen })}).then(response => {
 
             response.json().then(json => {  
 
@@ -379,7 +379,7 @@ function api_clear_image(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/clear_image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/clear_image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
@@ -393,7 +393,7 @@ function api_save_config(config) {
    
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/save_config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config)}).then(response => {
+        fetch('./api/save_config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config)}).then(response => {
 
             response.json().then(json => {  
 
@@ -407,7 +407,7 @@ function api_theme_save() {
  
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/theme_save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
+        fetch('./api/theme_save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
 
             response.json().then(json => {  
 
@@ -421,7 +421,7 @@ function api_theme_revert() {
   
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/theme_revert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
+        fetch('./api/theme_revert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
 
             response.json().then(json => {  
 
@@ -444,7 +444,7 @@ function api_set_led_strip(theme, intensity, speed, screen) {
 
         _throttle_led_setting = setTimeout(() => {
 
-            fetch('/api/led_strip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ theme, intensity, speed, screen })}).then(response => {
+            fetch('./api/led_strip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ theme, intensity, speed, screen })}).then(response => {
 
                 response.json().then(json => {  
 
@@ -460,7 +460,7 @@ function api_get_led_strip() {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/led_strip').then(response => {
+        fetch('./api/led_strip').then(response => {
         
             response.json().then(theme => {  
 
@@ -474,7 +474,7 @@ function api_up_widget(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/up_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/up_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
@@ -488,7 +488,7 @@ function api_down_widget(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/down_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/down_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
@@ -502,7 +502,7 @@ function api_top_widget(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/top_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/top_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
@@ -517,7 +517,7 @@ function api_bottom_widget(screen, widget) {
 
     return new Promise((fulfill, reject) => {
 
-        fetch('/api/bottom_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
+        fetch('./api/bottom_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
             response.json().then(json => {  
 
