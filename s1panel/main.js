@@ -17,6 +17,8 @@ const logger      = require('./logger');
 const api         = require('./api');
 
 const home_dir = process.env.S1PANEL_CONFIG || __dirname;
+const font_root = path.join('usr', 'share', 'fonts');
+const font_dir = process.env.SNAP ? path.join(process.env.SNAP, font_root) : path.join('/', font_root);
 
 function get_hr_time() {
 
@@ -604,7 +606,7 @@ function init_web_gui(state, config, theme) {
         const _ip = _listen[0];
         const _port = Number(_listen[1]);
 
-        _web.use(express.static('gui/dist'));
+        _web.use(express.static(path.join(__dirname, 'gui/dist')));
         _web.use(express.json());
 
         api.init(_web, { state, config, theme });
@@ -630,6 +632,96 @@ function lcd_thread_status(state, theme, message) {
     }
 }
 
+function file_exists(path) {
+
+    return new Promise(fulfill => {
+
+        fs.stat(path, (err, stats) => {
+
+            if (err) {
+                return fulfill();
+            }
+
+            fulfill(path);
+        });
+    });
+}
+
+function load_panel_font(font) {
+
+    return new Promise(fulfill => {
+
+        const _full_path = path.join(font_dir, font.path);
+
+        file_exists(_full_path).then(found => {
+
+            if (found) {
+                logger.info('initialize: register ' + _full_path + ' as ' + font.face.family);
+                node_canvas.registerFont(_full_path, font.face);
+            }
+            else {
+                logger.info('initialize: ' + _full_path + ' not available for ' + font.face.family);
+            }
+
+            fulfill();
+        });
+    });
+}
+
+function register_fonts() {
+
+    return new Promise(fulfill => {
+
+        const _fonts = [ 
+            // Arial → Liberation Sans
+            { path: '/truetype/liberation/LiberationSans-Regular.ttf', face: { family: 'Arial', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationSans-Bold.ttf', face: { family: 'Arial', weight: 'bold', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationSans-Italic.ttf', face: { family: 'Arial', weight: 'normal', style: 'italic' } },
+            { path: '/truetype/liberation/LiberationSans-BoldItalic.ttf', face: { family: 'Arial', weight: 'bold', style: 'italic' } },
+
+            // Courier New → Liberation Mono
+            { path: '/truetype/liberation/LiberationMono-Regular.ttf', face: { family: 'Courier New', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationMono-Bold.ttf', face: { family: 'Courier New', weight: 'bold', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationMono-Italic.ttf', face: { family: 'Courier New', weight: 'normal', style: 'italic' } },
+            { path: '/truetype/liberation/LiberationMono-BoldItalic.ttf', face: { family: 'Courier New', weight: 'bold', style: 'italic' } },
+
+            // Times New Roman → Liberation Serif
+            { path: '/truetype/liberation/LiberationSerif-Regular.ttf', face: { family: 'Times New Roman', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationSerif-Bold.ttf', face: { family: 'Times New Roman', weight: 'bold', style: 'normal' } },
+            { path: '/truetype/liberation/LiberationSerif-Italic.ttf', face: { family: 'Times New Roman', weight: 'normal', style: 'italic' } },
+            { path: '/truetype/liberation/LiberationSerif-BoldItalic.ttf', face: { family: 'Times New Roman', weight: 'bold', style: 'italic' } },
+
+            // Verdana → DejaVu Sans
+            { path: '/truetype/dejavu/DejaVuSans.ttf', face: { family: 'Verdana', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/dejavu/DejaVuSans-Bold.ttf', face: { family: 'Verdana', weight: 'bold', style: 'normal' } },
+
+            // Georgia → DejaVu Serif
+            { path: '/truetype/dejavu/DejaVuSerif.ttf', face: { family: 'Georgia', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/dejavu/DejaVuSerif-Bold.ttf', face: { family: 'Georgia', weight: 'bold', style: 'normal' } },
+
+            // Garamond → EB Garamond
+            { path: '/opentype/ebgaramond/EBGaramond12-Regular.otf', face: { family: 'Garamond', weight: 'normal', style: 'normal' } },
+            { path: '/opentype/ebgaramond/EBGaramond12-Bold.otf', face: { family: 'Garamond', weight: 'bold', style: 'normal' } },
+            { path: '/opentype/ebgaramond/EBGaramond12-Italic.otf', face: { family: 'Garamond', weight: 'normal', style: 'italic' } },
+
+            // Helvetica → FreeSans from GNU FreeFont
+            { path: '/truetype/freefont/FreeSans.ttf', face: { family: 'Helvetica', weight: 'normal', style: 'normal' } },
+            { path: '/truetype/freefont/FreeSans-Bold.ttf', face: { family: 'Helvetica', weight: 'bold', style: 'normal' } }
+        ];
+
+        var _promises = [];
+
+        logger.info('initialize: starting fonts registration from ' + font_dir);
+        
+        _fonts.forEach(font => {
+
+            _promises.push(load_panel_font(font));            
+        });
+
+        return Promise.all(_promises).then(fulfill, fulfill);
+    });
+}
+
 function main() {
     // additional commandline args
     const _args = process.argv.slice(2);
@@ -645,76 +737,79 @@ function main() {
 
         load_config(_theme_file).then(theme => {
 
-            const _output_canvas = node_canvas.createCanvas(config.canvas.width, config.canvas.height);
-            const _canvas1 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
-            const _canvas2 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
+            register_fonts().then(() => {
 
-            const _state = {
+                const _output_canvas = node_canvas.createCanvas(config.canvas.width, config.canvas.height);
+                const _canvas1 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
+                const _canvas2 = node_canvas.createCanvas(config.canvas.width, config.canvas.height).getContext('2d', { pixelFormat: config.canvas.pixel });
 
-                config_file        : _config_file,
+                const _state = {
 
-                widgets            : {},
-                sensors            : {},
+                    config_file        : _config_file,
 
-                redraw_want        : 1,
-                redraw_count       : 0,
+                    widgets            : {},
+                    sensors            : {},
 
-                drawing            : false,             // drawing in progress
-                changes            : [],                // screen update regions
-                change_count       : 0,                 // screen update count
+                    redraw_want        : 1,
+                    redraw_count       : 0,
 
-                output_canvas      : _output_canvas,
-                output_context     : _output_canvas.getContext('2d', { pixelFormat: config.canvas.pixel }),
-                active_context     : 0,
-                canvas_context     : [ _canvas1, _canvas2 ],
+                    drawing            : false,             // drawing in progress
+                    changes            : [],                // screen update regions
+                    change_count       : 0,                 // screen update count
 
-                change_screen      : 0,                 // index of forced screen change
-                screen_paused      : false,             // pause screen change
-                screen_index       : 0,                 // array index into screens, not screen id
-                screen_start       : get_hr_time(),
+                    output_canvas      : _output_canvas,
+                    output_context     : _output_canvas.getContext('2d', { pixelFormat: config.canvas.pixel }),
+                    active_context     : 0,
+                    canvas_context     : [ _canvas1, _canvas2 ],
 
-                update_orientation : true,
-                update_led         : true,
+                    change_screen      : 0,                 // index of forced screen change
+                    screen_paused      : false,             // pause screen change
+                    screen_index       : 0,                 // array index into screens, not screen id
+                    screen_start       : get_hr_time(),
 
-                wallpaper_image    : null,
+                    update_orientation : true,
+                    update_led         : true,
 
-                led_thread         : new threads.Worker('./led_thread.js', { workerData: config.led_config }),
-                lcd_thread         : new threads.Worker('./lcd_thread.js', { workerData: { device: config.device, poll: config.poll, refresh: config.refresh, heartbeat: config.heartbeat }}),
+                    wallpaper_image    : null,
 
-                unsaved_changes    : false,
+                    led_thread         : new threads.Worker('./led_thread.js', { workerData: config.led_config }),
+                    lcd_thread         : new threads.Worker('./lcd_thread.js', { workerData: { device: config.device, poll: config.poll, refresh: config.refresh, heartbeat: config.heartbeat }}),
 
-                // helpers to keep things consistant between here and api
-                pending_redraw     : (state) => state.redraw_count < state.redraw_want,
-                force_redraw       : (state) => state.redraw_want++,
-                done_redraw        : (state) => state.redraw_count < state.redraw_want ? state.redraw_count++ : state.redraw_count
-            };
+                    unsaved_changes    : false,
 
-            initialize(_state, config, theme).then(() => {
+                    // helpers to keep things consistant between here and api
+                    pending_redraw     : (state) => state.redraw_count < state.redraw_want,
+                    force_redraw       : (state) => state.redraw_want++,
+                    done_redraw        : (state) => state.redraw_count < state.redraw_want ? state.redraw_count++ : state.redraw_count
+                };
 
-                const _screen = theme.screens[_state.screen_index];
+                initialize(_state, config, theme).then(() => {
 
-                _screen.widgets.sort((a, b) => a.id - b.id);
+                    const _screen = theme.screens[_state.screen_index];
 
-                if (_screen.led_config) {
+                    _screen.widgets.sort((a, b) => a.id - b.id);
 
-                    config.led_config.theme = _screen.led_config.theme || 4;    // off by default
-                    config.led_config.intensity = _screen.led_config.intensity || 3;
-                    config.led_config.speed = _screen.led_config.speed || 3;
-                }
+                    if (_screen.led_config) {
 
-                _state.lcd_thread.on('message', message => {
+                        config.led_config.theme = _screen.led_config.theme || 4;    // off by default
+                        config.led_config.intensity = _screen.led_config.intensity || 3;
+                        config.led_config.speed = _screen.led_config.speed || 3;
+                    }
 
-                    lcd_thread_status(_state, theme, message);
+                    _state.lcd_thread.on('message', message => {
+
+                        lcd_thread_status(_state, theme, message);
+                    });
+
+                    init_web_gui(_state, config, theme).then(() => {
+
+                        start_draw_canvas(_state, config, theme);
+                    });
+
+                }, err => {
+
+                    logger.error('initialization failed');
                 });
-
-                init_web_gui(_state, config, theme).then(() => {
-
-                    start_draw_canvas(_state, config, theme);
-                });
-
-            }, err => {
-
-                logger.error('initialization failed');
             });
 
         }, err => {
