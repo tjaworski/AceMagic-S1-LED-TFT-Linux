@@ -56,6 +56,8 @@ This is my attempt at a panel software for linux, specifically for the ACEMAGIC 
 
 s1panel is now registered in the snap store. 
 
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/s1panel)
+
 ```
 sudo snap install s1panel
 sudo snap connect s1panel:raw-usb
