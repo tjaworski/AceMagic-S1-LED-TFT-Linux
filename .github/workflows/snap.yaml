@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo systemctl restart snapd
           sleep 5
-          sudo snap install core22 --channel=latest/stable
+          sudo snap install core24 --channel=latest/stable
           sudo snap install snapcraft --classic
           
       - name: Build and Upload Snap
