@@ -60,6 +60,7 @@
       {
          "module": "sensors/space.js",
          "config": {
+            "name": "root",
             "mount_point": "/",
             "max_points": 300
          }

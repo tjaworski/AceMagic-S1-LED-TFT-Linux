@@ -60,8 +60,14 @@ s1panel is now registered in the snap store.
 
 ```
 sudo snap install s1panel
+# to talk to LCD:
 sudo snap connect s1panel:raw-usb
+# to get all the sensors:
 sudo snap connect s1panel:hardware-observe
+# to get disk usage info:
+sudo snap connect s1panel:mount-observe
+sudo snap connect s1panel:removable-media
+sudo snap connect s1panel:block-devices
 ```
 
 The config/theme files should be in /root/snap/s1panel/current/ and if you want to modify them manually, make sure you stop the snap first. Here are some commands to use with snap:
@@ -72,7 +78,7 @@ sudo snap start s1panel
 sudo snap remove s1panel
 ```
 > [!NOTE]
-> The disk monitoring (sensor/space.js) will not work inside the snap at this time. 
+> For disk space monitoring, please check the s1panel log after restarting the service. You will find the lsblk output there, which you can use to determine the mappings between the Snap and the host system.
 
 
 ## Dependencies

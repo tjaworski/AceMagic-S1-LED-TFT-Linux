@@ -23,7 +23,7 @@ apps:
     daemon: simple
     restart-condition: on-failure
     restart-delay: 10s
-    plugs: [home, network, network-bind, raw-usb, hardware-observe]
+    plugs: [home, network, network-bind, raw-usb, hardware-observe, mount-observe, removable-media, block-devices]
     environment:
         SERVICE: 'true'
         NODE_ENV: 'production'
@@ -142,6 +142,7 @@ parts:
       sed "s|@SNAP@|$SNAP|g" "$SNAP/s1panel/in.conf/fonts.conf.in" > "$SNAP_USER_COMMON/fonts/fonts.conf"
 
       fc-cache -f -r || true
+      lsblk --fs --paths --list --exclude=7 || true
       
       cd "$SNAP/s1panel"
       exec node ./main.js
