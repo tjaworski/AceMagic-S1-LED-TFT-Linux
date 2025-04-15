@@ -14,7 +14,7 @@
          "name": "Theme1",
          "config": "themes/theme1/landscape.json"
       },
-	{
+	   {
 	     "name": "main",
 	     "config": "themes/main/landscape_main.json"
 	   }

@@ -1,7 +1,5 @@
-# Используем Alpine Linux с Node.js 18.13
 FROM alpine:latest
 
-# Устанавливаем зависимости: Node.js, npm, git и sudo (хотя в Docker sudo обычно не нужен)
 RUN apk --no-cache add \
     make \
     g++ \
