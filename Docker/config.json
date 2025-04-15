@@ -1,0 +1,107 @@
+{
+   "listen": "0.0.0.0:8686",
+   "theme": "themes/main/landscape_main.json",
+   "poll": 500,
+   "refresh": 1600,
+   "heartbeat": 60000,
+   "debug_update": false,
+   "theme_list": [
+      {
+         "name": "a simple demo portrait orientation",      
+         "config": "themes/simple_demo/portrait_simple.json"
+      },
+        {
+             "name": "main",
+             "config": "themes/main/landscape_main.json"    
+           }
+   ],
+   "sensors": [
+      {
+         "module": "sensors/clock.js"
+      },
+      {
+         "module": "sensors/calendar.js"
+      },
+      {
+         "module": "sensors/cpu_usage.js",
+         "config": {
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/cpu_temp.js",
+         "config": {
+            "max_points": 300,
+            "fahrenheit": false
+         }
+      },
+      {
+         "module": "sensors/cpu_power.js",
+         "config": {
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/network.js",
+         "config": {
+            "interface": "enp2s0",
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/memory.js",
+         "config": {
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/space.js",
+         "config": {
+            "name": "root",
+            "mount_point": "/",
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/weather.js",
+         "config": {
+            "name": "nyc",
+            "country": "US",
+            "imperial": true,
+            "forecast": 0
+         }
+      },
+      {
+         "module": "sensors/weather.js",
+         "config": {
+            "name": "Moscow",
+            "country": "RU",
+            "imperial": false,
+            "forecast": 1
+         }
+      }
+   ],
+   "widgets": [
+      "widgets/text.js",
+      "widgets/custom_bar.js",
+      "widgets/line_chart.js",
+      "widgets/doughnut_chart.js",
+      "widgets/bar_chart.js",
+      "widgets/image.js",
+      "widgets/iconify.js",
+      "widgets/weather_icon.js"
+   ],
+   "canvas": {
+      "width": 320,
+      "height": 170,
+      "pixel": "RGB16_565"
+   },
+   "device": "1-8:1.1",
+   "led_config": {
+      "device": "/dev/ttyUSB0",
+      "theme": 2,
+      "speed": 3,
+      "intensity": 3
+   },
+   "portrait": true
+}
