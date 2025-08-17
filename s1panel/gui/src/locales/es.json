@@ -1,0 +1,219 @@
+{
+  "buttons": {
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "discard": "Descartar",
+    "ok": "Aceptar",
+    "rename": "Renombrar",
+    "keep": "Mantener",
+    "add": "Añadir",
+    "change": "Cambiar",
+    "revert": "Revertir",
+    "edit": "Editar",
+    "remove": "Eliminar",
+    "upload": "Subir",
+    "clear": "Limpiar",
+    "addWidget": "Añadir widget",
+    "addSensor": "Añadir instancia de sensor",
+    "addScreen": "Añadir pantalla",
+    "addTheme": "Añadir tema",
+    "valueMapping": {
+      "addRule": "Añadir regla",
+      "addCondition": "Añadir condición"
+    }
+  },
+  "labels": {
+    "active": "Activo",
+    "name": "Nombre",
+    "type": "Tipo",
+    "description": "Descripción",
+    "action": "Acción",
+    "duration": "Duración",
+    "background": "Fondo",
+    "wallpaper": "Fondo de pantalla",
+    "ledStrip": "Tira LED",
+    "showFrame": "Mostrar marco",
+    "widget": "Widget",
+    "sensor": "Sensor",
+    "fontFamily": "Familia",
+    "fontSize": "Tamaño",
+    "fontStyle": "Estilo",
+    "fontWeight": "Peso",
+    "rectX": "X (0 - {max})",
+    "rectY": "Y (0 - {max})",
+    "rectWidth": "Ancho (1 - {max})",
+    "rectHeight": "Alto (1 - {max})",
+    "speed": "Velocidad",
+    "intensity": "Intensidad",
+    "valueMapping": {
+      "enable": "Habilitar mapeo de valores",
+      "rule": "Regla",
+      "if": "SI",
+      "then": "ENTONCES",
+      "else": "POR DEFECTO",
+      "operators": {
+        "equals": "Es igual a",
+        "notEqual": "No es igual a",
+        "greaterThan": "Es mayor que",
+        "lessThan": "Es menor que", 
+        "greaterOrEqual": "Es mayor o igual a",
+        "lessOrEqual": "Es menor o igual a",
+        "contains": "Contiene",
+        "notEmpty": "No está vacío"
+      }
+    }
+  },
+  "placeholders": {
+    "pickTheme": "Selecciona un tema",
+    "pickRefresh": "Selecciona una frecuencia",
+    "pickScreen": "Selecciona una pantalla",
+    "pickWidget": "Selecciona un widget",
+    "pickSensor": "Selecciona un sensor",
+    "pickFont": "Selecciona una fuente",
+    "normal": "Normal",
+    "sensorOrText": "Sensor o texto",
+    "chooseAnOption": "Elige una opción",
+    "screenName": "Nombre de la pantalla...",
+    "themeName": "Nombre del tema...",
+    "valueMapping": {
+      "operator": "Selecciona un operador",
+      "conditionValue": "Valor a comparar",
+      "result": "Valor resultante",
+      "defaultValue": "Valor por defecto"
+    }
+  },
+  "tooltips": {
+    "moveTop": "Mover al inicio",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "moveBottom": "Mover al final",
+    "sensorToggle": "Activar para usar como referencia a un sensor"
+  },
+  "messages": {
+    "unsavedChanges": "Cambios sin guardar",
+    "lostConnection": "Conexión perdida.",
+    "confirmDeleteTheme": "¿Deseas eliminar este tema?",
+    "confirmDeleteScreen": "¿Deseas eliminar esta pantalla?",
+    "confirmDeleteWidget": "¿Deseas eliminar este widget?",
+    "confirmClearWallpaper": "¿Limpiar fondo de pantalla?",
+    "confirmClearImage": "¿Limpiar imagen?",
+    "addSensorError": "Error al añadir sensor.",
+    "removeSensorError": "Error al eliminar sensor.",
+    "editSensorError": "Error al editar sensor.",
+    "confirmSensorRemove": "¡Esta acción eliminará la instancia del sensor \"{name}\"!.",
+    "sensorIdentityChanged": "Identidad del sensor cambiada.",
+    "sensorIdentityChangedMessage": "¿Deseas actualizar los {count} widgets que usan \"{oldName}\" con el nuevo nombre \"{newName}\"?"
+  },
+  "dialog": {
+    "settings": {
+      "header": "Ajustes",
+      "listenLabel": "Dirección IP y puerto de escucha",
+      "listenHelp": "Usa 0.0.0.0 para acceder desde la red, o 127.0.0.1 para solo acceder en local. El servicio se reiniciará tras guardar.",
+      "pollLabel": "Intervalo de sondeo",
+      "pollHelp": "Con qué frecuencia se consultan los sensores. No se recomienda un valor demasiado bajo.",
+      "refreshLabel": "Frecuencia de actualización de pantalla",
+      "refreshHelp": "Con qué frecuencia se envían datos a la pantalla. Un valor muy bajo puede causar errores USB.",
+      "heartbeatLabel": "Pulso",
+      "heartbeatHelp": "Con qué frecuencia se envía una señal de actividad para sincronizar la hora.",
+      "languageLabel": "Idioma",
+      "languageHelp": "Selecciona el idioma de la interfaz. Elige 'Detección automática' para usar el idioma de tu navegador.",
+      "languages": {
+        "auto": "Detección automática",
+        "en": "Inglés",
+        "es": "Español"
+      }
+    },
+    "manageThemes": {
+      "header": "Gestionar temas",
+      "tableHeader": "Mostrando del {first} al {last} de {totalRecords} temas."
+    },
+    "sensorManage": {
+      "header": "Gestionar sensores"
+    },
+    "addSensor": {
+      "header": "Añadir instancia de sensor"
+    },
+    "editSensor": {
+      "header": "Editar sensor"
+    },
+    "manageScreens": {
+      "header": "Gestionar pantallas"
+    },
+    "addWidget": {
+      "header": "Añadir widget a {screenName}"
+    },
+    "ledStrip": {
+      "header": "Tira LED",
+      "themes": {
+        "rainbow": "Arcoíris",
+        "breathing": "Respiración",
+        "colorCycle": "Ciclo de color",
+        "automatic": "Automático",
+        "off": "Apagado",
+        "unknown": "n/a"
+      }
+    }
+  },
+  "card": {
+    "preview": {
+      "header": "Vista previa"
+    },
+    "settings": {
+      "header": "Ajustes",
+      "ip": "IP",
+      "theme": "Tema",
+      "poll": "Sondeo",
+      "refresh": "Actualización",
+      "heartbeat": "Pulso",
+      "lcd": "LCD",
+      "led": "LED"
+    },
+    "config": {
+      "header": "Configuración",
+      "themeLabel": "Tema",
+      "orientationLabel": "Orientación",
+      "refreshLabel": "Actualización",
+      "screenLabel": "Pantalla",
+      "orientation": {
+        "portrait": "Vertical",
+        "landscape": "Horizontal"
+      },
+      "refreshMethods": {
+        "redraw": "Redibujar",
+        "update": "Actualizar"
+      }
+    }
+  },
+  "widget": {
+    "propertyCapitalize": {
+      "name": "Nombre",
+      "value": "Valor o sensor",
+      "font": "Tipografía",
+      "color": "Color",
+      "align": "Alineación",
+      "rect": "Posición y tamaño",
+      "format": "Formato",
+      "refresh": "Intervalo de sondeo",
+      "used": "Color de 'usado'",
+      "free": "Color de 'libre'",
+      "outline": "Color del borde",
+      "fill": "Color de relleno",
+      "points": "Puntos de datos",
+      "area": "Relleno de área",
+      "thickness": "Grosor",
+      "zoom": "Zoom",
+      "horizontal": "Horizontal",
+      "rotation": "Rotación",
+      "cutout": "Recorte",
+      "circumference": "Circunferencia",
+      "iconSet": "Set de iconos",
+      "type": "Tipo",
+      "debug_frame": "Marco de depuración",
+      "sensor": "Sensor asociado"
+    }
+  },
+  "confirmations": {
+    "areYouSure": "¿Estás seguro?"
+  }
+}

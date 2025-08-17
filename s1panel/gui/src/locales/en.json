@@ -1,0 +1,219 @@
+{
+  "buttons": {
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "discard": "Discard",
+    "ok": "OK",
+    "rename": "Rename",
+    "keep": "Keep",
+    "add": "Add",
+    "change": "Change",
+    "revert": "Revert",
+    "edit": "Edit",
+    "remove": "Remove",
+    "upload": "Upload",
+    "clear": "Clear",
+    "addWidget": "Add Widget",
+    "addSensor": "Add Sensor Instance",
+    "addScreen": "Add a New Screen",
+    "addTheme": "Add a New Theme",
+    "valueMapping": {
+      "addRule": "Add Rule",
+      "addCondition": "Add Condition"
+    }
+  },
+  "labels": {
+    "active": "Active",
+    "name": "Name",
+    "type": "Type",
+    "description": "Description",
+    "action": "Action",
+    "duration": "Duration",
+    "background": "Background",
+    "wallpaper": "Wallpaper",
+    "ledStrip": "LED Strip",
+    "showFrame": "Show Frame",
+    "widget": "Widget",
+    "sensor": "Sensor",
+    "fontFamily": "Family",
+    "fontSize": "Size",
+    "fontStyle": "Style",
+    "fontWeight": "Weight",
+    "rectX": "X (0 - {max})",
+    "rectY": "Y (0 - {max})",
+    "rectWidth": "Width (1 - {max})",
+    "rectHeight": "Height (1 - {max})",
+    "speed": "Speed",
+    "intensity": "Intensity",
+    "valueMapping": {
+      "enable": "Enable Value Mapping",
+      "rule": "Rule",
+      "if": "IF",
+      "then": "THEN",
+      "else": "DEFAULT",
+      "operators": {
+        "equals": "Equals",
+        "notEqual": "Not Equal",
+        "greaterThan": "Greater Than",
+        "lessThan": "Less Than",
+        "greaterOrEqual": "Greater or Equal",
+        "lessOrEqual": "Less or Equal",
+        "contains": "Contains",
+        "notEmpty": "Not Empty"
+      }
+    }
+  },
+  "placeholders": {
+    "pickTheme": "Pick a Theme",
+    "pickRefresh": "Pick a Refresh",
+    "pickScreen": "Pick a Screen",
+    "pickWidget": "Pick a widget",
+    "pickSensor": "Pick a Sensor",
+    "pickFont": "Pick a Font",
+    "normal": "Normal",
+    "sensorOrText": "Sensor or Text",
+    "chooseAnOption": "Choose an option",
+    "screenName": "Screen name...",
+    "themeName": "Theme name...",
+    "valueMapping": {
+      "operator": "Select an Operator",
+      "conditionValue": "Value to Compare",
+      "result": "Resulting Value",
+      "defaultValue": "Default Value"
+    }
+  },
+  "tooltips": {
+    "moveTop": "Move Top",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "moveBottom": "Move Bottom",
+    "sensorToggle": "Toggle to use as a sensor reference"
+  },
+  "messages": {
+    "unsavedChanges": "Unsaved",
+    "lostConnection": "Lost Connection",
+    "confirmDeleteTheme": "Do you want to delete this theme?",
+    "confirmDeleteScreen": "Do you want to delete this screen?",
+    "confirmDeleteWidget": "Do you want to delete this widget?",
+    "confirmClearWallpaper": "Clear Wallpaper?",
+    "confirmClearImage": "Clear Image?",
+    "addSensorError": "Add Sensor Error",
+    "removeSensorError": "Remove Sensor Error",
+    "editSensorError": "Edit Sensor Error",
+    "confirmSensorRemove": "This action will remove \"{name}\" sensor instance!",
+    "sensorIdentityChanged": "Sensor Identity Changed!",
+    "sensorIdentityChangedMessage": "Would you like to update {count} widgets that are currently using \"{oldName}\" with \"{newName}\"?"
+  },
+  "dialog": {
+    "settings": {
+      "header": "Settings",
+      "listenLabel": "Listen on IP:port",
+      "listenHelp": "Use 0.0.0.0 to access from network, or 127.0.0.1 to access locally only, service will restart",
+      "pollLabel": "Poll Time",
+      "pollHelp": "How often to poll for widgets and sensors, don't make this too small",
+      "refreshLabel": "Screen Refresh Rate",
+      "refreshHelp": "How often to send screen updates, don't set this too short or you'll get usb errors",
+      "heartbeatLabel": "Heartbeat",
+      "heartbeatHelp": "How often to force a heartbeat (set time)",
+      "languageLabel": "Language",
+      "languageHelp": "Select the interface language. Choose 'Auto Detect' to use your browser's language",
+      "languages": {
+        "auto": "Auto Detect",
+        "en": "English",
+        "es": "Spanish"
+      }
+    },
+    "manageThemes": {
+      "header": "Manage Themes",
+      "tableHeader": "Showing {first} to {last} of {totalRecords} themes"
+    },
+    "sensorManage": {
+      "header": "Sensor Manage"
+    },
+    "addSensor": {
+      "header": "Add Sensor Instance"
+    },
+    "editSensor": {
+      "header": "Edit Sensor"
+    },
+    "manageScreens": {
+      "header": "Manage Screens"
+    },
+    "addWidget": {
+      "header": "Add Widget to {screenName}"
+    },
+    "ledStrip": {
+      "header": "LED Strip",
+      "themes": {
+        "rainbow": "Rainbow",
+        "breathing": "Breathing",
+        "colorCycle": "Color Cycle",
+        "automatic": "Automatic",
+        "off": "Off",
+        "unknown": "n/a"
+      }
+    }
+  },
+  "card": {
+    "preview": {
+      "header": "Preview"
+    },
+    "settings": {
+      "header": "Settings",
+      "ip": "IP",
+      "theme": "Theme",
+      "poll": "Poll",
+      "refresh": "Refresh",
+      "heartbeat": "Heartbeat",
+      "lcd": "LCD",
+      "led": "LED"
+    },
+    "config": {
+      "header": "Configuration",
+      "themeLabel": "Theme",
+      "orientationLabel": "Orientation",
+      "refreshLabel": "Refresh",
+      "screenLabel": "Screen",
+      "orientation": {
+        "portrait": "Portrait",
+        "landscape": "Landscape"
+      },
+      "refreshMethods": {
+        "redraw": "Redraw",
+        "update": "Update"
+      }
+    }
+  },
+  "widget": {
+    "propertyCapitalize": {
+      "name": "Name",
+      "value": "Value",
+      "font": "Font",
+      "color": "Color",
+      "align": "Align",
+      "rect": "Rectangle",
+      "format": "Format",
+      "refresh": "Refresh",
+      "used": "Used",
+      "free": "Free",
+      "outline": "Outline",
+      "fill": "Fill",
+      "points": "Points",
+      "area": "Area",
+      "thickness": "Thickness",
+      "zoom": "Zoom",
+      "horizontal": "Horizontal",
+      "rotation": "Rotation",
+      "cutout": "Cutout",
+      "circumference": "Circumference",
+      "iconSet": "Icon Set",
+      "type": "Type",
+      "debug_frame": "Debug Frame",
+      "sensor": "Sensor"
+    }
+  },
+  "confirmations": {
+    "areYouSure": "Are you sure?"
+  }
+}

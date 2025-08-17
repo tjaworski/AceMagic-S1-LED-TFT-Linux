@@ -11,6 +11,29 @@ const path        = require('path');
 const multer      = require('multer');
 const upload      = multer();
 
+function generate_random_id(length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+const THEME_TEMPLATE = {
+    "orientation": "portrait",
+    "refresh": "update",
+    "screens": [
+        {
+            "id": 1,
+            "name": "Default Screen",
+            "background": "#000000",
+            "duration": 0,
+            "widgets": []
+        }
+    ]
+};
+
 const service = process.env.SERVICE || false;
 const home_dir = process.env.S1PANEL_CONFIG || __dirname;
 
@@ -21,7 +44,7 @@ function set_dirty(context, redraw) {
     if (redraw) {
         _state.force_redraw(_state);
     }
-                       
+
     _state.screen_paused = true;
     _state.unsaved_changes = true;
 }
@@ -41,7 +64,7 @@ function find_screen_widget(screen, id) {
 }
 
 function find_widget(context, screen, widget) {
-    
+
     return find_screen_widget(find_theme_screen(context, screen), widget);
 }
 
@@ -57,6 +80,30 @@ function get_theme_file_path(context, file) {
     return path.join(get_theme_dir(context), file);
 }
 
+function write_file(file_path, buffer) {
+    return new Promise((fulfill, reject) => {
+        fs.writeFile(file_path, buffer, (err) => {
+            if (err) {
+                logger.error('api write_file: error saving file ' + file_path + ' to disk ' + err);
+                return reject();
+            }
+            fulfill();
+        });
+    });
+}
+
+function read_file(file_path) {
+    return new Promise((fulfill, reject) => {
+        fs.readFile(file_path, (err, buffer) => {
+            if (err) {
+                logger.error('api read_file: error reading file ' + file_path + ' from disk ' + err);
+                return reject();
+            }
+            fulfill(buffer);
+        });
+    });
+}
+
 function get_widget_list(context) {
 
     return new Promise((fulfill, reject) => {
@@ -70,7 +117,7 @@ function get_widget_list(context) {
             const _info = _widget.info();
 
             // standard required fields are added here...
-            _info.fields = [].concat([ 
+            _info.fields = [].concat([
 
                 { name: 'name',        value: 'string'   },
                 { name: 'rect',        value: 'rect'     },
@@ -92,7 +139,7 @@ function get_widget_list(context) {
 function get_config(context) {
 
     return new Promise(fulfill => {
-        
+
         const _state = context.state;
 
         fulfill({ ...context.config, unsaved_changes: _state.unsaved_changes });
@@ -110,7 +157,7 @@ function get_lcd_screen(context) {
 }
 
 function get_sensor_list(context) {
-    
+
     return new Promise(fulfill => {
 
         const _state = context.state;
@@ -160,7 +207,7 @@ function toggle_debug_rect(context, request) {
             return fulfill({ value: _widget.debug_frame });
         }
 
-        reject(); 
+        reject();
     });
 }
 
@@ -193,19 +240,14 @@ function update_property(context, request) {
         const _widget = find_widget(context, request.screen, request.widget);
 
         if (_widget) {
-            
+
             const _value = _widget[request.key] = request.value;
 
-            if ('value' === request.key && _value.sensor) {
-
-                _widget.sensor = false;       
-            }
-
             set_dirty(context);
-            
+
             return fulfill({ value: _value });
         }
-        
+
         reject();
     });
 }
@@ -235,13 +277,13 @@ function set_background(context, request) {
     return new Promise((fulfill, reject) => {
 
         const _screen = find_theme_screen(context, request.screen);
-        
+
         if (_screen) {
 
-            _screen.background = request.value;    
+            _screen.background = request.value;
 
             set_dirty(context, true);
-    
+
             return fulfill({ value: _screen.background });
         }
 
@@ -285,20 +327,20 @@ function set_led_strip(context, request) {
         const _state = context.state;
         const _config = context.config;
         const _led_config = _config.led_config;
-        
+
         if (request.screen) {
 
             const _screen = find_theme_screen(context, request.screen);
 
             if (_screen) {
-                
+
                 if (!_screen.led_config) {
                     _screen.led_config = {};
                 }
 
                 set_led_settings(_screen.led_config, request);
                 set_dirty(context);
-            }            
+            }
         }
 
         set_led_settings(_led_config, request);
@@ -308,25 +350,25 @@ function set_led_strip(context, request) {
         read_file(_state.config_file).then(buffer => {
 
             const _file_config = JSON.parse(buffer);
-            
+
             _file_config.led_config = _led_config;
 
             return write_file(_state.config_file, JSON.stringify(_file_config, null, 3)).then(() => {
 
                 logger.info('api set_led_strip: config.json updated');
-                
+
                 fulfill({ theme: _led_config.theme, intensity: _led_config.intensity, speed: _led_config.speed, dirty: true });
-            
+
             }, reject);
-        
-        }, reject); 
+
+        }, reject);
     });
 }
 
 function get_led_strip(context) {
-    
+
     return new Promise(fulfill => {
-        
+
         const _config = context.config;
         const _led_config = _config.led_config;
 
@@ -431,11 +473,11 @@ function set_screen_duration(context, request) {
 function get_last_screen_id(screens) {
 
     var _id = 0;
-    
-    screens.forEach(each => { 
-        _id = Math.max(_id, each.id); 
+
+    screens.forEach(each => {
+        _id = Math.max(_id, each.id);
     });
-    
+
     return _id;
 }
 
@@ -464,14 +506,14 @@ function remove_screen(context, request) {
         const _theme = context.theme;
 
         const _current_screen = _theme.screens[_state.screen_index];
-        
+
         _theme.screens = _theme.screens.filter(each => each.id !== request.id);
-        
+
         // adjust screen_index to new array
         for (var i = 0; i < _theme.screens.length; i++) {
-            
+
             const _screen = _theme.screens[i];
-            
+
             if (_screen.id === _current_screen.id) {
                 _state.change_screen = _state.screen_index = i;
                 break;
@@ -524,7 +566,7 @@ function next_screen(context, request) {
                     break;
                 }
             }
-            else if (i === _next_screen_index) { 
+            else if (i === _next_screen_index) {
                 // pick based on next screen
                 _id = _screen.id;
                 break;
@@ -542,22 +584,22 @@ function get_random_color() {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
     const b = Math.floor(Math.random() * 256);
-  
+
     const _hex_r = r.toString(16).padStart(2, '0');
     const _hex_g = g.toString(16).padStart(2, '0');
     const _hex_b = b.toString(16).padStart(2, '0');
-    
-    return '#' + _hex_r + _hex_g + _hex_b;  
+
+    return '#' + _hex_r + _hex_g + _hex_b;
 }
 
 function get_last_widget_id(widgets) {
 
     var _id = 0;
-    
-    widgets.forEach(widget => { 
-        _id = Math.max(_id, widget.id); 
+
+    widgets.forEach(widget => {
+        _id = Math.max(_id, widget.id);
     });
-    
+
     return _id;
 }
 
@@ -601,7 +643,7 @@ function make_blank_widget(id, info) {
                 {
                     const _syntax = field.value.split(':');
 
-                    if (_syntax.length > 1) {                                    
+                    if (_syntax.length > 1) {
 
                         if ('list' === _syntax[0]) {
                             _obj[field.name] = _syntax[1].split(',')[0];
@@ -609,7 +651,7 @@ function make_blank_widget(id, info) {
                     }
                     else {
                         _obj[field.name] = '';
-                    }                
+                    }
                 }
                 break;
         }
@@ -623,22 +665,22 @@ function add_widget(context, request) {
     return new Promise((fulfill, reject) => {
 
         const _state = context.state;
-    
+
         const _screen = find_theme_screen(context, request.screen);
 
         if (_screen) {
 
-            const _name = Object.getOwnPropertyNames(_state.widgets).find(name => name === request.name);     
+            const _name = Object.getOwnPropertyNames(_state.widgets).find(name => name === request.name);
 
             if (_name) {
 
                 const _widget = _state.widgets[_name];
                 const _new_widget = make_blank_widget(1 + get_last_widget_id(_screen.widgets), _widget.info());
-                
+
                 _screen.widgets.push(_new_widget);
 
                 set_dirty(context, true);
-                
+
                 return fulfill(_new_widget);
             }
         }
@@ -661,7 +703,7 @@ function delete_widget(context, request) {
 
             return fulfill();
         }
-        
+
         reject();
     });
 }
@@ -671,7 +713,7 @@ function read_png(file_path) {
     return new Promise((fulfill, reject) => {
 
         fs.readFile(file_path, (err, data) => {
-            
+
             if (err) {
                 return reject();
             }
@@ -682,7 +724,7 @@ function read_png(file_path) {
 }
 
 function get_wallpaper(context, request) {
-    
+
     return new Promise((fulfill, reject) => {
 
         const _screen = find_theme_screen(context, Number(request.screen));
@@ -690,10 +732,10 @@ function get_wallpaper(context, request) {
         if (_screen) {
 
             return read_png(_screen.wallpaper).then(data => {
-                
+
                 fulfill(data);
-            
-            }, reject);            
+
+            }, reject);
         }
 
         reject();
@@ -701,7 +743,7 @@ function get_wallpaper(context, request) {
 }
 
 function get_image(context, request) {
-    
+
     return new Promise((fulfill, reject) => {
 
         const _widget = find_widget(context, Number(request.screen), Number(request.widget));
@@ -709,9 +751,9 @@ function get_image(context, request) {
         if (_widget) {
 
             return read_png(_widget.value).then(data => {
-                    
+
                 fulfill(data);
-            
+
             }, reject);
         }
 
@@ -720,9 +762,9 @@ function get_image(context, request) {
 }
 
 function clear_wallpaper(context, request) {
-    
+
     return new Promise((fulfill, reject) => {
-        
+
         const _screen = find_theme_screen(context, Number(request.screen));
 
         if (_screen) {
@@ -735,7 +777,7 @@ function clear_wallpaper(context, request) {
         }
 
         reject();
-    });            
+    });
 }
 
 function clear_image(context, request) {
@@ -757,42 +799,8 @@ function clear_image(context, request) {
     });
 }
 
-function write_file(file_path, buffer) {
-
-    return new Promise((fulfill, reject) => {
-
-        fs.writeFile(file_path, buffer, (err) => {
-
-            if (err) {
-
-                logger.error('api write_file: error saving file ' + file_path + ' to disk ' + err);
-                return reject();
-            }
-            
-            fulfill(); 
-        });
-    });
-}
-
-function read_file(file_path) {
-
-    return new Promise((fulfill, reject) => {
-        
-        fs.readFile(file_path, (err, buffer) => {
-
-            if (err) {
-
-                logger.error('api read_file: error reading file ' + file_path + ' from disk ' + err);
-                return reject();
-            }
-
-            fulfill(buffer);
-        });
-    });
-}
-
 function save_config(context, request) {
-    
+
     return new Promise((fulfill, reject) => {
 
         const _state = context.state;
@@ -806,12 +814,12 @@ function save_config(context, request) {
             var _restart = false;
 
             if (request.listen && 0 !== _live_config.listen.localeCompare(request.listen)) {
-                
+
                 _live_config.listen = _file_config.listen = request.listen;
                 _changed = true;
                 _restart = true;
             }
-    
+
             if (request.poll && _live_config.poll !== request.poll) {
 
                 _live_config.poll = _file_config.poll = request.poll;
@@ -831,7 +839,7 @@ function save_config(context, request) {
             }
 
             if (_changed) {
-                
+
                 return write_file(_state.config_file, JSON.stringify(_live_config, (key, value) => '_private' === key ? undefined : value, 3)).then(() => {
 
                     logger.info('api: config.json updated');
@@ -845,68 +853,154 @@ function save_config(context, request) {
             }
 
             fulfill(_live_config);
-        
-        }, reject);
-    });            
-}
 
-function theme_save(context) {
-
-    return new Promise((fulfill, reject) => {
-        
-        const _state = context.state;
-        const _config = context.config;
-        const _theme = context.theme;
-
-        return write_file(path.join(home_dir, _config.theme), JSON.stringify(_theme, (key, value) => '_private' === key ? undefined : value, 3)).then(() => {
-
-            logger.info('api: theme ' + _config.theme + ' saved');
-
-            _state.screen_paused = false;
-            _state.unsaved_changes = false;
-        
-            fulfill(_theme);
-        
         }, reject);
     });
 }
 
-function theme_revert(context) {
-
+function theme_create(context, request) {
     return new Promise((fulfill, reject) => {
-
         const _state = context.state;
         const _config = context.config;
 
-        read_file(path.join(home_dir, _config.theme)).then(buffer => {
+        let themeId;
+        let themePath;
+        do {
+            themeId = generate_random_id(12);
+            themePath = path.join(home_dir, 'themes', themeId);
+        } while (fs.existsSync(themePath));
 
-            const _theme = JSON.parse(buffer);
-            const _screen = _theme.screens[0];
-            
-            _screen.widgets.sort((a, b) => a.id - b.id);
-            
-            _state.update_orientation = true;
-            _state.redraw_want++;
-            _state.screen_index = _state.change_screen = 0;
-            
-            if (_screen.led_config) {
-                _config.led_config.theme = _screen.led_config.theme || 4;
-                _config.led_config.intensity = _screen.led_config.intensity || 3;
-                _config.led_config.speed = _screen.led_config.speed || 3;
-                _state.update_led = true;
-            }
-            
-            context.theme.orientation = _theme.orientation;
-            context.theme.refresh = _theme.refresh;
-            context.theme.screens = _theme.screens;
+        const themeConfigFile = path.join(themePath, 'theme.json');
+        const themeConfigRelativePath = `themes/${themeId}/theme.json`;
 
-            _state.force_redraw(_state);
-            _state.unsaved_changes = false;
+        fs.mkdir(themePath, { recursive: true }, (err) => {
+            if (err) return reject(err);
 
-            logger.info('api: theme reverted back from ' + _config.theme);
-        
-            fulfill(_theme);
-        
+            write_file(themeConfigFile, JSON.stringify(THEME_TEMPLATE, null, 3)).then(() => {
+                const newTheme = {
+                    name: request.name,
+                    config: themeConfigRelativePath
+                };
+
+                _config.theme_list.push(newTheme);
+
+                if (!_state.pending_theme_creations) {
+                    _state.pending_theme_creations = [];
+                }
+                _state.pending_theme_creations.push(themePath);
+
+                set_dirty(context);
+                fulfill(newTheme);
+            }, reject);
+        });
+    });
+}
+
+function theme_delete(context, request) {
+    return new Promise((fulfill) => {
+        const { state, config } = context;
+        const themePathToDelete = request.config;
+
+        config.theme_list = config.theme_list.filter(t => t.config !== themePathToDelete);
+
+        if (!state.pending_theme_deletions) {
+            state.pending_theme_deletions = [];
+        }
+        const fullPath = path.join(home_dir, path.dirname(themePathToDelete));
+        state.pending_theme_deletions.push(fullPath);
+
+        set_dirty(context);
+        fulfill({ success: true });
+    });
+}
+
+function switch_theme(context, request) {
+    return new Promise((fulfill, reject) => {
+        const { config, theme } = context;
+        const themePath = request.config;
+
+        read_file(path.join(home_dir, themePath)).then(themeBuffer => {
+            const newTheme = JSON.parse(themeBuffer);
+
+            Object.keys(theme).forEach(key => delete theme[key]);
+            Object.assign(theme, newTheme);
+
+            config.theme = themePath;
+
+            context.state.update_orientation = true;
+            context.state.force_redraw(context.state);
+            context.state.screen_index = 0;
+            context.state.change_screen = 0;
+
+            set_dirty(context);
+            fulfill(newTheme);
+        }, reject);
+    });
+}
+
+function theme_save(context) {
+    return new Promise((fulfill, reject) => {
+        const { state, config, theme } = context;
+
+        if (state.pending_theme_deletions) {
+            state.pending_theme_deletions.forEach(dirPath => {
+                fs.rm(dirPath, { recursive: true, force: true }, (err) => {
+                    if (err) logger.error(`Failed to delete theme directory: ${dirPath}`, err);
+                });
+            });
+        }
+
+        state.pending_theme_creations = [];
+        state.pending_theme_deletions = [];
+
+        write_file(path.join(home_dir, config.theme), JSON.stringify(theme, (key, value) => '_private' === key ? undefined : value, 3))
+            .then(() => write_file(state.config_file, JSON.stringify(config, null, 3)))
+            .then(() => {
+                logger.info(`api: theme '${config.theme}' and config.json saved`);
+                state.screen_paused = false;
+                state.unsaved_changes = false;
+                fulfill(theme);
+            })
+            .catch(reject);
+    });
+}
+
+function theme_revert(context) {
+    return new Promise((fulfill, reject) => {
+        const { state, config, theme } = context;
+
+        if (state.pending_theme_creations) {
+            state.pending_theme_creations.forEach(dirPath => {
+                fs.rm(dirPath, { recursive: true, force: true }, (err) => {
+                    if (err) logger.error(`Failed to revert theme creation by deleting directory: ${dirPath}`, err);
+                });
+            });
+        }
+
+        state.pending_theme_creations = [];
+        state.pending_theme_deletions = [];
+
+        read_file(state.config_file).then(savedConfigBuffer => {
+            const savedConfig = JSON.parse(savedConfigBuffer);
+
+            Object.keys(config).forEach(key => delete config[key]);
+            Object.assign(config, savedConfig);
+
+            read_file(path.join(home_dir, savedConfig.theme)).then(themeBuffer => {
+                const revertedTheme = JSON.parse(themeBuffer);
+
+                Object.keys(theme).forEach(key => delete theme[key]);
+                Object.assign(theme, revertedTheme);
+
+                state.update_orientation = true;
+                state.force_redraw(state);
+                state.screen_index = 0;
+                state.change_screen = 0;
+                state.unsaved_changes = false;
+
+                logger.info('api: All changes reverted from disk.');
+                fulfill({ config: savedConfig, theme: revertedTheme });
+            }, reject);
         }, reject);
     });
 }
@@ -919,7 +1013,7 @@ function up_widget(context, request) {
 
         if (_screen) {
 
-            var _previous = null; 
+            var _previous = null;
 
             _screen.widgets.find(widget => {
 
@@ -962,11 +1056,11 @@ function down_widget(context, request) {
 
                 _previous = widget;
             });
-            
+
             _screen.widgets.sort((a, b) => a.id - b.id);
-            
+
             set_dirty(context, true);
-            
+
             return fulfill();
         }
         reject();
@@ -985,11 +1079,11 @@ function top_widget(context, request) {
 
             _screen.widgets.forEach(widget => {
 
-                widget.id = (widget.id === request.widget) ? 1 : _count++; 
+                widget.id = (widget.id === request.widget) ? 1 : _count++;
             });
 
             _screen.widgets.sort((a, b) => a.id - b.id);
-            
+
             set_dirty(context, true);
 
             return fulfill();
@@ -1011,11 +1105,11 @@ function bottom_widget(context, request) {
 
             _screen.widgets.forEach(widget => {
 
-                widget.id = (widget.id === request.widget) ? _screen.widgets.length : _count++; 
+                widget.id = (widget.id === request.widget) ? _screen.widgets.length : _count++;
             });
-    
+
             _screen.widgets.sort((a, b) => a.id - b.id);
-            
+
             set_dirty(context, true);
 
             return fulfill();
@@ -1026,11 +1120,11 @@ function bottom_widget(context, request) {
 }
 
 function upload_image(context, req, res) {
-            
+
     return new Promise((fulfill, reject) => {
-        
+
         const _request = req.query;
-        const _file = req.files[0];                        
+        const _file = req.files[0];
 
         const _widget = find_widget(context, Number(_request.screen), Number(_request.widget));
 
@@ -1045,7 +1139,7 @@ function upload_image(context, req, res) {
                 set_dirty(context, true);
 
                 fulfill({ value: _file_path, id: _widget.id });
-            
+
             }, reject);
         }
 
@@ -1068,7 +1162,7 @@ function upload_wallpaper(context, req, res) {
         const _state = context.state;
 
         const _request = req.query;
-        const _file = req.files[0];            
+        const _file = req.files[0];
 
         const _screen = find_theme_screen(context, Number(_request.screen));
 
@@ -1077,17 +1171,17 @@ function upload_wallpaper(context, req, res) {
             const _file_path = get_theme_file_path(context, _file.originalname);
 
             return write_file(_file_path, _file.buffer).then(() => {
-                                        
+
                 node_canvas.loadImage(_file_path).then(image => {
-                                        
-                    _screen.wallpaper = _file_path;                    
-                    _state.wallpaper_image = image;    
-                    
+
+                    _screen.wallpaper = _file_path;
+                    _state.wallpaper_image = image;
+
                     set_dirty(context, true);
 
                     fulfill(_file_path);
                 });
-            
+
             }, reject);
         }
 
@@ -1104,7 +1198,7 @@ function upload_wallpaper(context, req, res) {
 }
 
 function config_sensor_list(context) {
-    
+
     return new Promise(fulfill => {
 
         const _state = context.state;
@@ -1112,7 +1206,7 @@ function config_sensor_list(context) {
 
         Object.getOwnPropertyNames(_state.sensors).forEach(each => {
 
-            const _info = _state.sensors[each].info || {};            
+            const _info = _state.sensors[each].info || {};
             const _config = JSON.parse(JSON.stringify(_state.sensors[each].config || {}, (key, value) => '_private' === key ? undefined : value, 3));
 
             _list.push({ name: each, info: _info, config: _config });
@@ -1123,11 +1217,11 @@ function config_sensor_list(context) {
 }
 
 function config_sensor_scan() {
-    
+
     const _sensor_dir = path.join(__dirname, 'sensors');
-    
+
     return new Promise(fulfill => {
-        
+
         var _list = [];
 
         fs.readdir(_sensor_dir, (err, files) => {
@@ -1138,7 +1232,7 @@ function config_sensor_scan() {
             }
 
             files.filter(file => file.endsWith('.js') && !file.includes('thread')).forEach(file => {
-                
+
                 const _sensor_path = path.join(_sensor_dir, file);
 
                 const _module = require(_sensor_path);
@@ -1152,9 +1246,9 @@ function config_sensor_scan() {
 }
 
 function config_sensor_add(context, request) {
-        
+
     return new Promise((fulfill, reject) => {
-    
+
         const _state = context.state;
 
         const _sensor = request.module;
@@ -1175,22 +1269,22 @@ function config_sensor_add(context, request) {
 
             return _module.stop(_config).then(() => {
                 fulfill({ status: 'duplicate', error: '"' + _name + '" sensor already exists'});
-            }); 
+            });
         }
-        
+
         read_file(_state.config_file).then(buffer => {
 
             const _file_config = JSON.parse(buffer);
             const _live_config = context.config;
-            
+
             const _new_sensor = {
                 module: _sensor,
                 config: _config_copy
             };
-    
+
             _file_config.sensors.push(_new_sensor);
             _live_config.sensors.push(_new_sensor);
-            
+
             return write_file(_state.config_file, JSON.stringify(_file_config, null, 3)).then(() => {
 
                 logger.info('api config_sensor_add: config.json updated');
@@ -1200,11 +1294,11 @@ function config_sensor_add(context, request) {
                 }, stop: () => {
                     return _module.stop(_config);
                 }};
-    
+
                 fulfill({ status: 'success', name: _name });
-            
+
             }, reject);
-        
+
         }, reject);
     });
 }
@@ -1215,9 +1309,9 @@ function config_match(a, b) {
 }
 
 function config_sensor_remove(context, request) {
-        
+
     return new Promise((fulfill, reject) => {
-    
+
         const _state = context.state;
         const _name = request?.name;
         const _module = request?.module;
@@ -1236,7 +1330,7 @@ function config_sensor_remove(context, request) {
 
             const _file_config = JSON.parse(buffer);
             const _live_config = context.config;
-            
+
             _file_config.sensors = _file_config.sensors.filter(each => {
                 return each.module !== _module || !config_match(each.config, _config);
             });
@@ -1253,7 +1347,7 @@ function config_sensor_remove(context, request) {
                     delete _state.sensors[_name];
                     fulfill({ status: 'success'});
                 });
-                
+
             }, reject);
         });
     });
@@ -1262,7 +1356,7 @@ function config_sensor_remove(context, request) {
 function config_sensor_edit(context, request) {
 
     return new Promise((fulfill, reject) => {
-        
+
         const _state = context.state;
         const _name = request?.name;
         const _module = request?.module;
@@ -1280,14 +1374,30 @@ function config_sensor_edit(context, request) {
         config_sensor_remove(context, request).then(result1 => {
 
             // add...
-            config_sensor_add(context, request).then(result2 => {                               
-                
+            config_sensor_add(context, request).then(result2 => {
+
                 fulfill(result2);
             });
         });
     });
 }
 
+function set_language(context, request) {
+    return new Promise((fulfill, reject) => {
+        const newLang = request.language;
+        const supportedLangs = ['auto', 'en', 'es'];
+
+        if (typeof newLang === 'string' && supportedLangs.includes(newLang)) {
+            context.config.language = newLang;
+
+            return write_file(context.state.config_file, JSON.stringify(context.config, null, 3)).then(() => {
+                logger.info('api set_language: config.json updated');
+                fulfill({ status: 'success', language: newLang });
+            }, reject);
+        }
+        reject(new Error('Unsupported or invalid language code'));
+    });
+}
 
 function callback_wrapper(method, url, req, res, callback, type, context) {
 
@@ -1296,7 +1406,7 @@ function callback_wrapper(method, url, req, res, callback, type, context) {
     callback(context, _request).then(respone => {
 
         res.type(type).status(200).send(respone || {});
-    
+
     }, err => {
 
         logger.error('api: request ' + url + ' error ' + err);
@@ -1337,6 +1447,9 @@ module.exports.init = function(web, context) {
         { method: 'post', url: '/api/save_config',          type: 'application/json', callback: save_config },
         { method: 'post', url: '/api/theme_save',           type: 'application/json', callback: theme_save },
         { method: 'post', url: '/api/theme_revert',         type: 'application/json', callback: theme_revert },
+        { method: 'post', url: '/api/theme_create',         type: 'application/json', callback: theme_create },
+        { method: 'post', url: '/api/theme_delete',         type: 'application/json', callback: theme_delete },
+        { method: 'post', url: '/api/switch_theme',         type: 'application/json', callback: switch_theme },
         { method: 'post', url: '/api/up_widget',            type: 'application/json', callback: up_widget },
         { method: 'post', url: '/api/down_widget',          type: 'application/json', callback: down_widget },
         { method: 'post', url: '/api/top_widget',           type: 'application/json', callback: top_widget },
@@ -1346,6 +1459,7 @@ module.exports.init = function(web, context) {
         { method: 'post', url: '/api/config_sensor_add',    type: 'application/json', callback: config_sensor_add },
         { method: 'post', url: '/api/config_sensor_remove', type: 'application/json', callback: config_sensor_remove },
         { method: 'post', url: '/api/config_sensor_edit',   type: 'application/json', callback: config_sensor_edit },
+        { method: 'post', url: '/api/set_language',         type: 'application/json', callback: set_language },
 
     ].forEach(each => {
 
@@ -1361,6 +1475,6 @@ module.exports.init = function(web, context) {
         }
     });
 
-    web.post('/api/upload_image', upload.any(), (req, res) => upload_image(context, req, res));    
-    web.post('/api/upload_wallpaper', upload.any(), (req, res) => upload_wallpaper(context, req, res));    
+    web.post('/api/upload_image', upload.any(), (req, res) => upload_image(context, req, res));
+    web.post('/api/upload_wallpaper', upload.any(), (req, res) => upload_wallpaper(context, req, res));
 };

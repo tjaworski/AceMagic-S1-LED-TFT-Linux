@@ -330,6 +330,80 @@ function fix_rect_bounds(config, rect) {
     return { x: rect.x, y: rect.y, width: _width, height: _height };
 }
 
+function checkCondition(sensorValue, condition) {
+    const ruleValue = condition.value;
+    // Important! Type coercion for numeric comparisons.
+    const numericSensorValue = parseFloat(sensorValue);
+    const numericRuleValue = parseFloat(ruleValue);
+
+    switch (condition.operator) {
+        case 'equals':
+            return String(sensorValue).toLowerCase() === String(ruleValue).toLowerCase();
+        case 'notEqual':
+            return String(sensorValue).toLowerCase() !== String(ruleValue).toLowerCase();
+        case 'greaterThan':
+            return !isNaN(numericSensorValue) && numericSensorValue > numericRuleValue;
+        case 'lessThan':
+            return !isNaN(numericSensorValue) && numericSensorValue < numericRuleValue;
+        case 'greaterOrEqual':
+            return !isNaN(numericSensorValue) && numericSensorValue >= numericRuleValue;
+        case 'lessOrEqual':
+            return !isNaN(numericSensorValue) && numericSensorValue <= numericRuleValue;
+        case 'contains':
+            return String(sensorValue).toLowerCase().includes(String(ruleValue).toLowerCase());
+        case 'notEmpty':
+            return sensorValue !== null && sensorValue !== undefined && sensorValue !== '';
+        default:
+            return false;
+    }
+}
+
+function applyValueMapping(widgetConfig, sensorValue) {
+    const mapping = widgetConfig.value_mapping;
+
+    // If no rules or not enabled, return original value
+    if (!mapping || !mapping.enabled || !mapping.rules || mapping.rules.length === 0) {
+        return sensorValue;
+    }
+
+    // Iterate through each rule defined
+    for (const rule of mapping.rules) {
+        if (!rule.conditions || rule.conditions.length === 0) {
+            continue;
+        }
+
+        let conditionsMet = true;
+        
+        // Evaluate conditions with chained logic
+        for (let i = 0; i < rule.conditions.length; i++) {
+            const condition = rule.conditions[i];
+            const conditionResult = checkCondition(sensorValue, condition);
+            
+            if (i === 0) {
+                // First condition, set initial result
+                conditionsMet = conditionResult;
+            } else {
+                // Apply the logic operator from the previous condition
+                const previousCondition = rule.conditions[i - 1];
+                const logicOperator = previousCondition.logicOperator || 'AND';
+                
+                if (logicOperator === 'OR') {
+                    conditionsMet = conditionsMet || conditionResult;
+                } else { // AND
+                    conditionsMet = conditionsMet && conditionResult;
+                }
+            }
+        }
+
+        if (conditionsMet) {
+            return rule.then; // Found a match, return the value and finish.
+        }
+    }
+
+    // If no rule matched, use the 'else' value
+    return mapping.else || sensorValue;
+}
+
 function next_draw_widgets(context, state, config, widgets, index, total, fulfill) {
 
     if (index < total) {
@@ -351,7 +425,13 @@ function next_draw_widgets(context, state, config, widgets, index, total, fulfil
        return _sensor_reading.then(sensor => {
 
             const _widget = state.widgets[_widget_config.name];
-            const _value = sensor ? sensor.value : _widget_config.value;
+            
+            // Get the raw value from sensor or literal value
+            const rawValue = sensor ? sensor.value : _widget_config.value;
+            
+            // Apply value mapping rules to get the final value
+            const finalValue = applyValueMapping(_widget_config, rawValue);
+            
             const _min = sensor ? sensor.min : 0;
             const _max = sensor ? sensor.max : 0;
 
@@ -359,7 +439,8 @@ function next_draw_widgets(context, state, config, widgets, index, total, fulfil
 
             if (_widget) {
 
-                _draw_promise = _widget.draw(context, _value, _min, _max, _widget_config);
+                // Pass the already transformed value to the widget
+                _draw_promise = _widget.draw(context, finalValue, _min, _max, _widget_config);
             }
 
             _draw_promise.then(changed => {
@@ -606,6 +687,7 @@ function init_web_gui(state, config, theme) {
         const _ip = _listen[0];
         const _port = Number(_listen[1]);
 
+        _web.use('/locales', express.static(path.join(__dirname, 'gui/src/locales')));
         _web.use(express.static(path.join(__dirname, 'gui/dist')));
         _web.use(express.json());
 

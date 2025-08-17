@@ -7,6 +7,7 @@
 import './assets/main.css';
 
 import { createApp } from 'vue';
+import { createI18n } from 'vue-i18n';
 import App from './App.vue';
 
 import 'primeflex/primeflex.css';
@@ -107,8 +108,22 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import RectEdit from '@/components/RectEdit.vue';
 import FontEdit from '@/components/FontEdit.vue';
 
+import enMessages from './locales/en.json';
+import esMessages from './locales/es.json';
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  fallbackLocale: 'en',
+  messages: {
+    en: enMessages,
+    es: esMessages
+  },
+});
+
 const app = createApp(App);
 
+app.use(i18n);
 app.use(PrimeVue, { ripple: true, inputStyle: 'outlined' });
 app.use(ConfirmationService);
 

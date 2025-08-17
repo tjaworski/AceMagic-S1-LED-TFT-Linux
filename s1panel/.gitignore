@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+gui/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+
+# Build output
+gui/dist/
+
+# Snapcraft build artifacts
+snap/
+prime/
+parts/
+stage/
+*.snap
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/

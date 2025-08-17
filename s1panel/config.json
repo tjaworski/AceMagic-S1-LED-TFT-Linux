@@ -1,6 +1,7 @@
 {
    "listen": "0.0.0.0:8686",
    "theme": "themes/simple_demo/portrait_simple.json",
+   "language": "auto",
    "poll": 500,
    "refresh": 1600,
    "heartbeat": 60000,

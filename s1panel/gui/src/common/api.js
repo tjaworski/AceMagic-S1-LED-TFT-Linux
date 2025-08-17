@@ -20,7 +20,7 @@ function api_fetch_config() {
 
                 fulfill(config);
             });
-        });            
+        });
     });
 }
 
@@ -29,10 +29,10 @@ function api_fetch_theme() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/theme').then(response => {
-        
-            response.json().then(theme => {  
 
-                fulfill(theme);             
+            response.json().then(theme => {
+
+                fulfill(theme);
             });
         });
     });
@@ -43,10 +43,10 @@ function api_fetch_screen() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/screen').then(response => {
-        
-            response.json().then(theme => {  
 
-                fulfill(theme);             
+            response.json().then(theme => {
+
+                fulfill(theme);
             });
         });
     });
@@ -56,10 +56,10 @@ function api_fetch_widgets() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/widget_list').then(response => {
-        
-            response.json().then(list => {  
 
-                fulfill(list);             
+            response.json().then(list => {
+
+                fulfill(list);
             });
         });
     });
@@ -69,10 +69,10 @@ function api_fetch_sensors() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/sensor_list').then(response => {
-        
-            response.json().then(list => {  
 
-                fulfill(list);             
+            response.json().then(list => {
+
+                fulfill(list);
             });
         });
     });
@@ -102,9 +102,9 @@ function api_toggle_debug_frame(screen, id) {
 
         fetch('/api/toggle_debug_frame', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -125,9 +125,9 @@ function api_adjust_rect(screen, id, rect) {
 
             fetch('/api/adjust_rect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, rect: rect })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
@@ -150,14 +150,14 @@ function api_update_property(screen, id, key, value) {
 
             fetch('/api/update_property', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, key: key, value: value })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
         }, _poll_time);
-    }); 
+    });
 }
 
 var _throttle_set_background = null;
@@ -175,14 +175,14 @@ function api_set_background(screen, value) {
 
             fetch('/api/set_background', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, value })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
         }, _poll_time);
-    }); 
+    });
 }
 
 function api_set_sensor(screen, id, value) {
@@ -191,9 +191,9 @@ function api_set_sensor(screen, id, value) {
 
         fetch('/api/set_sensor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen: screen, widget: id, sensor: value })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -205,9 +205,9 @@ function api_set_orientation(value) {
 
         fetch('/api/set_orientation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orientation: value })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -219,9 +219,9 @@ function api_set_refresh(value) {
 
         fetch('/api/set_refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh: value })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -232,10 +232,10 @@ function api_fetch_config_dirty() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/config_dirty').then(response => {
-        
-            response.json().then(json => {  
 
-                fulfill(json);             
+            response.json().then(json => {
+
+                fulfill(json);
             });
         });
     });
@@ -256,14 +256,14 @@ function api_set_screen_name(screen, name) {
 
             fetch('/api/set_screen_name', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
         }, _poll_time);
-    }); 
+    });
 }
 
 var _throttle_set_duration = null;
@@ -281,14 +281,14 @@ function api_set_screen_duration(screen, duration) {
 
             fetch('/api/set_screen_duration', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, duration })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
         }, _poll_time);
-    }); 
+    });
 }
 
 function api_add_screen(name) {
@@ -297,9 +297,9 @@ function api_add_screen(name) {
 
         fetch('/api/add_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -311,9 +311,9 @@ function api_remove_screen(id) {
 
         fetch('/api/remove_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -325,9 +325,9 @@ function api_next_screen(id) {
 
         fetch('/api/next_screen', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -339,9 +339,9 @@ function api_add_widget(screen, name) {
 
         fetch('/api/add_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, name })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -353,9 +353,9 @@ function api_delete_widget(screen, widget) {
 
         fetch('/api/delete_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -367,9 +367,9 @@ function api_clear_wallpaper(screen) {
 
         fetch('/api/clear_wallpaper', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -381,51 +381,51 @@ function api_clear_image(screen, widget) {
 
         fetch('/api/clear_image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
 }
 
 function api_save_config(config) {
-   
+
     return new Promise((fulfill, reject) => {
 
         fetch('/api/save_config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config)}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
 }
 
 function api_theme_save() {
- 
+
     return new Promise((fulfill, reject) => {
 
         fetch('/api/theme_save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
 }
 
 function api_theme_revert() {
-  
+
     return new Promise((fulfill, reject) => {
 
         fetch('/api/theme_revert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -446,14 +446,14 @@ function api_set_led_strip(theme, intensity, speed, screen) {
 
             fetch('/api/led_strip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ theme, intensity, speed, screen })}).then(response => {
 
-                response.json().then(json => {  
+                response.json().then(json => {
 
-                    fulfill(json);             
+                    fulfill(json);
                 });
             });
 
         }, _poll_time);
-    }); 
+    });
 }
 
 function api_get_led_strip() {
@@ -461,10 +461,10 @@ function api_get_led_strip() {
     return new Promise((fulfill, reject) => {
 
         fetch('/api/led_strip').then(response => {
-        
-            response.json().then(theme => {  
 
-                fulfill(theme);             
+            response.json().then(theme => {
+
+                fulfill(theme);
             });
         });
     });
@@ -476,9 +476,9 @@ function api_up_widget(screen, widget) {
 
         fetch('/api/up_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -490,9 +490,9 @@ function api_down_widget(screen, widget) {
 
         fetch('/api/down_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -504,9 +504,9 @@ function api_top_widget(screen, widget) {
 
         fetch('/api/top_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -519,9 +519,9 @@ function api_bottom_widget(screen, widget) {
 
         fetch('/api/bottom_widget', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, widget })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -532,10 +532,10 @@ function api_config_sensor_list() {
     return new Promise(fulfill => {
 
         fetch('/api/config_sensor_list').then(response => {
-        
-            response.json().then(list => {  
 
-                fulfill(list);             
+            response.json().then(list => {
+
+                fulfill(list);
             });
         });
     });
@@ -546,10 +546,10 @@ function api_config_sensor_scan() {
     return new Promise(fulfill => {
 
         fetch('/api/config_sensor_scan').then(response => {
-        
-            response.json().then(list => {  
 
-                fulfill(list);             
+            response.json().then(list => {
+
+                fulfill(list);
             });
         });
     });
@@ -561,9 +561,9 @@ function api_config_sensor_add(module, config) {
 
         fetch('/api/config_sensor_add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ module, config })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -575,9 +575,9 @@ function api_config_sensor_remove(name, module) {
 
         fetch('/api/config_sensor_remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, module })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
     });
@@ -589,11 +589,41 @@ function api_config_sensor_edit(name, module, config) {
 
         fetch('/api/config_sensor_edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, module, config })}).then(response => {
 
-            response.json().then(json => {  
+            response.json().then(json => {
 
-                fulfill(json);             
+                fulfill(json);
             });
         });
+    });
+}
+
+function api_set_language(lang) {
+    return new Promise((fulfill, reject) => {
+
+      fetch('/api/set_language', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ language: lang })}).then(response => {
+            response.json().then(fulfill, reject);
+        }, reject);
+    });
+}
+
+function api_theme_create(name) {
+    return new Promise((fulfill, reject) => {
+        fetch('/api/theme_create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name })})
+        .then(res => res.json()).then(fulfill, reject);
+    });
+}
+
+function api_theme_delete(config) {
+    return new Promise((fulfill, reject) => {
+        fetch('/api/theme_delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ config })})
+        .then(res => res.json()).then(fulfill, reject);
+    });
+}
+
+function api_switch_theme(config) {
+    return new Promise((fulfill, reject) => {
+        fetch('/api/switch_theme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ config })})
+        .then(res => res.json()).then(fulfill, reject);
     });
 }
 
@@ -635,5 +665,9 @@ export default {
     config_sensor_scan   : api_config_sensor_scan,
     config_sensor_add    : api_config_sensor_add,
     config_sensor_remove : api_config_sensor_remove,
-    config_sensor_edit   : api_config_sensor_edit
+    config_sensor_edit   : api_config_sensor_edit,
+    set_language         : api_set_language,
+    theme_create         : api_theme_create,
+    theme_delete         : api_theme_delete,
+    switch_theme         : api_switch_theme
 };
