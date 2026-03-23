@@ -9,6 +9,18 @@
       {
          "name": "a simple demo portrait orientation",
          "config": "themes/simple_demo/portrait_simple.json"
+      },
+      {
+         "name": "Official Dark",
+         "config": "themes/official/portrait_dark.json"
+      },
+      {
+         "name": "Official Clock",
+         "config": "themes/official/portrait_clock.json"
+      },
+      {
+         "name": "Official Power",
+         "config": "themes/official/portrait_power.json"
       }
    ],
    "sensors": [
@@ -28,13 +40,26 @@
          "module": "sensors/cpu_temp.js",
          "config": {
             "max_points": 300,
-            "fahrenheit": true
+            "fahrenheit": false
          }
       },
       {
          "module": "sensors/cpu_power.js",
          "config": {
             "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/cpu_freq.js",
+         "config": {
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/nvme_temp.js",
+         "config": {
+            "max_points": 300,
+            "fahrenheit": false
          }
       },
       {
@@ -47,7 +72,14 @@
       {
          "module": "sensors/network.js",
          "config": {
-            "interface": "enp4s0",
+            "interface": "wlp3s0",
+            "max_points": 300
+         }
+      },
+      {
+         "module": "sensors/wifi_signal.js",
+         "config": {
+            "interface": "wlp3s0",
             "max_points": 300
          }
       },
@@ -102,9 +134,9 @@
    "device": "1-8:1.1",
    "led_config": {
       "device": "/dev/ttyUSB0",
-      "theme": 2,
-      "speed": 3,
-      "intensity": 3
+      "theme": 3,
+      "speed": 5,
+      "intensity": 5
    },
    "portrait": true
 }

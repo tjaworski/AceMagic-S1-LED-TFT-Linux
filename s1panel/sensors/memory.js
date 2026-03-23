@@ -97,7 +97,7 @@ function calc_memory_usage(current) {
         free: _current_free * 1024,
         cached: _current_cached * 1024,
         active: _active * 1024,
-        usage:  ((_active / _current_total) * 100.0).toFixed(2),
+        usage:  ((_active / _current_total) * 100.0).toFixed(0),
         swap_total: _current_swap_total * 1024,
         swap_used: _swap_used * 1024,
         swap: ((_swap_used / _current_swap_total) * 100.0).toFixed(2)

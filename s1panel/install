@@ -1,4 +1,36 @@
 #!/bin/bash
+
+# Define la versión de Node.js
+NODE_VERSION="20.19.5"
+
+# Carga NVM
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh"
+    echo "NVM cargado..."
+else
+    echo "Error: No se encontró NVM en $NVM_DIR."
+    echo "Asegúrate de tener NVM instalado para tu usuario."
+    exit 1
+fi
+
+# Asegura que la versión específica esté instalada y en uso
+echo "Asegurando el uso de Node v$NODE_VERSION..."
+nvm install $NODE_VERSION > /dev/null
+nvm use $NODE_VERSION
+if [ $? -ne 0 ]; then
+    echo "Error: No se pudo activar la versión $NODE_VERSION de Node."
+    exit 1
+fi
+echo "Confirmado, usando: $(node -v)"
+
+# Obtiene la ruta absoluta del ejecutable 'node' para esa versión
+NODE_PATH=$(which node)
+if [ -z "$NODE_PATH" ]; then
+    echo "Error: No se pudo encontrar la ruta de Node."
+    exit 1
+fi
+
 CURRENT_DIR=$(pwd)
 
 make_service()
@@ -6,9 +38,11 @@ make_service()
 cat <<EOF
 [Unit]
 \rDescription="S1 Panel"
+\rAfter=network-online.target
+\rWants=network-online.target
 \r
 \r[Service]
-\rExecStart=/usr/bin/node main.js
+\rExecStart=$NODE_PATH main.js
 \rWorkingDirectory=$CURRENT_DIR
 \rRestart=always
 \rRestartSec=10
@@ -22,17 +56,33 @@ EOF
 }
 
 echo "Home Directory is $CURRENT_DIR"
+echo "La ruta de Node para el servicio será: $NODE_PATH"
+
+# --- FASE DE CONSTRUCCIÓN (como usuario normal) ---
+echo "Instalando dependencias (npm i)..."
 npm i
 (cd gui; npm i)
-echo "Building GUI"
+echo "Construyendo GUI (npm run build)..."
 (cd gui; npm run build)
-echo "Install Service..."
-echo -e "$(make_service)" > /etc/systemd/system/s1panel.service
+
+# --- FASE DE INSTALACIÓN (con sudo) ---
+echo "Instalando el servicio (se requerirá sudo)..."
+
+# Usamos 'sudo tee' para escribir el archivo como root
+echo -e "$(make_service)" | sudo tee /etc/systemd/system/s1panel.service > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Error al escribir el archivo de servicio. ¿Cancelaste el sudo?"
+    exit 1
+fi
+
 echo "Reload Service Daemon..."
-systemctl daemon-reload
+sudo systemctl daemon-reload
+
 echo "Enable s1panel..."
-systemctl enable s1panel.service
+sudo systemctl enable s1panel.service
+
 echo "Start s1panel..."
-systemctl start s1panel.service
+sudo systemctl start s1panel.service
+
 echo "Done!"
-systemctl status s1panel.service
+sudo systemctl status s1panel.service

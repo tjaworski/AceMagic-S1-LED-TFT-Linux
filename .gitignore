@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+s1panel/node_modules/
+s1panel/gui/node_modules/
+
+# Build output
+s1panel/gui/dist/
+
+# Snap build artifacts
+s1panel/snap/.snapcraft/
+parts/
+stage/
+prime/
+*.snap
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Runtime / generated fonts config
+s1panel/fonts.conf

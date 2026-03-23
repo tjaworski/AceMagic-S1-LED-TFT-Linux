@@ -3,10 +3,11 @@
  * s1panel - sensor/space
  * Copyright (c) 2024-2025 Tomasz Jaworski
  * GPL-3 Licensed
- * 
+ *
  * inspired by https://github.com/Ex161/AceMagic-S1-LED-TFT-Linux/blob/main/s1panel/sensors/storage_space.js
  */
 const fs = require('fs');
+const { exec } = require('child_process');
 
 const logger = require('../logger');
 
@@ -29,25 +30,51 @@ function space_info(path) {
 
     return new Promise((fulfill, reject) => {
 
-        fs.statfs(path, (err, stats) => {
+        // Try fs.statfs if available (Node.js >= 19.6.0)
+        if (typeof fs.statfs === 'function') {
+            fs.statfs(path, (err, stats) => {
 
-            var _info = {
-                used: 0,
-                avail: 0,
-                size: 0,
-            };
+                var _info = {
+                    used: 0,
+                    avail: 0,
+                    size: 0,
+                };
 
-            if (!err) {
-                const _total_bytes = stats.blocks * stats.bsize;
-                const _free_bytes = stats.bfree * stats.bsize;
+                if (!err) {
+                    const _total_bytes = stats.blocks * stats.bsize;
+                    const _free_bytes = stats.bfree * stats.bsize;
 
-                _info.used = _total_bytes - _free_bytes;
-                _info.avail = _free_bytes;
-                _info.size = _total_bytes;
-            }
-            
-            fulfill(_info);
-        });
+                    _info.used = _total_bytes - _free_bytes;
+                    _info.avail = _free_bytes;
+                    _info.size = _total_bytes;
+                }
+
+                fulfill(_info);
+            });
+        } else {
+            // Fallback to df command for older Node.js versions
+            exec(`df -B1 ${path}`, (err, stdout, stderr) => {
+                var _info = {
+                    used: 0,
+                    avail: 0,
+                    size: 0,
+                };
+
+                if (!err && stdout) {
+                    const lines = stdout.trim().split('\n');
+                    if (lines.length > 1) {
+                        const parts = lines[1].split(/\s+/);
+                        if (parts.length >= 4) {
+                            _info.size = parseInt(parts[1]) || 0;
+                            _info.used = parseInt(parts[2]) || 0;
+                            _info.avail = parseInt(parts[3]) || 0;
+                        }
+                    }
+                }
+
+                fulfill(_info);
+            });
+        }
     });
 }
 

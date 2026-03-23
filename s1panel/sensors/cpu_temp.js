@@ -16,6 +16,7 @@ var _last_sampled = 0;
 var _history = [];
 var _max_temp = 0;
 var _min_temp = 0;
+var _core_temps = [];
 
 function read_file(path) {
   
@@ -94,19 +95,25 @@ function cpu_temp() {
                 var _temp_path = null;
                 var _temp_found = false;
 
+                        var _core_paths = [];
+
                 return walk_directory(_path_coretemp, fullpath => {
-                    
+
                     if (fullpath.includes('temp') && fullpath.includes('label')) {
 
                         return read_file(fullpath).then(name => {
-                        
+
                             if (name.startsWith('Package id 0')) {
                                 _temp_path = fullpath;
                                 _temp_found = true;
                             }
-                        }, reject);
+                            else if (name.startsWith('Core ')) {
+                                _core_paths.push(fullpath.replace('_label', '_input'));
+                            }
+
+                        }, () => Promise.resolve());
                     }
-                    
+
                     return Promise.resolve();
 
                 }).then(() => {
@@ -114,16 +121,27 @@ function cpu_temp() {
                     if (_temp_found) {
 
                         const _input_path = _temp_path.replace('_label', '_input');
-                        const _max_path = _temp_path.replace('_label', '_max');
+                        const _max_path   = _temp_path.replace('_label', '_max');
 
-                        return Promise.all([read_file(_input_path), read_file(_max_path) ]).then(values => {
+                        const _reads = [
+                            read_file(_input_path),
+                            read_file(_max_path),
+                            ..._core_paths.sort().map(p => read_file(p))
+                        ];
 
-                            var _value = Number(values[0]) / 1000;
-                            var _max = Number(values[1]) / 1000;
+                        return Promise.all(_reads).then(values => {
 
-                            fulfill({ 
-                                value: _fahrenheit ? celsius_fahrenheit(_value) : _value, 
-                                max: _fahrenheit ? celsius_fahrenheit(_max) : _max 
+                            const _value = Number(values[0]) / 1000;
+                            const _max   = Number(values[1]) / 1000;
+                            const _cores = values.slice(2).map(v => {
+                                const c = Number(v) / 1000;
+                                return _fahrenheit ? celsius_fahrenheit(c) : c;
+                            });
+
+                            fulfill({
+                                value: _fahrenheit ? celsius_fahrenheit(_value) : _value,
+                                max:   _fahrenheit ? celsius_fahrenheit(_max)   : _max,
+                                cores: _cores
                             });
 
                         }, reject);
@@ -167,6 +185,10 @@ function get_current_value(json) {
         logger.info('initialize: cpu temp min set to ' + _min_temp);
     }
 
+    if (json.cores && json.cores.length) {
+        _core_temps = json.cores.map(c => c.toFixed(0));
+    }
+
     return json.value;
 }
 
@@ -207,15 +229,27 @@ function sample(rate, format) {
         
                 switch (number) {
 
-                    case '0':   // degrees
+                    case '0':   // package temp (current)
                         return _history[_history.length - 1];
 
                     case '1':   // history
-                        return _history.join();  
+                        return _history.join();
 
-                    case '2':
-                        return _fahrenheit ? 'F' : 'C';  
-                                 
+                    case '2':   // unit
+                        return _fahrenheit ? 'F' : 'C';
+
+                    case '3':   // Core 0
+                        return _core_temps[0] || 'null';
+
+                    case '4':   // Core 1
+                        return _core_temps[1] || 'null';
+
+                    case '5':   // Core 2
+                        return _core_temps[2] || 'null';
+
+                    case '6':   // Core 3
+                        return _core_temps[3] || 'null';
+
                     default:
                         return 'null';
                 }

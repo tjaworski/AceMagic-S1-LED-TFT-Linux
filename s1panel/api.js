@@ -830,6 +830,13 @@ function save_config(context, request) {
                 _changed = true;
             }
 
+            if (request.theme && 0 !== _live_config.theme.localeCompare(request.theme)) {
+
+                _live_config.theme = _file_config.theme = request.theme;
+                _changed = true;
+                _restart = true;
+            }
+
             if (_changed) {
                 
                 return write_file(_state.config_file, JSON.stringify(_live_config, (key, value) => '_private' === key ? undefined : value, 3)).then(() => {

@@ -435,70 +435,64 @@
 
     </Dialog>
 
-    <div class="p-3">
-        <div class="grid flud">
-            <div class="col-5">
+    <div class="layout-root">
 
-                <Card ref="preview" class="h-full w-full">
-                    <template #title>Preview</template>
+        <!-- ── DERECHA: Preview + Settings (fijos) ── -->
+        <div class="panel-right">
 
-                    <template #content>
-                        <div class="flex justify-content-center flex-wrap">
-                            <canvas ref="canvas" class="flex align-items-center justify-content-center"></canvas>
-                        </div>
-                    </template>
+            <Card ref="preview" class="w-full">
+                <template #title>Preview</template>
+                <template #content>
+                    <div class="flex justify-content-center flex-wrap">
+                        <canvas ref="canvas" class="flex align-items-center justify-content-center"></canvas>
+                    </div>
+                </template>
+            </Card>
 
-                </Card>
+            <Card class="w-full">
+                <template #title>Settings
+                    <i class="cursor-pointer pi pi-cog ml-3" style="color: #1bd443" @click="onEditConfig()"></i>
+                    <i class="cursor-pointer pi pi-bolt ml-3" style="color: #ff0000" @click="onOpenSensorManage()"></i>
+                </template>
+                <template #content>
+                    <ul class="list-none p-0 m-0">
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">IP</div>
+                            <div class="text-900 w-full text-overflow-ellipsis overflow-hidden">{{ config?.listen }} <Tag v-if="!connected" class="ml-2" severity="danger" value="Lost Connection" rounded></Tag></div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">Theme</div>
+                            <div class="text-900 w-full text-overflow-ellipsis overflow-hidden">{{ getThemeName(config?.theme) }}</div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">Poll</div>
+                            <div class="text-900 w-full">{{ config?.poll }} ms</div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">Refresh</div>
+                            <div class="text-900 w-full">{{ config?.refresh }} ms</div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">Heartbeat</div>
+                            <div class="text-900 w-full">{{ config?.heartbeat }} ms</div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">LCD</div>
+                            <div class="text-900 w-full text-overflow-ellipsis overflow-hidden">{{ config?.device }}</div>
+                        </li>
+                        <li class="flex align-items-center py-2 px-2 border-top-1 surface-border flex-nowrap">
+                            <div class="text-500 w-5rem font-medium">LED</div>
+                            <div class="text-900 w-full text-overflow-ellipsis overflow-hidden">{{ config?.led_config.device }}</div>
+                        </li>
+                    </ul>
+                </template>
+            </Card>
 
-            </div>
+        </div>
 
-            <div class="col-7">
-
-                <Card class="h-full">
-                    <template #title>Settings 
-                        <i class="cursor-pointer pi pi-cog ml-3" style="color: #1bd443" @click="onEditConfig()"></i>
-                        <i class="cursor-pointer pi pi-bolt ml-3" style="color: #ff0000" @click="onOpenSensorManage()"></i>
-                    </template>
-                    <template #content>
-
-                        <ul class="list-none p-0 m-0">
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">IP</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.listen }} <Tag v-if="!connected" class="ml-2" severity="danger" value="Lost Connection" rounded></Tag></div>
-                            </li>
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">Theme</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ getThemeName(config?.theme) }}</div>
-                            </li>
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">Poll</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.poll }} ms</div>
-                            </li>        
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">Refresh</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.refresh }} ms</div>
-                            </li>
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">Heartbeat</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.heartbeat }} ms</div>
-                            </li>
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">LCD</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.device }}</div>
-                            </li> 
-                            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-nowrap">
-                                <div class="text-500 w-6 md:w-3 font-medium">LED</div>
-                                <div class="text-900 w-full md:w-7 md:flex-order-0 flex-order-1">{{ config?.led_config.device }}</div>
-                            </li>                 
-                        </ul>	
-
-                    </template>
-                </Card>
-
-            </div>
-
-            <div class="col-12">
-                <Card>
+        <!-- ── IZQUIERDA: Configuración (scrollable) ── -->
+        <div class="panel-left">
+            <Card>
                     <template #title>
                         <div class="flex justify-content-between flex-nowrap">
                             <div class="flex align-items-center justify-content-center gap-3">
@@ -765,7 +759,14 @@
                                             
                     </template>
                 </Card>
-            </div>
+        </div>
+
+    </div>
+
+    <div v-if="loading.show" class="loading-overlay">
+        <div class="loading-content">
+            <ProgressSpinner strokeWidth="4" animationDuration=".8s"/>
+            <p class="mt-3">{{ loading.message }}</p>
         </div>
     </div>
 
@@ -906,7 +907,8 @@ export default {
             methods: [
                 { id: 'redraw', name: 'Redraw' },
                 { id: 'update', name: 'Update' },
-            ]
+            ],
+            loading: { show: false, message: '' }
         };
     },
     mounted() {
@@ -1366,6 +1368,14 @@ export default {
 
             if (this.config.theme_list.length > 1) {
 
+                const _doSwitch = () => {
+                    this.loading = { show: true, message: 'Applying theme, please wait...' };
+                    this.config.theme = this.edit_theme;
+                    api.save_config({ theme: this.edit_theme }).then(() => {
+                        window.location.reload();
+                    });
+                };
+
                 return api.fetch_config_dirty().then(response => {
 
                     if (response.unsaved_changes) {
@@ -1375,15 +1385,15 @@ export default {
                             header: 'Would you like to save your changes?',
                             message: 'Switching themes will discard any unsaved changes!',
                             accept: () => {
-                                console.log('save changes and switch theme');
+                                api.theme_save().then(_doSwitch);
                             },
                             reject: () => {
-                                console.log('do nothing');
+                                _doSwitch();
                             }
                         });
                     }
                     else {
-                        console.log('switch theme');
+                        _doSwitch();
                     }
                 });
             }
