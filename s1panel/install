@@ -6,6 +6,7 @@ make_service()
 cat <<EOF
 [Unit]
 \rDescription="S1 Panel"
+\rAfter=network.target
 \r
 \r[Service]
 \rExecStart=/usr/bin/node main.js
@@ -14,6 +15,7 @@ cat <<EOF
 \rRestartSec=10
 \rSyslogIdentifier=s1panel
 \rEnvironment=SERVICE=true
+\rEnvironment=NODE_ENV=production
 \r
 \r[Install]
 \rWantedBy=multi-user.target

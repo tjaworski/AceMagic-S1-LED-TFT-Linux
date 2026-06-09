@@ -1,0 +1,441 @@
+{
+   "orientation": "portrait",
+   "refresh": "update",
+   "screens": [
+      {
+         "id": 2,
+         "name": "Screen 2 Charts",
+         "background": "#000000",
+         "duartion": 0,
+         "widgets": [
+            {
+               "id": 1,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 170,
+                  "height": 39
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{1}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#88ff00",
+               "fill": "#80c72e",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 2,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 40,
+                  "width": 50,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "cpu",
+               "format": "",
+               "refresh": 0,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 3,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 130,
+                  "y": 40,
+                  "width": 37,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "cpu_usage",
+               "format": "{0}%",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 6,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 57,
+                  "y": 40,
+                  "width": 65,
+                  "height": 20
+               },
+               "sensor": true,
+               "value": "cpu_temp",
+               "format": "{0} °C",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "center"
+            },
+            {
+               "id": 7,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 49,
+                  "y": 60,
+                  "width": 121,
+                  "height": 10
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{10}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#ffffff",
+               "fill": "#d7ecee",
+               "points": 1,
+               "thickness": 15,
+               "zoom": 0,
+               "horizontal": true
+            },
+            {
+               "id": 9,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 59,
+                  "width": 40,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "memory",
+               "format": "{14}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "bold 11px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 10,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 88,
+                  "width": 60,
+                  "height": 12
+               },
+               "sensor": false,
+               "value": "TailScale",
+               "font": "11px Arial",
+               "color": "#ffffff",
+               "align": "left"
+            },
+            {
+               "id": 11,
+               "group": 1,
+               "name": "service_status",
+               "rect": {
+                  "x": 50,
+                  "y": 87,
+                  "width": 14,
+                  "height": 14
+               },
+               "sensor": true,
+               "value": "systemd_tailscaled",
+               "format": "{1}",
+               "refresh": 5000
+            },
+            {
+               "id": 12,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 95,
+                  "y": 88,
+                  "width": 60,
+                  "height": 12
+               },
+               "sensor": false,
+               "value": "OpenClaw",
+               "font": "11px Arial",
+               "color": "#ffffff",
+               "align": "left"
+            },
+            {
+               "id": 13,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 120,
+                  "width": 170,
+                  "height": 35
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{2}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#0033ff",
+               "fill": "#2332a6",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 14,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 157,
+                  "width": 170,
+                  "height": 10
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{1}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#37139c",
+               "fill": "#7a23f7",
+               "points": 1,
+               "thickness": 7,
+               "zoom": 0,
+               "horizontal": true
+            },
+            {
+               "id": 15,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 168,
+                  "width": 15,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "rx",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 16,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 90,
+                  "y": 168,
+                  "width": 80,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "network_enp4s0",
+               "format": "{15}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 17,
+               "group": 1,
+               "name": "line_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 201,
+                  "width": 170,
+                  "height": 35
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{5}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#3db2c4",
+               "fill": "#26cccc",
+               "points": 60,
+               "area": true
+            },
+            {
+               "id": 18,
+               "group": 1,
+               "name": "bar_chart",
+               "rect": {
+                  "x": 0,
+                  "y": 238,
+                  "width": 170,
+                  "height": 10
+               },
+               "sensor": true,
+               "value": "network_enp2s0",
+               "format": "{4}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "outline": "#f5054d",
+               "fill": "#ff0091",
+               "points": 1,
+               "thickness": 7,
+               "zoom": 0,
+               "horizontal": true
+            },
+            {
+               "id": 19,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 5,
+                  "y": 249,
+                  "width": 15,
+                  "height": 15
+               },
+               "sensor": false,
+               "value": "tx",
+               "format": "",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "left"
+            },
+            {
+               "id": 20,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 90,
+                  "y": 249,
+                  "width": 80,
+                  "height": 15
+               },
+               "sensor": true,
+               "value": "network_enp4s0",
+               "format": "{16}",
+               "refresh": 1000,
+               "debug_frame": false,
+               "font": "12px Arial",
+               "color": "#26ff00",
+               "align": "right"
+            },
+            {
+               "id": 100,
+               "group": 1,
+               "name": "service_status",
+               "rect": {
+                  "x": 156,
+                  "y": 87,
+                  "width": 14,
+                  "height": 14
+               },
+               "sensor": true,
+               "value": "systemd_openclaw-gateway",
+               "format": "{1}",
+               "refresh": 5000
+            },
+            {
+               "id": 101,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 103,
+                  "width": 60,
+                  "height": 12
+               },
+               "sensor": false,
+               "value": "RustDesk",
+               "font": "11px Arial",
+               "color": "#ffffff",
+               "align": "left"
+            },
+            {
+               "id": 102,
+               "group": 1,
+               "name": "service_status",
+               "rect": {
+                  "x": 50,
+                  "y": 102,
+                  "width": 14,
+                  "height": 14
+               },
+               "sensor": true,
+               "value": "systemd_rustdesk",
+               "format": "{1}",
+               "refresh": 5000
+            },
+            {
+               "id": 103,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 95,
+                  "y": 103,
+                  "width": 60,
+                  "height": 12
+               },
+               "sensor": false,
+               "value": "SSH",
+               "font": "11px Arial",
+               "color": "#ffffff",
+               "align": "left"
+            },
+            {
+               "id": 104,
+               "group": 1,
+               "name": "service_status",
+               "rect": {
+                  "x": 156,
+                  "y": 102,
+                  "width": 14,
+                  "height": 14
+               },
+               "sensor": true,
+               "value": "systemd_ssh",
+               "format": "{1}",
+               "refresh": 5000
+            },
+            {
+               "id": 200,
+               "group": 1,
+               "name": "text",
+               "rect": {
+                  "x": 0,
+                  "y": 295,
+                  "width": 170,
+                  "height": 25
+               },
+               "sensor": true,
+               "value": "log_activity",
+               "format": "{0}",
+               "refresh": 2000,
+               "debug_frame": false,
+               "font": "22px Arial",
+               "color": "#0fff2b",
+               "align": "center"
+            }
+         ],
+         "duration": 60000,
+         "led_config": {
+            "theme": 4,
+            "intensity": 3,
+            "speed": 3
+         }
+      }
+   ]
+}

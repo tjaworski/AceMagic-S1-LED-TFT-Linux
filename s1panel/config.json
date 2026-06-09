@@ -1,6 +1,6 @@
 {
    "listen": "0.0.0.0:8686",
-   "theme": "themes/simple_demo/portrait_simple.json",
+   "theme": "themes/backup-default/portrait_juraj.json",
    "poll": 500,
    "refresh": 1600,
    "heartbeat": 60000,
@@ -9,6 +9,10 @@
       {
          "name": "a simple demo portrait orientation",
          "config": "themes/simple_demo/portrait_simple.json"
+      },
+      {
+         "name": "backup default juraj",
+         "config": "themes/backup-default/portrait_juraj.json"
       }
    ],
    "sensors": [
@@ -82,6 +86,34 @@
             "imperial": true,
             "forecast": 1
          }
+      },
+      {
+         "module": "sensors/systemd.js",
+         "config": {
+            "service": "tailscaled"
+         }
+      },
+      {
+         "module": "sensors/systemd.js",
+         "config": {
+            "service": "openclaw-gateway",
+            "user": "yr"
+         }
+      },
+      {
+         "module": "sensors/systemd.js",
+         "config": {
+            "service": "ssh"
+         }
+      },
+      {
+         "module": "sensors/log_activity.js"
+      },
+      {
+         "module": "sensors/systemd.js",
+         "config": {
+            "service": "rustdesk"
+         }
       }
    ],
    "widgets": [
@@ -92,7 +124,8 @@
       "widgets/bar_chart.js",
       "widgets/image.js",
       "widgets/iconify.js",
-      "widgets/weather_icon.js"
+      "widgets/weather_icon.js",
+      "widgets/service_status.js"
    ],
    "canvas": {
       "width": 320,

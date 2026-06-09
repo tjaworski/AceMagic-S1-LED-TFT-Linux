@@ -45,7 +45,9 @@ function bytes_to_data_rate(bytes, bits) {
 
 
 function max_link_capacity_bytes(link_speed) {
-
+    if (link_speed <= 0) {
+        link_speed = 1000; // default to 1000 Mbps if unknown (e.g. WiFi)
+    }
     return (link_speed * 0.125) * (1024 * 1024);
 }
 
@@ -90,43 +92,43 @@ function sample(rate, format, config) {
                         return _private.iface;
 
                     case '1': // download
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return _private.history_rx_bytes[_private.history_rx_bytes.length - 1];
                     case '2':
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return _private.history_rx_bytes.join();
                     case '3':
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_rx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return bytes_to_data_rate(_private.history_rx_bytes[_private.history_rx_bytes.length - 1]);
 
                     case '4': // upload
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return _private.history_tx_bytes[_private.history_tx_bytes.length - 1];
                     case '5':
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return _private.history_tx_bytes.join();
                     case '6':
-                        _max = _private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max;
+                        _max = Math.max(_private.scale_factor ? Math.min(Math.ceil(_private.max_tx_bytes * _private.scale_factor), _absolute_max) : _absolute_max, 1024);
                         return bytes_to_data_rate(_private.history_tx_bytes[_private.history_tx_bytes.length - 1]);
 
                     case '7': // download packets
-                        _max = _private.max_rx_packets;
+                        _max = Math.max(_private.max_rx_packets, 10);
                         return _private.history_rx_packets[_private.history_rx_packets.length - 1];
                     case '8':
-                        _max = _private.max_rx_packets;
+                        _max = Math.max(_private.max_rx_packets, 10);
                         return _private.history_rx_packets[_private.history_rx_packets.length - 1] + ' rx/pps';
                     case '9':
-                        _max = _private.max_rx_packets;
+                        _max = Math.max(_private.max_rx_packets, 10);
                         return _private.history_rx_packets.join();
 
                     case '10': // upload packets
-                        _max = _private.max_tx_packets;
+                        _max = Math.max(_private.max_tx_packets, 10);
                         return _private.history_tx_packets[_private.history_tx_packets.length - 1];
                     case '11':
-                        _max = _private.max_tx_packets;
+                        _max = Math.max(_private.max_tx_packets, 10);
                         return _private.history_tx_packets[_private.history_tx_packets.length - 1] + ' tx/pps';
                     case '12':
-                        _max = _private.max_tx_packets;
+                        _max = Math.max(_private.max_tx_packets, 10);
                         return _private.history_tx_packets.join();
 
                     case '13':

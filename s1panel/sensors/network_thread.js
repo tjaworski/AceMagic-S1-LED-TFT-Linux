@@ -85,7 +85,8 @@ function network_usage(iface) {
     return Promise.all([
 
         read_file(_base_path + '/mtu'),
-        read_file(_base_path + '/speed'),
+        // Some interfaces (for example many Wi-Fi adapters) do not expose speed.
+        read_file(_base_path + '/speed').catch(() => '-1'),
 
         read_file(_path + '/rx_bytes'),
         read_file(_path + '/tx_bytes'),
