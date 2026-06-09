@@ -184,6 +184,43 @@ function update_device_screen(context, state, config, theme) {
     });
 }
 
+function is_screen_enabled(screen) {
+
+    return screen && screen.enabled !== false;
+}
+
+function find_next_enabled_index(screens, start_index) {
+
+    const _count = screens.length;
+
+    if (!_count) {
+        return start_index;
+    }
+
+    for (var i = 1; i <= _count; i++) {
+
+        const _index = (start_index + i) % _count;
+
+        if (is_screen_enabled(screens[_index])) {
+            return _index;
+        }
+    }
+
+    return start_index;
+}
+
+function find_first_enabled_index(screens) {
+
+    for (var i = 0; i < screens.length; i++) {
+
+        if (is_screen_enabled(screens[i])) {
+            return i;
+        }
+    }
+
+    return 0;
+}
+
 // keep screen at least for 10 seconds
 // prevents from fast screen switching...
 function has_screen_expired(elapsed, duration) {
@@ -197,6 +234,22 @@ function has_screen_expired(elapsed, duration) {
     return elapsed > _min_time_ms ? true : false;
 }
 
+function get_gui_screen(state, theme) {
+
+    const _index = state.gui_screen_index;
+
+    if (_index >= 0 && _index < theme.screens.length) {
+        return theme.screens[_index];
+    }
+
+    return theme.screens[0];
+}
+
+function reset_wallpaper(state) {
+
+    state.wallpaper_image = null;
+}
+
 function fetch_screen(state, config, theme) {
 
     const _count = theme.screens.length;
@@ -204,34 +257,22 @@ function fetch_screen(state, config, theme) {
 
     var _screen = theme.screens[state.screen_index];
 
+    if (_screen && !is_screen_enabled(_screen)) {
+
+        state.screen_index = find_first_enabled_index(theme.screens);
+        _screen = theme.screens[state.screen_index];
+    }
+
     if (_count > 1) {
 
         const _now = get_hr_time();
         const _diff = _now - state.screen_start;
 
-        if (state.change_screen !== state.screen_index) {
-
-            // jump to change_screen
-            if (state.change_screen < _count) {
-
-                state.screen_index = state.change_screen;
-            }
-            else {
-
-                state.change_screen = 0;
-            }
-        }
-        else if (_screen.duration && has_screen_expired(_diff, _screen.duration)) {
+        if (_screen.duration && has_screen_expired(_diff, _screen.duration)) {
 
             if (!state.screen_paused) {
 
-                // move to next screen, or cycle back
-                state.screen_index++;
-
-                if (state.screen_index >= _count) {
-
-                    state.screen_index = 0;
-                }
+                state.screen_index = find_next_enabled_index(theme.screens, state.screen_index);
             }
             else {
 
@@ -258,7 +299,6 @@ function fetch_screen(state, config, theme) {
                 state.update_led = true;
             }
 
-            // sync up everything, and force full screen redraw
             state.change_screen = state.screen_index;
             state.screen_start = get_hr_time();
             state.force_redraw(state);
@@ -330,7 +370,7 @@ function fix_rect_bounds(config, rect) {
     return { x: rect.x, y: rect.y, width: _width, height: _height };
 }
 
-function next_draw_widgets(context, state, config, widgets, index, total, fulfill) {
+function next_draw_widgets(context, state, config, widgets, index, total, for_lcd, fulfill) {
 
     if (index < total) {
 
@@ -364,7 +404,7 @@ function next_draw_widgets(context, state, config, widgets, index, total, fulfil
 
             _draw_promise.then(changed => {
 
-                if (!state.drawing && changed) {
+                if (for_lcd && !state.drawing && changed) {
 
                     calc_update_region(fix_rect_bounds(config, _widget_config.rect)).forEach(each => {
 
@@ -373,7 +413,7 @@ function next_draw_widgets(context, state, config, widgets, index, total, fulfil
                     });
                 }
 
-                next_draw_widgets(context, state, config, widgets, 1 + index, total, fulfill);
+                next_draw_widgets(context, state, config, widgets, 1 + index, total, for_lcd, fulfill);
             });
         });
     }
@@ -411,7 +451,7 @@ function load_wallpaper(context, state, config, screen) {
     });
 }
 
-function draw_screen(context, state, config, screen) {
+function draw_screen(context, state, config, screen, for_lcd) {
 
     return new Promise(fulfill => {
 
@@ -432,7 +472,7 @@ function draw_screen(context, state, config, screen) {
                 context.rotate(-Math.PI / 2);
             }
 
-            next_draw_widgets(context, state, config, screen.widgets, 0, screen.widgets.length, () => {
+            next_draw_widgets(context, state, config, screen.widgets, 0, screen.widgets.length, for_lcd, () => {
 
                 fulfill();
             });
@@ -513,33 +553,35 @@ function poll_inactive_screen_sensors(state, screens, index, active, fulfill) {
 
 function start_draw_canvas(state, config, theme) {
 
-    const _context = state.canvas_context[state.active_context];
-    const _active_screen = fetch_screen(state, config, theme);
+    const _lcd_screen = fetch_screen(state, config, theme);
+    const _preview_screen = get_gui_screen(state, theme);
+    const _lcd_context = state.canvas_context[state.active_context];
 
-    poll_inactive_screen_sensors(state, theme.screens, 0, _active_screen, () => {
+    poll_inactive_screen_sensors(state, theme.screens, 0, _preview_screen, () => {
 
-        // pick a screen and draw it
-        draw_screen(_context, state, config, _active_screen).then(() => {
+        reset_wallpaper(state);
+        draw_screen(state.output_context, state, config, _preview_screen, false).then(() => {
 
-            // update lcd screen
-            update_device_screen(_context, state, config, theme).then(device_updated => {
+            reset_wallpaper(state);
+            draw_screen(_lcd_context, state, config, _lcd_screen, true).then(() => {
 
-                state.output_context.putImageData(_context.getImageData(0, 0, config.canvas.width, config.canvas.height), 0, 0);
+                update_device_screen(_lcd_context, state, config, theme).then(device_updated => {
 
-                if (device_updated) {
+                    if (device_updated) {
 
-                    state.active_context ^= 1;  // flip buffer to use
-                }
+                        state.active_context ^= 1;  // flip buffer to use
+                    }
 
-                update_led_strip(state, config).then(() => {
+                    update_led_strip(state, config).then(() => {
 
-                    setTimeout(() => {
+                        setTimeout(() => {
 
-                        lcd_set_config(state, config);
+                            lcd_set_config(state, config);
 
-                        start_draw_canvas(state, config, theme);
+                            start_draw_canvas(state, config, theme);
 
-                    }, config.poll);
+                        }, config.poll);
+                    });
                 });
             });
         });
@@ -590,6 +632,10 @@ function initialize(state, config, theme) {
 
     // sort screens by id
     theme.screens.sort((a, b) => a.id - b.id);
+
+    state.screen_index = find_first_enabled_index(theme.screens);
+    state.gui_screen_index = state.screen_index;
+    state.change_screen = state.screen_index;
 
     lcd_set_time(state);
 
@@ -763,6 +809,7 @@ function main() {
                     canvas_context     : [ _canvas1, _canvas2 ],
 
                     change_screen      : 0,                 // index of forced screen change
+                    gui_screen_index   : 0,                 // screen selected in web gui
                     screen_paused      : false,             // pause screen change
                     screen_index       : 0,                 // array index into screens, not screen id
                     screen_start       : get_hr_time(),

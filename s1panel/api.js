@@ -428,6 +428,65 @@ function set_screen_duration(context, request) {
     });
 }
 
+function is_screen_enabled(screen) {
+
+    return screen && screen.enabled !== false;
+}
+
+function find_next_enabled_index(screens, start_index) {
+
+    const _count = screens.length;
+
+    if (!_count) {
+        return start_index;
+    }
+
+    for (var i = 1; i <= _count; i++) {
+
+        const _index = (start_index + i) % _count;
+
+        if (is_screen_enabled(screens[_index])) {
+            return _index;
+        }
+    }
+
+    return start_index;
+}
+
+function set_screen_enabled(context, request) {
+
+    return new Promise((fulfill, reject) => {
+
+        const _screen = find_theme_screen(context, request.screen);
+        const _state = context.state;
+        const _theme = context.theme;
+
+        if (_screen) {
+
+            _screen.enabled = !!request.enabled;
+
+            if (!_screen.enabled) {
+
+                const _current = _theme.screens[_state.screen_index];
+
+                if (_current && _current.id === _screen.id && !_state.screen_paused) {
+
+                    const _next_index = find_next_enabled_index(_theme.screens, _state.screen_index);
+
+                    _state.change_screen = _state.screen_index = _next_index;
+                    _state.force_redraw(_state);
+                }
+            }
+
+            set_dirty(context);
+
+            return fulfill({ enabled: _screen.enabled });
+        }
+
+        reject();
+    });
+}
+
 function get_last_screen_id(screens) {
 
     var _id = 0;
@@ -446,7 +505,7 @@ function add_screen(context, request) {
 
         const _theme = context.theme;
 
-        const _screen = { id: 1 + get_last_screen_id(_theme.screens), name: request.name, background: '#000000', duartion: 0, widgets: [] };
+        const _screen = { id: 1 + get_last_screen_id(_theme.screens), name: request.name, background: '#000000', duration: 0, enabled: true, widgets: [] };
 
         _theme.screens.push(_screen);
 
@@ -464,6 +523,7 @@ function remove_screen(context, request) {
         const _theme = context.theme;
 
         const _current_screen = _theme.screens[_state.screen_index];
+        const _gui_screen = _theme.screens[_state.gui_screen_index];
         
         _theme.screens = _theme.screens.filter(each => each.id !== request.id);
         
@@ -472,9 +532,12 @@ function remove_screen(context, request) {
             
             const _screen = _theme.screens[i];
             
-            if (_screen.id === _current_screen.id) {
+            if (_current_screen && _screen.id === _current_screen.id) {
                 _state.change_screen = _state.screen_index = i;
-                break;
+            }
+
+            if (_gui_screen && _screen.id === _gui_screen.id) {
+                _state.gui_screen_index = i;
             }
         }
 
@@ -531,7 +594,15 @@ function next_screen(context, request) {
             }
         }
 
-        _state.change_screen = _next_screen_index;
+        _state.gui_screen_index = _next_screen_index;
+
+        const _picked = _theme.screens[_next_screen_index];
+
+        if (is_screen_enabled(_picked)) {
+
+            _state.change_screen = _state.screen_index = _next_screen_index;
+            _state.force_redraw(_state);
+        }
 
         fulfill({ id: _id });
     });
@@ -887,7 +958,7 @@ function theme_revert(context) {
             
             _state.update_orientation = true;
             _state.redraw_want++;
-            _state.screen_index = _state.change_screen = 0;
+            _state.screen_index = _state.change_screen = _state.gui_screen_index = 0;
             
             if (_screen.led_config) {
                 _config.led_config.theme = _screen.led_config.theme || 4;
@@ -1326,6 +1397,7 @@ module.exports.init = function(web, context) {
         { method: 'post', url: '/api/set_refresh',          type: 'application/json', callback: set_refresh },
         { method: 'post', url: '/api/set_screen_name',      type: 'application/json', callback: set_screen_name },
         { method: 'post', url: '/api/set_screen_duration',  type: 'application/json', callback: set_screen_duration },
+        { method: 'post', url: '/api/set_screen_enabled',   type: 'application/json', callback: set_screen_enabled },
         { method: 'post', url: '/api/add_screen',           type: 'application/json', callback: add_screen },
         { method: 'post', url: '/api/remove_screen',        type: 'application/json', callback: remove_screen },
         { method: 'post', url: '/api/next_screen',          type: 'application/json', callback: next_screen },
