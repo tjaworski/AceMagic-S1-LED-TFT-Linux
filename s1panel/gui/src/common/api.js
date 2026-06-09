@@ -291,6 +291,20 @@ function api_set_screen_duration(screen, duration) {
     }); 
 }
 
+function api_set_screen_enabled(screen, enabled) {
+
+    return new Promise((fulfill, reject) => {
+
+        fetch('/api/set_screen_enabled', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ screen, enabled })}).then(response => {
+
+            response.json().then(json => {  
+
+                fulfill(json);             
+            });
+        });
+    });
+}
+
 function api_add_screen(name) {
 
     return new Promise((fulfill, reject) => {
@@ -615,6 +629,7 @@ export default {
     fetch_config_dirty   : api_fetch_config_dirty,
     set_screen_name      : api_set_screen_name,
     set_screen_duration  : api_set_screen_duration,
+    set_screen_enabled   : api_set_screen_enabled,
     add_screen           : api_add_screen,
     remove_screen        : api_remove_screen,
     next_screen          : api_next_screen,

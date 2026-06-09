@@ -351,6 +351,19 @@
 
                 </template>
 
+                <Column field="enabled" header="LCD" style="width: 6rem">
+                
+                    <template #body="row">
+
+                        <div class="flex align-items-center gap-2">
+                            <Checkbox :modelValue="row.data.enabled !== false" :binary="true" :inputId="'screen_lcd_' + row.data.id" @update:modelValue="onSetScreenEnabledFromManage(row.data, $event)" />
+                            <label :for="'screen_lcd_' + row.data.id" class="text-sm">Active</label>
+                        </div>
+
+                    </template>
+
+                </Column>
+
                 <Column field="name" header="Name" sortable>
 
                     <template #body="row">
@@ -541,6 +554,11 @@
                             <div class="w-full md:w-2">
                                 <label class="w-full text-sm" for="refresh">Refresh</label>                    
                                 <Dropdown id="refresh" v-model="edit_refresh" :options="methods" optionValue="id" optionLabel="name" placeholder="Pick a Refresh" class="w-full" @update:modelValue="onRefreshChange()"/>
+                            </div>
+
+                            <div class="w-full md:w-2">
+                                <label class="w-full text-sm" for="screen_enabled">LCD Active</label>
+                                <Dropdown id="screen_enabled" v-model="edit_screen_enabled" :options="screen_status" optionValue="id" optionLabel="name" placeholder="Pick status" class="w-full" @update:modelValue="onSetScreenEnabled()"/>
                             </div>
 
                             <div class="w-full md:w-auto">
@@ -897,6 +915,7 @@ export default {
             edit_duration: null,
             edit_background: null,
             edit_screen_name: null,
+            edit_screen_enabled: true,
             unsaved_changes: false,
             uploading: [],
             orientation: [
@@ -906,6 +925,10 @@ export default {
             methods: [
                 { id: 'redraw', name: 'Redraw' },
                 { id: 'update', name: 'Update' },
+            ],
+            screen_status: [
+                { id: true, name: 'Active' },
+                { id: false, name: 'Inactive' },
             ]
         };
     },
@@ -938,6 +961,7 @@ export default {
             this.edit_duration = this.screen.duration || 0;
             this.edit_background = this.screen.background || '#000000';
             this.edit_screen_name = this.screen.name || 'n/a';
+            this.edit_screen_enabled = this.screen.enabled !== false;
 
             this.unsaved_changes = this.config.unsaved_changes || false;
             
@@ -1056,6 +1080,20 @@ export default {
 
             return api.set_screen_duration(this.screen.id, this.edit_duration).then(() => {
                 this.screen.duration = this.edit_duration;
+                this.unsaved_changes = true;
+            });
+        },
+        onSetScreenEnabled() {
+
+            return api.set_screen_enabled(this.screen.id, this.edit_screen_enabled).then(() => {
+                this.screen.enabled = this.edit_screen_enabled;
+                this.unsaved_changes = true;
+            });
+        },
+        onSetScreenEnabledFromManage(screen, enabled) {
+
+            return api.set_screen_enabled(screen.id, enabled).then(() => {
+                screen.enabled = enabled;
                 this.unsaved_changes = true;
             });
         },
@@ -1400,6 +1438,7 @@ export default {
                     this.edit_duration = this.screen.duration || 0;
                     this.edit_background = this.screen.background || '#000000';
                     this.edit_screen_name = this.screen.name || 'n/a';
+                    this.edit_screen_enabled = this.screen.enabled !== false;
 
                     this.screen.widgets.forEach(each => {
 
@@ -1591,6 +1630,7 @@ export default {
                 this.edit_duration = this.screen.duration || 0;
                 this.edit_background = this.screen.background || '#000000';
                 this.edit_screen_name = this.screen.name || 'n/a';
+                this.edit_screen_enabled = this.screen.enabled !== false;
                 
                 this.screen.widgets.forEach(each => {
                     
